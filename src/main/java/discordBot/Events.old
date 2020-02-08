@@ -1,0 +1,109 @@
+package discordBot;
+
+import apis.delugeApi.DelugeAPICaller;
+import apis.sonarrApi.SonarrAPICaller;
+import apis.sonarrApi.ombiCallers.CalendarCreator;
+import apis.sonarrApi.ombiCallers.TvSearcher;
+import apis.sonarrApi.templateClasses.calendar.Calendar;
+import apis.sonarrApi.templateClasses.tvLookup.Lookup;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import settingsManager.OldSettings;
+
+public class Events extends ListenerAdapter {
+
+    //Create objects
+    SonarrAPICaller sonarr = new SonarrAPICaller();
+    DelugeAPICaller deluge = new DelugeAPICaller();
+    Settings settings = new Settings();
+    CalendarCreator calendar = new CalendarCreator();
+    TvSearcher tvSearcher = new TvSearcher();
+    EmbedManager embeder = new EmbedManager();
+
+    //oh god why
+    String testJSON = null;
+
+    @Override
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+
+        if (event.getMessage().getContentRaw().toCharArray()[0] == settings.getPrefix()) {
+
+            String[] args = event.getMessage().getContentRaw().split(" ");
+
+            if (args[0].equalsIgnoreCase(settings.getPrefix() + "request")) {
+                event.getChannel().sendMessage("TODO: enable requests").queue();
+            }
+
+            if (args[0].equalsIgnoreCase(settings.getPrefix() + "view")) {
+                event.getChannel().sendMessage("TODO: enable viewing requests").queue();
+            }
+
+            //Allows the user to search for media on the tv db
+            if (args[0].equalsIgnoreCase(settings.getPrefix() + "search")) {
+                try {
+                    if (args[1].toLowerCase().matches("tv|television|telly|tele")) {
+                        String searchQuery = "";
+                        //retrieve the search query from the string array
+
+                        for (int i = 2; i < args.length; i++) {
+                            searchQuery += args[i];
+                            searchQuery += " ";
+                        }
+                        System.out.println(searchQuery);
+                        //Retrieve array of Calendar Objects
+                        Lookup[] tester = tvSearcher.createTvSearchArray(searchQuery);
+                        System.out.println("obtained the array");
+                        //Return the name of the first show on the calendar
+                        embeder.postSearchEmbed(tester, 0, event);
+                        System.out.println("queued the message");
+                        //event.getChannel().sendMessage("Here is the first result: " + tester[0].getTitle()).queue();
+
+                    } else if (args[1].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks")) {
+                        event.getChannel().sendMessage("Here is the movie URL: ").queue();
+                    } else {
+                        event.getChannel().sendMessage("Please specify movie/tv: \"!search movie/tv\"").queue();
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    event.getChannel().sendMessage("Error: Nothing found").queue();
+                }
+            }
+
+            if (args[0].equalsIgnoreCase(settings.getPrefix() + "hot")) {
+                try {
+                    if (args[1].toLowerCase().matches("tv|television|telly|tele")) {
+
+
+                        event.getChannel().sendMessage("Here is the hottest Show on the TV Database: ").queue();
+
+                    } else if (args[1].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks")) {
+                        event.getChannel().sendMessage("Here is the hottest Movie on the TV Database: ").queue();
+                    } else {
+                        event.getChannel().sendMessage("Please specify movie/tv: \"!calendar movie/tv\"").queue();
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    event.getChannel().sendMessage("Please specify movie/tv: \"!calendar movie/tv\"").queue();
+                }
+            }
+
+            //Handles requests for the calendar from both Radarr and Sonarr
+            if(args[0].equalsIgnoreCase(settings.getPrefix() + "calendar")) {
+                try {
+                    if (args[1].toLowerCase().matches("tv|television|telly|tele")) {
+
+                        //Retrieve array of Calendar Objects
+                        Calendar[] testArray = calendar.createObjectArray();
+                        //Return the name of the first show on the calendar
+                        event.getChannel().sendMessage("The first show one the calendar is: " + testArray[0].getSeries().getTitle()).queue();
+
+                    } else if (args[1].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks")) {
+                        event.getChannel().sendMessage("Here is the movie URL: ").queue();
+                    } else {
+                        event.getChannel().sendMessage("Please specify movie/tv: \"!calendar movie/tv\"").queue();
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    event.getChannel().sendMessage("Please specify movie/tv: \"!calendar movie/tv\"").queue();
+                }
+            }
+        }
+    }
+}

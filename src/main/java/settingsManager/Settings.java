@@ -11,7 +11,7 @@ public class Settings {
     //This class loads values from a config file - if one does not exits, we make one
 
     private static Path path = null;
-    private static String token, prefix, sonarrURL, sonarrKey, radarrURL, radarrKey, ombiURL, ombiKey, ownerID;
+    private static String token, prefix, ombiURL, ombiKey, ownerID;
 
 
     //this is NOT user configurable
@@ -30,22 +30,6 @@ public class Settings {
 
     public static String getPrefix() {
         return prefix;
-    }
-
-    public static String getSonarrUrl() {
-        return sonarrURL;
-    }
-
-    public static String getSonarrKey() {
-        return sonarrKey;
-    }
-
-    public static String getRadarrUrl() {
-        return radarrURL;
-    }
-
-    public static String getRadarrKey() {
-        return radarrKey;
     }
 
     public static String getOmbiUrl() {
@@ -80,10 +64,6 @@ public class Settings {
             token = properties.getProperty("token").replaceAll("^\"|\"$", "");
             ownerID = properties.getProperty("ownerID").replaceAll("^\"|\"$", "");
             prefix = properties.getProperty("prefix").replaceAll("^\"|\"$", "");
-            sonarrURL = properties.getProperty("sonarrURL").replaceAll("^\"|\"$", "");
-            sonarrKey = properties.getProperty("sonarrKey").replaceAll("^\"|\"$", "");
-            radarrURL = properties.getProperty("radarrURL").replaceAll("^\"|\"$", "");
-            radarrKey = properties.getProperty("radarrKey").replaceAll("^\"|\"$", "");
             ombiURL = properties.getProperty("ombiURL").replaceAll("^\"|\"$", "");
             ombiKey = properties.getProperty("ombiKey").replaceAll("^\"|\"$", "");
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+@Deprecated //We MIGHT need to use this in the future, but we currently do not download anything
 public class FileDownloader {
 
     //This method downloads a file and returns a string containing the file's contents

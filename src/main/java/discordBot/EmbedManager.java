@@ -22,6 +22,7 @@ import java.util.Random;
 public class EmbedManager {
 
 
+
     //search methods
     public EmbedBuilder createTVSearchEmbed(TvSearch[] resultArray, int resultNum) {
         EmbedBuilder eb = new EmbedBuilder();

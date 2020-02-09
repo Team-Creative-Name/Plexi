@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-
-@Deprecated //We MIGHT need to use this in the future, but we currently do not download anything
 public class FileDownloader {
 
     //This method downloads a file and returns a string containing the file's contents
@@ -16,7 +14,7 @@ public class FileDownloader {
         try {
             URL url = new URL(toConvert);
             reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            StringBuilder buffer = new StringBuilder();
+            StringBuffer buffer = new StringBuffer();
             int read;
             char[] chars = new char[1024];
             while ((read = reader.read(chars)) != -1)
@@ -29,5 +27,6 @@ public class FileDownloader {
         }
     }
 
+    //TODO add methods to grab photos 'n stuff
 
 }

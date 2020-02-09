@@ -11,11 +11,14 @@ public class Settings {
     //This class loads values from a config file - if one does not exits, we make one
 
     private static Path path = null;
-    private static String token, prefix, ombiURL, ombiKey;
+    private static String token, prefix, sonarrURL, sonarrKey, radarrURL, radarrKey, ombiURL, ombiKey, ownerID;
 
-    private static String ownerID;
 
+    //this is NOT user configurable
+    private static String version = "v1.0-beta.2";
     private boolean exists;
+
+    //begin getters/setters
 
     public static Path getPath() {
         return path;
@@ -27,6 +30,22 @@ public class Settings {
 
     public static String getPrefix() {
         return prefix;
+    }
+
+    public static String getSonarrUrl() {
+        return sonarrURL;
+    }
+
+    public static String getSonarrKey() {
+        return sonarrKey;
+    }
+
+    public static String getRadarrUrl() {
+        return radarrURL;
+    }
+
+    public static String getRadarrKey() {
+        return radarrKey;
     }
 
     public static String getOmbiUrl() {
@@ -41,7 +60,13 @@ public class Settings {
         return ownerID;
     }
 
-    public void init() {
+    public static String getVersion() {
+        return version;
+    }
+
+    //begin methods
+
+    public static void init() {
 
         try {
 
@@ -55,6 +80,10 @@ public class Settings {
             token = properties.getProperty("token").replaceAll("^\"|\"$", "");
             ownerID = properties.getProperty("ownerID").replaceAll("^\"|\"$", "");
             prefix = properties.getProperty("prefix").replaceAll("^\"|\"$", "");
+            sonarrURL = properties.getProperty("sonarrURL").replaceAll("^\"|\"$", "");
+            sonarrKey = properties.getProperty("sonarrKey").replaceAll("^\"|\"$", "");
+            radarrURL = properties.getProperty("radarrURL").replaceAll("^\"|\"$", "");
+            radarrKey = properties.getProperty("radarrKey").replaceAll("^\"|\"$", "");
             ombiURL = properties.getProperty("ombiURL").replaceAll("^\"|\"$", "");
             ombiKey = properties.getProperty("ombiKey").replaceAll("^\"|\"$", "");
 
@@ -71,11 +100,11 @@ public class Settings {
 
     }
 
-    public void reload() {
+    public static void reload() {
         init();
     }
 
-    private void generateConfig() {
+    private static void generateConfig() {
 
     }
 

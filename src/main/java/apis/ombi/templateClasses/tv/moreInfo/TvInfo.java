@@ -12,7 +12,6 @@ import java.util.List;
 
 public class TvInfo {
 
-    ArrayList<Episode> MissingEpisodeList = new ArrayList<>();
     @SerializedName("title")
     @Expose
     private String title;
@@ -127,19 +126,15 @@ public class TvInfo {
     @SerializedName("showSubscribe")
     @Expose
     private Boolean showSubscribe;
+
+    ArrayList<Episode> MissingEpisodeList = new ArrayList<>();
     private int numOfEpisodes = -1;
-    //Extra variable that gets the number of missing episodes
-    private int missingEpisodes = -1;
 
     public int getMissingEpisodes() {
         if (missingEpisodes == -1) {
             populateMissingData();
         }
         return missingEpisodes;
-    }
-
-    public void setMissingEpisodes(int missingEpisodes) {
-        this.missingEpisodes = missingEpisodes;
     }
 
     public int getNumOfEpisodes() {
@@ -153,6 +148,9 @@ public class TvInfo {
         this.numOfEpisodes = numOfEpisodes;
     }
 
+    //Extra variable that gets the number of missing episodes
+    private int missingEpisodes = -1;
+
     public ArrayList<Episode> getMissingEpisodeList() {
         if (MissingEpisodeList == null) {
             populateMissingData();
@@ -163,6 +161,7 @@ public class TvInfo {
     public void setMissingEpisodeList(ArrayList<Episode> missingEpisodeList) {
         MissingEpisodeList = missingEpisodeList;
     }
+
 
     public String getTitle() {
         return title;
@@ -466,6 +465,10 @@ public class TvInfo {
 
     public void setShowSubscribe(Boolean showSubscribe) {
         this.showSubscribe = showSubscribe;
+    }
+
+    public void setMissingEpisodes(int missingEpisodes) {
+        this.missingEpisodes = missingEpisodes;
     }
 
     public void populateMissingData() {

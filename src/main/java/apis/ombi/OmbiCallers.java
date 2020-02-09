@@ -258,7 +258,6 @@ public class OmbiCallers {
 
 
     }
-
     //Helper methods
     private String formatSearchTerm(String query) {
         //format searchQuery

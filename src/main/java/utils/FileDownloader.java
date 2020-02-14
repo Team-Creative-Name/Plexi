@@ -27,7 +27,4 @@ public class FileDownloader {
                 reader.close();
         }
     }
-
-    //TODO add methods to grab photos 'n stuff
-
 }

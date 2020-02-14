@@ -31,11 +31,18 @@ public class PlexiBot {
 
 
         //Create JDA bot instance
-        JDA botInstance = new JDABuilder(AccountType.BOT)
-                .setToken(Settings.getToken())
-                .addEventListeners(commandList.build(), waiter)
-                .build();
+        JDA botInstance;
 
+        try {
+            botInstance = new JDABuilder(AccountType.BOT)
+                    .setToken(Settings.getToken())
+                    .addEventListeners(commandList.build(), waiter)
+                    .build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getLocalizedMessage());
+            botInstance = null;
+            return;
+        }
         try {
             botInstance.awaitReady();
             System.out.println("Startup Complete!");

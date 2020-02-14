@@ -73,16 +73,17 @@ public class MainView extends JFrame {
             @Override
             public void run() {
                 if (PlexiBot.isRunning()) {
-
                     //ask the user if they really want to shutdown
                     int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to shut down Plexi?");
                     if (choice == 0) {
                         PlexiBot.shutdownBot();
                         //now that the bot is off, change button label
-                        buttonState.setText("Start");
+                        if (!PlexiBot.isRunning()) {
+                            buttonState.setText("Start");
+                        } else {
+                            System.out.println("Error: Unable to stop bot");
+                        }
                     }
-
-
                 } else {
                     try {
                         PlexiBot.startBot();
@@ -90,10 +91,10 @@ public class MainView extends JFrame {
                         System.out.println("It died");
                     }
                     //now that the bot is on, change button label
-                    buttonState.setText("Stop");
+                    if (PlexiBot.isRunning()) {
+                        buttonState.setText("Stop");
+                    }
                 }
-
-
             }
         });
         thread.start();

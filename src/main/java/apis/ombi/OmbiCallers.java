@@ -27,6 +27,9 @@ public class OmbiCallers {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
+        //write request to console
+        System.out.println("Searching Ombi TV for: " + toSearch);
+
         //Create the request
         Request request = new Request.Builder()
                 .url(Settings.getOmbiUrl() + "/api/v1/Search/tv/" + formatSearchTerm(toSearch))
@@ -41,7 +44,7 @@ public class OmbiCallers {
             }
             //Download the Json returned by the API and make it into a string
             String downloadedJson = response.body().string();
-            System.out.println(downloadedJson);
+
             //Pass the String to Gson and have it turned into a TvSearch Array
             TvSearch[] result = gson.fromJson(downloadedJson, TvSearch[].class);
             //Log the number of items in the array
@@ -60,6 +63,9 @@ public class OmbiCallers {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
+        //write request to console
+        System.out.println("Searching Ombi Movie for: " + toSearch);
+
         //Create the request
         Request request = new Request.Builder()
                 .url(Settings.getOmbiUrl() + "/api/v1/Search/movie/" + formatSearchTerm(toSearch))
@@ -74,11 +80,10 @@ public class OmbiCallers {
             }
             //Download the Json returned by the API and make it into a string
             String downloadedJson = response.body().string();
-            System.out.println(downloadedJson);
             //Pass the String to Gson and have it turned into a TvSearch Array
             MovieSearch[] result = gson.fromJson(downloadedJson, MovieSearch[].class);
             //Log the number of items in the array
-            System.out.println("The array is " + result.length + " items long");
+            System.out.println("There are  " + result.length + " results");
             //return the array
             return result;
         } catch (IOException e) {
@@ -94,6 +99,9 @@ public class OmbiCallers {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
+        //write request to console
+        System.out.println("Getting More TV Info for: " + id);
+
         //create the request
         Request request = new Request.Builder()
                 .url(Settings.getOmbiUrl() + "/api/v1/search/tv/info/" + id)
@@ -107,7 +115,6 @@ public class OmbiCallers {
             }
 
             String downloadedJSON = response.body().string();
-            System.out.println(downloadedJSON);
 
             return gson.fromJson(downloadedJSON, TvInfo.class);
 
@@ -118,19 +125,12 @@ public class OmbiCallers {
         return null;
     }
 
-    public TvInfo[] getTvInfoArray(TvSearch[] searchArray) {
-        TvInfo[] infoArray = new TvInfo[searchArray.length];
-
-        for (int i = 0; i < searchArray.length; i++) {
-            infoArray[i] = ombiTvInfo(String.valueOf(searchArray[i].getId()));
-        }
-        return infoArray;
-    }
-
     public MovieInfo ombiMovieInfo(String id) {
-        System.out.println("This was called");
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+        //write request to console
+        System.out.println("Making A Movie Info Request for: " + id);
 
         //create the request
         Request request = new Request.Builder()
@@ -145,7 +145,6 @@ public class OmbiCallers {
             }
 
             String downloadedJSON = response.body().string();
-            System.out.println(downloadedJSON);
             return gson.fromJson(downloadedJSON, MovieInfo.class);
 
         } catch (IOException e) {
@@ -153,15 +152,6 @@ public class OmbiCallers {
         }
 
         return null;
-    }
-
-    public MovieInfo[] getTvInfoArray(MovieInfo[] searchArray) {
-        MovieInfo[] infoArray = new MovieInfo[searchArray.length];
-
-        for (int i = 0; i < searchArray.length; i++) {
-            infoArray[i] = ombiMovieInfo(String.valueOf(searchArray[i].getId()));
-        }
-        return infoArray;
     }
 
     public String requestMovie(String id) {
@@ -182,7 +172,10 @@ public class OmbiCallers {
             Response response = client.newCall(request).execute();
 
             String downloadedJSON = response.body().string();
-            System.out.println("The JSON is " + downloadedJSON);
+
+            //write request to console
+            System.out.println("Making a movie request for: " + id);
+
 
             MovieRequest requestObj = gson.fromJson(downloadedJSON, MovieRequest.class);
 
@@ -217,7 +210,9 @@ public class OmbiCallers {
             Response response = client.newCall(request).execute();
 
             String downloadedJSON = response.body().string();
-            System.out.println("The JSON is " + downloadedJSON);
+
+            //write request to console
+            System.out.println("Making a tv request for: " + id);
 
             MovieRequest requestObj = gson.fromJson(downloadedJSON, MovieRequest.class);
 
@@ -258,9 +253,30 @@ public class OmbiCallers {
 
 
     }
+
     //Helper methods
     private String formatSearchTerm(String query) {
         //format searchQuery
         return query.toLowerCase().replaceAll(" ", "%20");
+    }
+
+    @Deprecated
+    public TvInfo[] getTvInfoArray(TvSearch[] searchArray) {
+        TvInfo[] infoArray = new TvInfo[searchArray.length];
+
+        for (int i = 0; i < searchArray.length; i++) {
+            infoArray[i] = ombiTvInfo(String.valueOf(searchArray[i].getId()));
+        }
+        return infoArray;
+    }
+
+    @Deprecated
+    public MovieInfo[] getMovieInfoArray(MovieInfo[] searchArray) {
+        MovieInfo[] infoArray = new MovieInfo[searchArray.length];
+
+        for (int i = 0; i < searchArray.length; i++) {
+            infoArray[i] = ombiMovieInfo(String.valueOf(searchArray[i].getId()));
+        }
+        return infoArray;
     }
 }

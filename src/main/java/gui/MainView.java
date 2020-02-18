@@ -53,8 +53,11 @@ public class MainView extends JFrame {
 
         //add event handler for start button
         buttonState.addActionListener(new ActionListener() {
+
+
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+
                 startStopButton();
             }
         });
@@ -98,6 +101,10 @@ public class MainView extends JFrame {
             }
         });
         thread.start();
+    }
+
+    public void disableStart() {
+        buttonState.setEnabled(false);
     }
 
 }

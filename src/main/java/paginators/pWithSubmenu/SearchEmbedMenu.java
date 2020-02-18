@@ -89,7 +89,7 @@ public class SearchEmbedMenu extends Menu {
         } else if (pageNum > pages) {
             pageNum = pages;
         }
-        System.out.println("There are " + pages + " pages");
+
         //if there is only 1 item, go directly to the detailed view
 
         Message msg = renderSearchPage(pageNum);

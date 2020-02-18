@@ -100,7 +100,7 @@ public class SearchSubmenu extends Menu {
                 //Type 1 is tv, 2 is movie - chooses method based upon type
                 if (type == 1) {
                     event.getChannel().sendMessage("TV requests are currently disabled").queue();
-                    // event.getChannel().sendMessage(caller.requestTv(mediaId)).queue();
+                    //event.getChannel().sendMessage(caller.requestTv(mediaId)).queue();
                 } else if (type == 2) {
                     event.getChannel().sendMessage(caller.requestMovie(mediaId)).queue();
                 }

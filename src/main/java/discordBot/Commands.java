@@ -8,7 +8,6 @@ public class Commands extends CommandClientBuilder {
 
 
     public void commandList(EventWaiter waiter) {
-        //TODO add commands
         this.addCommand(new SearchCommand(waiter));
         this.addCommand(new MediaInfoCommand());
         this.addCommand(new RequestCommand());

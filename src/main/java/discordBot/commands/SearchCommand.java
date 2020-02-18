@@ -57,7 +57,6 @@ public class SearchCommand extends Command {
             System.out.println(args[1]);
             //Retrieve array of TvSearch Objects - each object is a search result
             TvSearch[] tester = tvSearcher.ombiTvSearch(args[1]);
-            System.out.println("obtained the array");
 
             //check to see if there were any results{
             if (tester.length == 0) {
@@ -77,7 +76,7 @@ public class SearchCommand extends Command {
                 p.paginate(event.getChannel(), 1);
             }
 
-            System.out.println("queued the message");
+
             //event.getChannel().sendMessage("Here is the first result: " + tester[0].getTitle()).queue();
         } else if (args[0].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks|m")) {
 
@@ -86,7 +85,7 @@ public class SearchCommand extends Command {
             System.out.println(args[1]);
 
             MovieSearch[] result = moviesearcher.ombiMovieSearch(args[1]);
-            System.out.println("Obtained Array");
+
 
             //make sure the array is not empty
             if (result.length == 0) {

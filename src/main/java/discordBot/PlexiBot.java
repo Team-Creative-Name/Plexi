@@ -11,7 +11,8 @@ import javax.security.auth.login.LoginException;
 
 public class PlexiBot {
 
-    //Create settings object to get settings
+    //reference to JDA - also used to determine if the bot is running
+    private static JDA bot = null;
 
 
     public static void startBot() throws LoginException {
@@ -30,19 +31,49 @@ public class PlexiBot {
 
 
         //Create JDA bot instance
-        JDA botInstance = new JDABuilder(AccountType.BOT)
-                .setToken(Settings.getToken())
-                .addEventListeners(commandList.build(), waiter)
-                .build();
+        JDA botInstance;
 
+        try {
+            botInstance = new JDABuilder(AccountType.BOT)
+                    .setToken(Settings.getToken())
+                    .addEventListeners(commandList.build(), waiter)
+                    .build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getLocalizedMessage());
+            botInstance = null;
+            return;
+        }
+        try {
+            botInstance.awaitReady();
+            System.out.println("Startup Complete!");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            System.out.println("Error Starting Bot");
+            shutdownBot();
+
+        }
+
+
+        bot = botInstance;
     }
 
-    public static void shutdownBot(JDA botInstance) {
-        botInstance.shutdown();
+    public static void shutdownBot() {
+
+        bot.shutdown();
+        bot = null;
+        System.out.println("Shutdown Complete");
     }
 
     public static void restartBot(JDA botInstance) throws LoginException {
-        shutdownBot(botInstance);
+        shutdownBot();
         startBot();
+    }
+
+    public static JDA getJDAInstance() {
+        return bot;
+    }
+
+    public static boolean isRunning() {
+        return bot != null;
     }
 }

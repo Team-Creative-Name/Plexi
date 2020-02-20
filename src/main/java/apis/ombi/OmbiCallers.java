@@ -182,7 +182,7 @@ public class OmbiCallers {
             if (requestObj.getIsError()) {
                 return requestObj.getErrorMessage().toString();
             } else {
-                return requestObj.getMessage();
+                return requestObj.getMessage().substring(0, requestObj.getMessage().length() - 1) + " to the request list";
             }
 
 

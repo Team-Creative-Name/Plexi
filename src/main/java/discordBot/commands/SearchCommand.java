@@ -48,7 +48,7 @@ public class SearchCommand extends Command {
             return;
         }
 
-        if (args[0].toLowerCase().matches("tv|television|telly|tele|t")) {
+        if (args[0].toLowerCase().matches("tv|television|telly|tele|t|s|show")) {
 
             //Create new objects
             OmbiCallers tvSearcher = new OmbiCallers();

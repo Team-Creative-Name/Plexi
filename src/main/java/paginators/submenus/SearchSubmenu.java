@@ -98,9 +98,10 @@ public class SearchSubmenu extends Menu {
             case ADD_TO_REQUESTLIST:
 
                 //Type 1 is tv, 2 is movie - chooses method based upon type
+                //TODO Implement this in a way that isn't broken (hmm, that seems hard)
                 if (type == 1) {
-                    event.getChannel().sendMessage("TV requests are currently disabled").queue();
-                    //event.getChannel().sendMessage(caller.requestTv(mediaId)).queue();
+                    //event.getChannel().sendMessage("TV requests are currently disabled").queue();
+                    event.getChannel().sendMessage(caller.requestTv(mediaId)).queue();
                 } else if (type == 2) {
                     event.getChannel().sendMessage(caller.requestMovie(mediaId)).queue();
                 }

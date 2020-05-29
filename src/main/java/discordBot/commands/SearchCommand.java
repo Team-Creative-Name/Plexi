@@ -52,21 +52,21 @@ public class SearchCommand extends Command {
 
             //Create new objects
             OmbiCallers tvSearcher = new OmbiCallers();
-            EmbedManager embeder = new EmbedManager();
+            EmbedManager embedManager = new EmbedManager();
 
             System.out.println(args[1]);
             //Retrieve array of TvSearch Objects - each object is a search result
-            TvSearch[] tester = tvSearcher.ombiTvSearch(args[1]);
+            TvSearch[] result = tvSearcher.ombiTvSearch(args[1]);
 
             //check to see if there were any results{
-            if (tester.length == 0) {
+            if (result.length == 0) {
                 event.reply("No Results Found!");
             } else {
 
                 //Return the name of the first show on the calendar
                 ePBuilder.setTvType();
-                ePBuilder.setEmbedArray(embeder.getPostTvSearchEmbed(tester));
-                ePBuilder.setSubmenuEmbedArray(generateEpisodeIdArray(tester));
+                ePBuilder.setEmbedArray(embedManager.getPostTvSearchEmbed(result));
+                ePBuilder.setSubmenuEmbedArray(generateEpisodeIdArray(result));
                 ePBuilder.setCommandEvent(event);
                 ePBuilder.setWrapPageEnds(true);
                 SearchEmbedMenu p = ePBuilder
@@ -77,11 +77,11 @@ public class SearchCommand extends Command {
             }
 
 
-            //event.getChannel().sendMessage("Here is the first result: " + tester[0].getTitle()).queue();
+            //event.getChannel().sendMessage("Here is the first result: " + result[0].getTitle()).queue();
         } else if (args[0].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks|m")) {
 
             OmbiCallers moviesearcher = new OmbiCallers();
-            EmbedManager embeder = new EmbedManager();
+            EmbedManager embedManager = new EmbedManager();
             System.out.println(args[1]);
 
             MovieSearch[] result = moviesearcher.ombiMovieSearch(args[1]);
@@ -92,7 +92,7 @@ public class SearchCommand extends Command {
                 event.reply("No Results Found!");
             } else {
                 ePBuilder.setMovieType();
-                ePBuilder.setEmbedArray(embeder.getPostMovieSearchEmbed(result));
+                ePBuilder.setEmbedArray(embedManager.getPostMovieSearchEmbed(result));
                 ePBuilder.setSubmenuEmbedArray(generateMovieIdArray(result));
                 ePBuilder.setWrapPageEnds(true);
 

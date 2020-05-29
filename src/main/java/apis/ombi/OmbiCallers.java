@@ -197,13 +197,14 @@ public class OmbiCallers {
         Gson gson = new Gson();
 
 
-        RequestBody requestBody = RequestBody.create("{\"theMovieDbId\": " + id + ",\"languageCode\":\"string\"}", MediaType.parse("text"));
+        RequestBody requestBody = RequestBody.create("{\"tvDbId\": " + id + ",\"languageCode\":\"string\"}", MediaType.parse("text"));
         Request request = new Request.Builder()
                 .url(Settings.getOmbiUrl() + "/api/v1/request/tv")
                 .post(requestBody)
                 .addHeader("Accept", "application/json")
                 .addHeader("ApiKey", Settings.getOmbiKey())
                 .addHeader("Content-Type", "text/json")
+
                 .build();
 
         try {

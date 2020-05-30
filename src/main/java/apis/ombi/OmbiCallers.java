@@ -192,13 +192,16 @@ public class OmbiCallers {
         return "Unable to request media";
     }
 
-    public String requestTv(String id, boolean latest, boolean isAvailable ) {
+    public String requestTv(String id, boolean latest, int availabilityInt ) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
         RequestBody requestBody = null;
 
+
+
         //We need to form the request differently depending on if the show is available already or not.
-        if(!isAvailable){
+        if(availabilityInt == 0){
+
             //Check to see if the user only wants to request the latest season
             if(latest){
 
@@ -214,15 +217,26 @@ public class OmbiCallers {
             }
 
         }else{
+
+
             //here, we have a show that already has some episodes on plex. We need to determine which ones they are and request the others
+
+            TvInfo tvInfo = ombiTvInfo(id);
+            TvRequestTemplate requestTemplate = tvInfo.getMissingEpisodeArray();
+            requestTemplate.setTvDbId(Integer.decode(id));
+
+            String toJSON = gson.toJson(requestTemplate);
+
+
 
             //check to see if the user only wants the latest season
             if(latest){
 
             }else{
-                requestBody = RequestBody.create("{" + "\"requestAll\": " + "\"true\"" +
-                        ",\"tvDbId\": " + id +
-                        ",\"languageCode\":\"string\"}", MediaType.parse("text"));
+
+
+
+                requestBody = RequestBody.create(toJSON, MediaType.parse("text"));
                 //request everything that isn't available
             }
 

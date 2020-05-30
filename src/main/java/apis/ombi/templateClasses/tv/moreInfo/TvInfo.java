@@ -513,6 +513,17 @@ public class TvInfo {
         }
     }
 
+    //returns the status of a show via an int 2 is fully and 0 is not
+    public int getPlexAvailabilityInt() {
+        if (fullyAvailable) {
+            return 2;
+        } else if (!fullyAvailable && available) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     public String getLatestEpisodeDate() {
         int seasonNum = 0;
         int episodeNum = 0;

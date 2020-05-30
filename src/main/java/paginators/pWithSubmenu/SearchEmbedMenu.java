@@ -224,7 +224,7 @@ public class SearchEmbedMenu extends Menu {
             //get the media embed and the status
             TvInfo info = caller.ombiTvInfo(String.valueOf(id));
             boolean isRequested = info.getRequested();
-            boolean isAvailable = info.getFullyAvailable();
+            int isAvailable = info.getPlexAvailabilityInt();
             String mediaId = String.valueOf(info.getId());
             EmbedBuilder infoEmbed = embedManager.createTvMoreInfoEmbed(info);
 
@@ -238,7 +238,7 @@ public class SearchEmbedMenu extends Menu {
             ePBuilder.setMovieType();
             MovieInfo info = caller.ombiMovieInfo(String.valueOf(id));
             boolean isRequested = info.getRequested();
-            boolean isAvailable = info.getAvailable();
+            int isAvailable = info.getAvailabilityInt();
             String mediaId = String.valueOf(info.getId());
             EmbedBuilder infoEmbed = embedManager.createMovieMoreInfoEmbed(info);
 

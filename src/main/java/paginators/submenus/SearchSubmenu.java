@@ -33,11 +33,11 @@ public class SearchSubmenu extends Menu {
     private final String text;
     private final int type;
     private final boolean isRequested;
-    private final boolean isAvailable;
+    private final int isAvailable;
     private final String mediaId;
 
 
-    SearchSubmenu(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit unit, EmbedBuilder embeds, boolean wrapPageEnds, Consumer<Message> finalAction, String text, int type, boolean isRequested, boolean isAvailable, String mediaId) {
+    SearchSubmenu(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit unit, EmbedBuilder embeds, boolean wrapPageEnds, Consumer<Message> finalAction, String text, int type, boolean isRequested, int isAvailable, String mediaId) {
         super(waiter, users, roles, timeout, unit);
         this.embeds = embeds;
         this.pages = 1;
@@ -148,9 +148,9 @@ public class SearchSubmenu extends Menu {
             m.clearReactions().queue();
 
             //add emotes depending on media status
-            if (!isRequested && !isAvailable) {
+            if (!isRequested && (isAvailable == 1 || isAvailable == 0)) {
                 m.addReaction(ADD_TO_REQUESTLIST).queue();
-            } else if (isRequested && !isAvailable) {
+            } else if (isRequested && (isAvailable == 1 || isAvailable == 0)) {
                 m.addReaction(REMOVE_FROM_REQUESTLIST).queue();
             }
             //add new reaction if the media type is a tv show (1)
@@ -197,7 +197,7 @@ public class SearchSubmenu extends Menu {
         private String text = null;
         private int type = 1;
         private boolean isRequested = false;
-        private boolean isAvailable = false;
+        private int isAvailable = 1;
         private String mediaID = "";
 
         @Override
@@ -243,7 +243,7 @@ public class SearchSubmenu extends Menu {
             this.isRequested = isRequested;
         }
 
-        public void setAvailability(boolean isAvailable) {
+        public void setAvailability(int isAvailable) {
             this.isAvailable = isAvailable;
         }
     }

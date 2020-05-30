@@ -1,6 +1,7 @@
 package paginators.submenus;
 
 import apis.ombi.OmbiCallers;
+import apis.ombi.templateClasses.tv.moreInfo.TvInfo;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.Menu;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -35,9 +36,10 @@ public class SearchSubmenu extends Menu {
     private final boolean isRequested;
     private final int isAvailable;
     private final String mediaId;
+    private final TvInfo tvInfo;
 
 
-    SearchSubmenu(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit unit, EmbedBuilder embeds, boolean wrapPageEnds, Consumer<Message> finalAction, String text, int type, boolean isRequested, int isAvailable, String mediaId) {
+    SearchSubmenu(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit unit, EmbedBuilder embeds, boolean wrapPageEnds, Consumer<Message> finalAction, String text, int type, boolean isRequested, int isAvailable, String mediaId, TvInfo tvInfo) {
         super(waiter, users, roles, timeout, unit);
         this.embeds = embeds;
         this.pages = 1;
@@ -47,6 +49,7 @@ public class SearchSubmenu extends Menu {
         this.isRequested = isRequested;
         this.isAvailable = isAvailable;
         this.mediaId = mediaId;
+        this.tvInfo = tvInfo;
         if (type > 2 || type < 1) {
             System.out.println("The type is: " + type);
             throw new IllegalArgumentException("Must specify embed type!");
@@ -102,7 +105,7 @@ public class SearchSubmenu extends Menu {
                 //Type 1 is tv, 2 is movie - chooses method based upon type
                 if (type == 1) {
                     //event.getChannel().sendMessage("TV requests are currently disabled").queue();
-                    event.getChannel().sendMessage(caller.requestTv(mediaId, false, isAvailable)).queue();
+                    event.getChannel().sendMessage(caller.requestTv(mediaId, false, isAvailable, tvInfo)).queue();
                 } else if (type == 2) {
                     event.getChannel().sendMessage(caller.requestMovie(mediaId)).queue();
                 }
@@ -119,9 +122,10 @@ public class SearchSubmenu extends Menu {
                 return;
             case REQUEST_LATEST:
                 //ensure this is a tv request
-                if(type ==1 ){
-                    event.getChannel().sendMessage(caller.requestTv(mediaId, true, isAvailable)).queue();
+                if (type == 1) {
+                    event.getChannel().sendMessage(caller.requestTv(mediaId, true, isAvailable, tvInfo)).queue();
                 }
+                finalAction.accept(message);
 
         }
 
@@ -171,6 +175,7 @@ public class SearchSubmenu extends Menu {
             case REMOVE_FROM_REQUESTLIST:
             case STOP:
             case ADD_TO_REQUESTLIST:
+            case REQUEST_LATEST:
                 return isValidUser(event.getUser(), event.isFromGuild() ? event.getGuild() : null);
             //return true;
             default:
@@ -192,20 +197,21 @@ public class SearchSubmenu extends Menu {
         private EmbedBuilder embeds = new EmbedBuilder();
 
 
-        private boolean wrapPageEnds = false;
+        private final boolean wrapPageEnds = false;
         private Consumer<Message> finalAction = m -> m.delete().queue();
         private String text = null;
         private int type = 1;
         private boolean isRequested = false;
         private int isAvailable = 1;
         private String mediaID = "";
+        private TvInfo tvInfo = null;
 
         @Override
         public SearchSubmenu build() {
             Checks.check(waiter != null, "Must set an EventWaiter");
             Checks.check(!embeds.isEmpty(), "Must include at least one item to paginate");
 
-            return new SearchSubmenu(waiter, users, roles, timeout, unit, embeds, wrapPageEnds, finalAction, text, type, isRequested, isAvailable, mediaID);
+            return new SearchSubmenu(waiter, users, roles, timeout, unit, embeds, wrapPageEnds, finalAction, text, type, isRequested, isAvailable, mediaID, tvInfo);
         }
 
         public Builder setEmbedArray(EmbedBuilder embeds) {
@@ -245,6 +251,11 @@ public class SearchSubmenu extends Menu {
 
         public void setAvailability(int isAvailable) {
             this.isAvailable = isAvailable;
+        }
+
+        public Builder setTvInfo(TvInfo tvInfo) {
+            this.tvInfo = tvInfo;
+            return this;
         }
     }
 

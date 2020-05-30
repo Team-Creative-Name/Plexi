@@ -233,6 +233,7 @@ public class SearchEmbedMenu extends Menu {
             ePBuilder.setAvailability(isAvailable);
             ePBuilder.setMediaID(String.valueOf(info.getId()));
             ePBuilder.setMediaID(mediaId);
+            ePBuilder.setTvInfo(info);
 
         } else if (type == 2) {
             ePBuilder.setMovieType();

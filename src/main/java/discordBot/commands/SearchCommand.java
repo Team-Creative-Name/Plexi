@@ -69,6 +69,8 @@ public class SearchCommand extends Command {
                 ePBuilder.setSubmenuEmbedArray(generateEpisodeIdArray(result));
                 ePBuilder.setCommandEvent(event);
                 ePBuilder.setWrapPageEnds(true);
+
+
                 SearchEmbedMenu p = ePBuilder
                         .setUsers(event.getAuthor())
                         .build();

@@ -192,15 +192,16 @@ public class OmbiCallers {
         return "Unable to request media";
     }
 
-    public String requestTv(String id, boolean latest, int availabilityInt ) {
+    public String requestTv(String id, boolean latest, int availabilityInt, TvInfo tvInfo) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
         RequestBody requestBody = null;
 
 
+        //fully available == 2 partial == 1 not == 0
 
         //We need to form the request differently depending on if the show is available already or not.
-        if(availabilityInt == 0){
+        if (availabilityInt == 0) {
 
             //Check to see if the user only wants to request the latest season
             if(latest){
@@ -212,35 +213,31 @@ public class OmbiCallers {
             }else{
                 //In this case, nothing is available and the user wants to request everything
                 requestBody = RequestBody.create("{" + "\"requestAll\": " + "\"true\"" +
-                        ",\"tvDbId\": " + id +
-                        ",\"languageCode\":\"string\"}", MediaType.parse("text"));
+                                ",\"tvDbId\": " + id +
+                                ",\"languageCode\":\"string\"}",
+                        MediaType.parse("text"));
             }
 
         }else{
 
 
             //here, we have a show that already has some episodes on plex. We need to determine which ones they are and request the others
-
-            TvInfo tvInfo = ombiTvInfo(id);
-            TvRequestTemplate requestTemplate = tvInfo.getMissingEpisodeArray();
-            requestTemplate.setTvDbId(Integer.decode(id));
-
-            String toJSON = gson.toJson(requestTemplate);
-
+            String toJSON;
 
 
             //check to see if the user only wants the latest season
-            if(latest){
+            TvRequestTemplate requestTemplate;
+            if (latest) {
+                requestTemplate = tvInfo.getLatestMissingSeasonArray();
+                requestTemplate.setLatestSeason(true);
 
-            }else{
+            } else {
+                requestTemplate = tvInfo.getMissingEpisodeArray();
 
-
-
-                requestBody = RequestBody.create(toJSON, MediaType.parse("text"));
-                //request everything that isn't available
             }
-
-
+            requestTemplate.setTvDbId(Integer.decode(id));
+            toJSON = gson.toJson(requestTemplate);
+            requestBody = RequestBody.create(toJSON, MediaType.parse("text"));
         }
 
         Request request = new Request.Builder()
@@ -265,7 +262,12 @@ public class OmbiCallers {
             if (requestObj.getIsError()) {
                 return requestObj.getErrorMessage().toString();
             } else {
-                return requestObj.getRequestId() + " has been successfully requested!";
+                //inform the user that media was requested
+                if (latest) {
+                    return "The latest season from " + tvInfo.getTitle() + " has been requested!";
+                } else {
+                    return tvInfo.getTitle() + " has been successfully requested!";
+                }
             }
 
 

@@ -513,6 +513,17 @@ public class TvInfo {
         }
     }
 
+    //returns the status of a show via an int 2 is fully and 0 is not
+    public int getPlexAvailabilityInt() {
+        if (fullyAvailable) {
+            return 2;
+        } else if (!fullyAvailable && available) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     public String getLatestEpisodeDate() {
         int seasonNum = 0;
         int episodeNum = 0;
@@ -522,6 +533,45 @@ public class TvInfo {
         episodeNum = seasonRequests.get(seasonNum).getEpisodes().size() - 1;
 
         return seasonRequests.get(seasonNum).getEpisodes().get(episodeNum).getAirDate();
+    }
+
+    //TODO: The following two methods are essentially the same. They can probably be simplified or something...
+
+    public TvRequestTemplate getLatestMissingSeasonArray() {
+        //Create a new requestTemplate obj
+        TvRequestTemplate missing = new TvRequestTemplate();
+        //Create a new Season ArrayList
+        ArrayList<Season> missingSeasons = new ArrayList<>();
+
+        //get the last season in the show
+        int i = seasonRequests.size();
+
+        //Create a new season
+        Season season = new Season();
+        season.setSeasonNumber(i - 1);
+        //Create a new Episode ArrayList
+        ArrayList<RequestEpisode> missingEpisodes = new ArrayList<>();
+        //loop through the episodes in a season
+        for (int j = 0; j < seasonRequests.get(i - 1).getEpisodes().size(); j++) {
+            if (seasonRequests.get(i - 1).getEpisodes().get(j).getAvailable() == false) {
+                //create new Episode object
+                System.out.println("Season " + i + " Episode " + j + " is missing!");
+                RequestEpisode episode = new RequestEpisode();
+                //set the episode number
+                episode.setEpisodeNumber(seasonRequests.get(i - 1).getEpisodes().get(j).getEpisodeNumber());
+                //add episode to the missingEpisodes array
+                missingEpisodes.add(episode);
+            }
+        }
+        //add the missing episodes to the season
+        season.setRequestEpisodes(missingEpisodes);
+        missingSeasons.add(season);
+
+
+        //finally add the missing seasons array to the TvRequestTemplate obj
+        missing.setSeasons(missingSeasons);
+        //and return it
+        return missing;
     }
 
     public TvRequestTemplate getMissingEpisodeArray() {

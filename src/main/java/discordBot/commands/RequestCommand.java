@@ -1,6 +1,7 @@
 package discordBot.commands;
 
 import apis.ombi.OmbiCallers;
+import apis.ombi.templateClasses.tv.moreInfo.TvInfo;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
@@ -24,7 +25,11 @@ public class RequestCommand extends Command {
 
         if (args[0].toLowerCase().matches("tv|television|telly|tele|t")) {
             try {
-                event.reply(ombiCallers.requestTv(args[1]));
+                //TODO: this command must change to conform to the new request method.
+                OmbiCallers caller = new OmbiCallers();
+                TvInfo tvInfo = caller.ombiTvInfo(args[1]);
+
+                event.reply(ombiCallers.requestTv(args[1], true, tvInfo.getPlexAvailabilityInt(), tvInfo));
             } catch (IllegalArgumentException e) {
                 event.reply("Error requesting media");
             }
@@ -38,7 +43,6 @@ public class RequestCommand extends Command {
         } else {
             event.getChannel().sendMessage("Malformed Command!").queue();
         }
-
 
     }
 }

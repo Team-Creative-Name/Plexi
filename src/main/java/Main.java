@@ -19,12 +19,16 @@ public class Main {
                 "    | $$                                             \n" +
                 "    |__/";
 
-        boolean settingsSuccess = false;
+
+        //check to make sure that we can find the config file - this will fail on first run
+
+        //boolean settingsSuccess = false;
+
         try {
             Settings.init();
-            settingsSuccess = true;
+           // settingsSuccess = true;
         } catch (IllegalArgumentException e) {
-            settingsSuccess = false;
+           // settingsSuccess = false;
         }
 
 

@@ -288,8 +288,13 @@ public class OmbiCallers {
 
     //Helper methods
     private String formatSearchTerm(String query) {
+        String formattedString = query;
+
+        formattedString = formattedString.toLowerCase().replaceAll(" ", "%20");
+        formattedString = formattedString.replaceAll("\""," ");
+        formattedString = formattedString.replaceAll("/", " ");
         //format searchQuery
-        return query.toLowerCase().replaceAll(" ", "%20");
+        return formattedString;
     }
 
     @Deprecated

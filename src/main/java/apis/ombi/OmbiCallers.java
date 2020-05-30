@@ -192,12 +192,43 @@ public class OmbiCallers {
         return "Unable to request media";
     }
 
-    public String requestTv(String id) {
+    public String requestTv(String id, boolean latest, boolean isAvailable ) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
+        RequestBody requestBody = null;
+
+        //We need to form the request differently depending on if the show is available already or not.
+        if(!isAvailable){
+            //Check to see if the user only wants to request the latest season
+            if(latest){
+
+                //In this case, nothing is available and the user wants to request everything
+                requestBody = RequestBody.create("{" + "\"latestSeason\": " + "\"true\"" +
+                        ",\"tvDbId\": " + id +
+                        ",\"languageCode\":\"string\"}", MediaType.parse("text"));
+            }else{
+                //In this case, nothing is available and the user wants to request everything
+                requestBody = RequestBody.create("{" + "\"requestAll\": " + "\"true\"" +
+                        ",\"tvDbId\": " + id +
+                        ",\"languageCode\":\"string\"}", MediaType.parse("text"));
+            }
+
+        }else{
+            //here, we have a show that already has some episodes on plex. We need to determine which ones they are and request the others
+
+            //check to see if the user only wants the latest season
+            if(latest){
+
+            }else{
+                requestBody = RequestBody.create("{" + "\"requestAll\": " + "\"true\"" +
+                        ",\"tvDbId\": " + id +
+                        ",\"languageCode\":\"string\"}", MediaType.parse("text"));
+                //request everything that isn't available
+            }
 
 
-        RequestBody requestBody = RequestBody.create("{\"tvDbId\": " + id + ",\"languageCode\":\"string\"}", MediaType.parse("text"));
+        }
+
         Request request = new Request.Builder()
                 .url(Settings.getOmbiUrl() + "/api/v1/request/tv")
                 .post(requestBody)
@@ -220,7 +251,7 @@ public class OmbiCallers {
             if (requestObj.getIsError()) {
                 return requestObj.getErrorMessage().toString();
             } else {
-                return requestObj.getMessage();
+                return requestObj.getRequestId() + " has been successfully requested!";
             }
 
 

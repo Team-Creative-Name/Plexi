@@ -24,7 +24,9 @@ public class RequestCommand extends Command {
 
         if (args[0].toLowerCase().matches("tv|television|telly|tele|t")) {
             try {
-                event.reply(ombiCallers.requestTv(args[1]));
+                //TODO: this command must change to conform to the new request method.
+
+                //event.reply(ombiCallers.requestTv(args[1]));
             } catch (IllegalArgumentException e) {
                 event.reply("Error requesting media");
             }
@@ -38,7 +40,6 @@ public class RequestCommand extends Command {
         } else {
             event.getChannel().sendMessage("Malformed Command!").queue();
         }
-
 
     }
 }

@@ -21,9 +21,10 @@ import java.util.function.Consumer;
 public class SearchSubmenu extends Menu {
 
 
-    public static final String ADD_TO_REQUESTLIST = "\uD83D\uDC4D";
-    public static final String STOP = "\uD83D\uDED1";
-    public static final String REMOVE_FROM_REQUESTLIST = "\uD83D\uDC4E";
+    private static final String ADD_TO_REQUESTLIST = "\uD83D\uDC4D";
+    private static final String STOP = "\uD83D\uDED1";
+    private static final String REMOVE_FROM_REQUESTLIST = "\uD83D\uDC4E";
+    private static final String REQUEST_LATEST = "\uD83C\uDD95";
     //Big list of global variables
     private final EmbedBuilder embeds;
     private final int pages;
@@ -90,6 +91,7 @@ public class SearchSubmenu extends Menu {
         initialize(message.editMessage(msg), pageNum);
     }
 
+    //TODO: Figure out a way to validate reactions.
     private void handleMessageReactionAddAction(MessageReactionAddEvent event, Message message, int pageNum) {
         int newPageNum = pageNum;
         OmbiCallers caller = new OmbiCallers();
@@ -98,10 +100,9 @@ public class SearchSubmenu extends Menu {
             case ADD_TO_REQUESTLIST:
 
                 //Type 1 is tv, 2 is movie - chooses method based upon type
-                //TODO Implement this in a way that isn't broken (hmm, that seems hard)
                 if (type == 1) {
                     //event.getChannel().sendMessage("TV requests are currently disabled").queue();
-                    event.getChannel().sendMessage(caller.requestTv(mediaId)).queue();
+                    event.getChannel().sendMessage(caller.requestTv(mediaId, false, isAvailable)).queue();
                 } else if (type == 2) {
                     event.getChannel().sendMessage(caller.requestMovie(mediaId)).queue();
                 }
@@ -109,12 +110,19 @@ public class SearchSubmenu extends Menu {
                 finalAction.accept(message);
                 return;
             case REMOVE_FROM_REQUESTLIST:
+                //TODO: Make this do something
                 event.getChannel().sendMessage("Removing from requestList").queue();
                 finalAction.accept(message);
                 return;
             case STOP:
                 finalAction.accept(message);
                 return;
+            case REQUEST_LATEST:
+                //ensure this is a tv request
+                if(type ==1 ){
+                    event.getChannel().sendMessage(caller.requestTv(mediaId, true, isAvailable)).queue();
+                }
+
         }
 
         try {
@@ -139,10 +147,15 @@ public class SearchSubmenu extends Menu {
         action.queue(m -> {
             m.clearReactions().queue();
 
+            //add emotes depending on media status
             if (!isRequested && !isAvailable) {
                 m.addReaction(ADD_TO_REQUESTLIST).queue();
             } else if (isRequested && !isAvailable) {
                 m.addReaction(REMOVE_FROM_REQUESTLIST).queue();
+            }
+            //add new reaction if the media type is a tv show (1)
+            if(type == 1){
+                m.addReaction(REQUEST_LATEST).queue();
             }
             m.addReaction(STOP).queue(v -> pagination(m, pageNum), t -> pagination(m, pageNum));
         });

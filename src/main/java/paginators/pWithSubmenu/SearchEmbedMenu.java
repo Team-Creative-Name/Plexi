@@ -174,8 +174,8 @@ public class SearchEmbedMenu extends Menu {
         if (event.getMessageIdLong() != messageId)
             return false;
         switch (event.getReactionEmote().getName()) {
-            // LEFT, STOP, RIGHT, BIG_LEFT, BIG_RIGHT all fall-through to
-            // return if the User is valid or not. If none trip, this defaults
+            // LEFT, STOP, RIGHT, Select all fall-through to
+            // return if the user is valid or not. If none trip, this defaults
             // and returns false.
             case LEFT:
             case STOP:

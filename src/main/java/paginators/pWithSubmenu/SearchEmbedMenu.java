@@ -169,7 +169,6 @@ public class SearchEmbedMenu extends Menu {
         });
     }
 
-
     private boolean checkReaction(MessageReactionAddEvent event, long messageId) {
         if (event.getMessageIdLong() != messageId)
             return false;

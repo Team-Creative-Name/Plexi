@@ -13,6 +13,7 @@ public class ShutdownCommand extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
+        event.reply("Plexi is shutting down.");
         event.reactWarning();
         event.getJDA().retrieveApplicationInfo().queue();
 

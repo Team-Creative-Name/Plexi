@@ -114,8 +114,8 @@ public class SearchCommand extends Command {
 
         ArrayList<Integer> toReturn = new ArrayList<>();
 
-        for (int i = 0; i < tvArray.length; i++) {
-            toReturn.add(tvArray[i].getId());
+        for (TvSearch tvSearch : tvArray) {
+            toReturn.add(tvSearch.getId());
         }
 
         return toReturn;
@@ -124,8 +124,8 @@ public class SearchCommand extends Command {
     private ArrayList<Integer> generateMovieIdArray(MovieSearch[] movieArray) {
         ArrayList<Integer> toReturn = new ArrayList<>();
 
-        for (int i = 0; i < movieArray.length; i++) {
-            toReturn.add(movieArray[i].getId());
+        for (MovieSearch movieSearch : movieArray) {
+            toReturn.add(movieSearch.getId());
         }
         return toReturn;
     }

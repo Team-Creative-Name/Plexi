@@ -17,7 +17,7 @@ public class RestartCommand extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
-        event.reply("System is going down NOW!");
+        event.reply("Plexi will be back in 1 second. Please wait.");
         try {
             PlexiBot.restartBot(event.getJDA());
         } catch (LoginException e) {

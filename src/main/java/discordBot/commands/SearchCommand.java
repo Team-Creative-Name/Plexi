@@ -8,14 +8,14 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import discordBot.EmbedManager;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import paginators.pWithSubmenu.SearchEmbedMenu;
+import paginators.pWithSubmenu.SearchPaginator;
 
 import java.util.ArrayList;
 
 
 public class SearchCommand extends Command {
 
-    private final SearchEmbedMenu.Builder ePBuilder;
+    private final SearchPaginator.Builder ePBuilder;
 
     public SearchCommand(EventWaiter waiter) {
         this.name = "search";
@@ -26,7 +26,7 @@ public class SearchCommand extends Command {
         this.guildOnly = true;
 
 
-        ePBuilder = new SearchEmbedMenu.Builder()
+        ePBuilder = new SearchPaginator.Builder()
 
                 .setFinalAction(message -> {
                     try {
@@ -71,7 +71,7 @@ public class SearchCommand extends Command {
                 ePBuilder.setWrapPageEnds(true);
 
 
-                SearchEmbedMenu p = ePBuilder
+                SearchPaginator p = ePBuilder
                         .setUsers(event.getAuthor())
                         .build();
 
@@ -98,7 +98,7 @@ public class SearchCommand extends Command {
                 ePBuilder.setSubmenuEmbedArray(generateMovieIdArray(result));
                 ePBuilder.setWrapPageEnds(true);
 
-                SearchEmbedMenu p = ePBuilder
+                SearchPaginator p = ePBuilder
                         .setUsers(event.getAuthor())
                         .build();
 

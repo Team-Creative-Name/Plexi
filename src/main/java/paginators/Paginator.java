@@ -2,7 +2,8 @@ package paginators;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.Menu;
-
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -27,8 +28,8 @@ public abstract class Paginator extends Menu {
     protected final String SELECT = "\u2705"; //✅ - Select Menu and perform action
     protected final String RIGHT = "\u25B6"; //▶️️
 
-    //An arraylist of the reactions displayed under the embed.
-    protected final String[] REACTIONS;
+    //An array of emojis to be displayed under the embed
+    protected final Emoji[] REACTIONS;
 
     //An arraylist of embeds to display to the user
     protected final ArrayList<EmbedBuilder> EMBED_ARRAYLIST;
@@ -48,7 +49,7 @@ public abstract class Paginator extends Menu {
 
         //provide super class with required information
         super(waiter, users, roles, timeout, timeUnit);
-        this.REACTIONS = reactions;
+        this.REACTIONS = toEmojiArray(reactions);
 
         //set local data fields
         EMBED_ARRAYLIST = pages;
@@ -93,6 +94,7 @@ public abstract class Paginator extends Menu {
     }
 
     private void pagination(Message m, int n) {
+        System.out.println("Here1!");
         waiter.waitForEvent(MessageReactionAddEvent.class,
                 event -> checkReaction(event, m.getIdLong()), // Check Reaction
                 event -> handleMessageReactionAddAction(event, m, n), // Handle Reaction
@@ -113,13 +115,13 @@ public abstract class Paginator extends Menu {
     protected abstract void enterSubmenu(MessageChannel channel);
 
     private boolean checkReaction(MessageReactionAddEvent event, long messageId) {
-        if (event.getMessageIdLong() != messageId){
+        if (event.getMessageIdLong() != messageId) {
             return false;
         }
 
         //run through reaction array and check to see if a reaction is valid
-        for (String reactions:REACTIONS) {
-            if(reactions.equals(event.getReactionEmote().getName())){
+        for (Emoji reactions : REACTIONS) {
+            if (reactions.getUnicode().equals(event.getReactionEmote().getName())) {
                 return isValidUser(event.getUser(), event.isFromGuild() ? event.getGuild() : null);
             }
         }
@@ -131,19 +133,29 @@ public abstract class Paginator extends Menu {
     //adds reactions to the embed and sets final action
     private void initialize(RestAction<Message> action, int pageNum) {
         action.queue(m -> {
-            if (pageNum > 1) {
-                for(int i = 0; i < REACTIONS.length - 1; i++){
-                    m.addReaction(REACTIONS[i]);
+            if (MENU_PAGE_COUNT > 1) {
+                for (int i = 0; i < REACTIONS.length - 1; i++) {
+                    m.addReaction(REACTIONS[i].getUnicode()).queue();
+                    System.out.println("Adding emote: " + REACTIONS[i].getUnicode());
                 }
-                m.addReaction(REACTIONS[REACTIONS.length - 1]).queue(v -> pagination(m, pageNum), t -> pagination(m, pageNum));
+                m.addReaction(REACTIONS[REACTIONS.length - 1].getUnicode()).queue(v -> pagination(m, pageNum), t -> pagination(m, pageNum));
             } else {
                 FINAL_ACTION.accept(m);
             }
         });
     }
 
-    protected void changePage(Message originalMessage, int pageNum){
-        originalMessage.editMessage(embedToMessage(pageNum)).queue(m -> pagination(m, pageNum));
+    protected void changePage(Message originalMessage, int newPageNum) {
+        originalMessage.editMessage(embedToMessage(newPageNum)).queue(m -> pagination(m, newPageNum));
+    }
+
+    //I got frustrated with unicode, so I made it so we only have to provide emoji aliases to this class. This method changes them into Emoji
+    private Emoji[] toEmojiArray(String[] stringEmojiArray) {
+        Emoji[] toReturn = new Emoji[stringEmojiArray.length];
+        for (int i = 0; i < stringEmojiArray.length; i++) {
+            toReturn[i] = EmojiManager.getForAlias(stringEmojiArray[i]);
+        }
+        return toReturn;
     }
 
 }

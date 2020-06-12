@@ -26,37 +26,38 @@ import java.util.function.Consumer;
 
 public class SearchPaginator extends Paginator {
     public SearchPaginator(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit timeUnit, ArrayList<EmbedBuilder> pages, boolean wrapPages, Consumer<Message> finalAction) {
-        super(waiter, users, roles, timeout, timeUnit, new String[]{"\u25C0", "\uD83D\uDED1", "\u2705", "\u25B6"}, pages, wrapPages, finalAction);
+        super(waiter, users, roles, timeout, timeUnit, new String[]{":arrow_backward:", ":stop_sign:", ":white_check_mark:", ":arrow_forward:"}, pages, wrapPages, finalAction);
     }
 
     @Override
     protected void handleMessageReactionAddAction(MessageReactionAddEvent event, Message message, int pageNum) {
         int newPageNum = pageNum;
-        switch (event.getReaction().getReactionEmote().getName()) {
-            case LEFT:
-                if (newPageNum == 1 && WRAP_PAGES){
-                    newPageNum = MENU_PAGE_COUNT + 1;
-                }else if(newPageNum > 1){
-                    newPageNum--;
-                }
-                break;
-            case RIGHT:
-                if (newPageNum == MENU_PAGE_COUNT && WRAP_PAGES){
-                    newPageNum = 0;
-                }else if (newPageNum < MENU_PAGE_COUNT){
-                    newPageNum++;
-                }
-                break;
-            case SELECT:
-                System.out.println(event.getUser() + " has used the select button in the search paginator!");
 
-                //We need to go into a submenu at this point!
-                //enterSubmenu(subMenuIds.get(pageNum - 1), message, null);
-                return;
+        //DEBUG TIME!
+        System.out.println("JDA says: " + event.getReaction().getReactionEmote().getName());
 
-            case STOP:
-                FINAL_ACTION.accept(message);
-                return;
+
+        if (REACTIONS[0].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { // the first item in the array is the left arrow
+            if (newPageNum == 1 && WRAP_PAGES) {
+                newPageNum = MENU_PAGE_COUNT + 1;
+            } else if (newPageNum > 1) {
+                newPageNum--;
+            }
+        } else if (REACTIONS[1].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the second item in the array is the stop sign
+            FINAL_ACTION.accept(message);
+            return;
+        } else if (REACTIONS[2].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the third item in the array is the check mark
+            System.out.println(event.getUser() + " has used the select button in the search paginator!");
+
+            //We need to go into a submenu at this point!
+            //enterSubmenu(subMenuIds.get(pageNum - 1), message, null);
+
+        } else if (REACTIONS[3].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the last item is the right arrow
+            if (newPageNum == MENU_PAGE_COUNT && WRAP_PAGES) {
+                newPageNum = 0;
+            } else if (newPageNum < MENU_PAGE_COUNT) {
+                newPageNum++;
+            }
         }
 
         try {

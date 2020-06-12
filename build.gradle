@@ -19,5 +19,6 @@ dependencies {
     compile 'net.dv8tion:JDA:4.0.0_73'
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
     implementation 'com.typesafe:config:1.4.0'
+    compile 'com.vdurmont:emoji-java:5.1.1'
 
 }

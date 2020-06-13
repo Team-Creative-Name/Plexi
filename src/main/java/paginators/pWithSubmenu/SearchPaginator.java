@@ -33,29 +33,29 @@ public class SearchPaginator extends Paginator {
     protected void handleMessageReactionAddAction(MessageReactionAddEvent event, Message message, int pageNum) {
         int newPageNum = pageNum;
 
-        //DEBUG TIME!
-        System.out.println("JDA says: " + event.getReaction().getReactionEmote().getName());
-
 
         if (REACTIONS[0].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { // the first item in the array is the left arrow
-            if (newPageNum == 1 && WRAP_PAGES) {
-                newPageNum = MENU_PAGE_COUNT + 1;
-            } else if (newPageNum > 1) {
+            //decrement pageNum
+            if (pageNum == 1 && WRAP_PAGES) {
+                newPageNum = MENU_PAGE_COUNT;
+            }
+            if (pageNum > 1) {
                 newPageNum--;
             }
         } else if (REACTIONS[1].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the second item in the array is the stop sign
+            //perform the final action
             FINAL_ACTION.accept(message);
-            return;
-        } else if (REACTIONS[2].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the third item in the array is the check mark
-            System.out.println(event.getUser() + " has used the select button in the search paginator!");
 
-            //We need to go into a submenu at this point!
-            //enterSubmenu(subMenuIds.get(pageNum - 1), message, null);
+        } else if (REACTIONS[2].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the third item in the array is the check mark
+            //Enter the submenu
+            enterSubmenu(event.getChannel());
 
         } else if (REACTIONS[3].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the last item is the right arrow
-            if (newPageNum == MENU_PAGE_COUNT && WRAP_PAGES) {
-                newPageNum = 0;
-            } else if (newPageNum < MENU_PAGE_COUNT) {
+            //Increment pageNum
+            if (pageNum == MENU_PAGE_COUNT && WRAP_PAGES) {
+                newPageNum = 1;
+            }
+            if (pageNum < MENU_PAGE_COUNT) {
                 newPageNum++;
             }
         }

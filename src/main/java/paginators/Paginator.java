@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+//This class uses emoji aliases via com.vdurmont.emoji. The full list of aliases as of this version can be found here: https://gist.github.com/collectioncard/913937204a3b3d63438a9fbcc34f5bba
+
 public abstract class Paginator extends Menu {
 
 
@@ -93,12 +95,14 @@ public abstract class Paginator extends Menu {
         initialize(message.editMessage(msg), pageNum);
     }
 
-    private void pagination(Message m, int n) {
+    protected void pagination(Message m, int n) {
         System.out.println("Here1!");
         waiter.waitForEvent(MessageReactionAddEvent.class,
                 event -> checkReaction(event, m.getIdLong()), // Check Reaction
                 event -> handleMessageReactionAddAction(event, m, n), // Handle Reaction
                 timeout, unit, () -> FINAL_ACTION.accept(m));
+
+        System.out.println("Exited Pagination waiter");
     }
 
     private Message embedToMessage(int pageNum) {
@@ -113,6 +117,7 @@ public abstract class Paginator extends Menu {
 
     //allows the menu to go into a submenu - child class defines what this method does (if anything)!
     protected abstract void enterSubmenu(MessageChannel channel);
+
 
     private boolean checkReaction(MessageReactionAddEvent event, long messageId) {
         if (event.getMessageIdLong() != messageId) {
@@ -131,7 +136,7 @@ public abstract class Paginator extends Menu {
     }
 
     //adds reactions to the embed and sets final action
-    private void initialize(RestAction<Message> action, int pageNum) {
+    protected void initialize(RestAction<Message> action, int pageNum) {
         action.queue(m -> {
             if (MENU_PAGE_COUNT > 1) {
                 for (int i = 0; i < REACTIONS.length - 1; i++) {

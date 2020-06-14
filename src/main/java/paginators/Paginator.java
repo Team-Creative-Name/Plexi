@@ -116,7 +116,7 @@ public abstract class Paginator extends Menu {
     protected abstract void handleMessageReactionAddAction(MessageReactionAddEvent event, Message message, int pageNum);
 
     //allows the menu to go into a submenu - child class defines what this method does (if anything)!
-    protected abstract void enterSubmenu(MessageChannel channel);
+    protected abstract void enterSubmenu(Message oldMessage, int pageNum);
 
 
     private boolean checkReaction(MessageReactionAddEvent event, long messageId) {
@@ -162,5 +162,6 @@ public abstract class Paginator extends Menu {
         }
         return toReturn;
     }
+
 
 }

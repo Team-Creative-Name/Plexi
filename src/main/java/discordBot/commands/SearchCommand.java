@@ -8,7 +8,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import discordBot.EmbedManager;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import paginators.pWithSubmenu.SearchPaginator;
+import paginators.searchPaginators.SearchPaginator;
 
 import java.util.ArrayList;
 

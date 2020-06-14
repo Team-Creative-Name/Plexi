@@ -1,16 +1,18 @@
-package paginators.submenus;
+package paginators.searchPaginators;
 
 import apis.ombi.OmbiCallers;
 import apis.ombi.templateClasses.movies.moreInfo.MovieInfo;
 import apis.ombi.templateClasses.tv.moreInfo.TvInfo;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.jagrosh.jdautilities.menu.Menu;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Checks;
 import paginators.Paginator;
 
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class SearchSubmenu2 extends Paginator {
+public class SearchSubmenu extends Paginator {
 
     //this class has some additional variables to keep track of
 
@@ -31,7 +33,7 @@ public class SearchSubmenu2 extends Paginator {
     int AVAILABILITY;
 
 
-    public SearchSubmenu2(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit timeUnit, ArrayList<EmbedBuilder> pages, boolean wrapPages, Consumer<Message> finalAction, TvInfo tvinfo, MovieInfo movieInfo) {
+    public SearchSubmenu(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit timeUnit, ArrayList<EmbedBuilder> pages, boolean wrapPages, Consumer<Message> finalAction, TvInfo tvinfo, MovieInfo movieInfo) {
         super(waiter, users, roles, timeout, timeUnit, new String[]{":thumbsup:", "thumbsdown", ":new:", ":stop_sign:"}, pages, wrapPages, finalAction);
 
         //globals need to be set differently depending on the media type
@@ -84,8 +86,9 @@ public class SearchSubmenu2 extends Paginator {
         FINAL_ACTION.accept(message);
     }
 
+
     @Override
-    protected void enterSubmenu(MessageChannel channel) {
+    protected void enterSubmenu(Message oldMessage, int pageNum) {
         //This menu does not have a submenu
     }
 
@@ -109,5 +112,77 @@ public class SearchSubmenu2 extends Paginator {
         });
     }
 
+    //create temp builder class
+    //TODO: Remove builder and replace
+    public static class Builder extends Menu.Builder<Builder, SearchSubmenu> {
+
+        private ArrayList<EmbedBuilder> embeds = new ArrayList<>();
+
+        private boolean wrapPageEnds = false;
+        private Consumer<Message> finalAction = m -> m.delete().queue();
+        private String text = null;
+        private int type = 1;
+        private CommandEvent event;
+        private TvInfo tvInfo = null;
+        private MovieInfo movieInfo = null;
+
+        @Override
+        public SearchSubmenu build() {
+            Checks.check(waiter != null, "Must set an EventWaiter");
+            Checks.check(!embeds.isEmpty(), "Must include at least one item to paginate");
+            Checks.check(tvInfo == null ^ movieInfo == null, "Must include info object!");
+
+            return new SearchSubmenu(waiter, users, roles, timeout, unit, embeds, wrapPageEnds, finalAction, tvInfo, movieInfo);
+
+        }
+
+        public Builder setEmbedArray(ArrayList<EmbedBuilder> embeds) {
+            this.embeds = embeds;
+            return this;
+        }
+
+
+        public Builder setText(String text) {
+            this.text = text;
+            return this;
+        }
+
+        public Builder setFinalAction(Consumer<Message> finalAction) {
+            this.finalAction = finalAction;
+            return this;
+        }
+
+        public Builder setTvType() {
+            this.type = 1;
+            return this;
+        }
+
+        public Builder setMovieType() {
+            this.type = 2;
+            return this;
+        }
+
+        public Builder setTvInfo(TvInfo newTvInfo) {
+            tvInfo = newTvInfo;
+            return this;
+        }
+
+        public Builder setMovieInfo(MovieInfo newMovieInfo) {
+            movieInfo = newMovieInfo;
+            return this;
+        }
+
+        public void setCommandEvent(CommandEvent event) {
+            this.event = event;
+        }
+
+        public void setWrapPageEnds(boolean wrapPageEnds) {
+            this.wrapPageEnds = wrapPageEnds;
+        }
+    }
 
 }
+
+
+
+

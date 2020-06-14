@@ -247,4 +247,12 @@ public class EmbedManager {
         return createTvMoreInfoEmbed(caller.ombiTvInfo(String.valueOf(id)));
     }
 
+    //wraps EmbedBuilder in an arrayList
+    public ArrayList<EmbedBuilder> toArrayList(EmbedBuilder toAdd) {
+        System.out.println("Is the embedBuilder empty? " + toAdd.isEmpty());
+        ArrayList<EmbedBuilder> newArrayList = new ArrayList<>();
+        newArrayList.add(toAdd);
+        return newArrayList;
+    }
+
 }

@@ -57,9 +57,17 @@ public class SearchPaginator extends Paginator {
             //perform the final action
             FINAL_ACTION.accept(message);
 
+            //return bc we dont want to do anything else
+            return;
+
         } else if (REACTIONS[2].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the third item in the array is the check mark
+            //close this paginator
+            FINAL_ACTION.accept(message);
             //Enter the submenu
-            enterSubmenu(message, pageNum);
+            enterSubmenu(message, pageNum - 1);
+
+            //return bc we dont want the main menu to override anything about the submenu
+            return;
 
         } else if (REACTIONS[3].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the last item is the right arrow
             //Increment pageNum

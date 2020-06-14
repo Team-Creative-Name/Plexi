@@ -22,14 +22,6 @@ import java.util.function.Consumer;
 
 public abstract class Paginator extends Menu {
 
-
-    //These are leftover Strings and need to be removed in the future
-    //TODO: Delete these variables
-    protected final String LEFT = "\u25C0"; //◀️
-    protected final String STOP = "\uD83D\uDED1"; //🛑
-    protected final String SELECT = "\u2705"; //✅ - Select Menu and perform action
-    protected final String RIGHT = "\u25B6"; //▶️️
-
     //An array of emojis to be displayed under the embed
     protected final Emoji[] REACTIONS;
 
@@ -138,12 +130,19 @@ public abstract class Paginator extends Menu {
     //adds reactions to the embed and sets final action
     protected void initialize(RestAction<Message> action, int pageNum) {
         action.queue(m -> {
+            //clear previous reactions
+            m.clearReactions().queue();
             if (MENU_PAGE_COUNT > 1) {
                 for (int i = 0; i < REACTIONS.length - 1; i++) {
                     m.addReaction(REACTIONS[i].getUnicode()).queue();
                     System.out.println("Adding emote: " + REACTIONS[i].getUnicode());
                 }
                 m.addReaction(REACTIONS[REACTIONS.length - 1].getUnicode()).queue(v -> pagination(m, pageNum), t -> pagination(m, pageNum));
+            } else if (MENU_PAGE_COUNT == 1) {
+                //close this paginator
+                FINAL_ACTION.accept(m);
+                //Enter the submenu - actions depend on code in overridden method
+                enterSubmenu(m, pageNum - 1);
             } else {
                 FINAL_ACTION.accept(m);
             }

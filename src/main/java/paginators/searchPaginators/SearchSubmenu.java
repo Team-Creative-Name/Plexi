@@ -26,11 +26,13 @@ public class SearchSubmenu extends Paginator {
 
     //automatically filled in globals
     int MEDIA_TYPE;
-    int MEDIA_ID;
+    String MEDIA_ID;
     boolean IS_REQUESTED;
     //this can be a bit funky, but tv shows can have 3 forms all, partial or nothing available.
     // 0 = nothing  -- 1 = partial -- 2 = full
     int AVAILABILITY;
+    TvInfo TV_INFO;
+    MovieInfo MOVIE_INFO;
 
 
     public SearchSubmenu(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit timeUnit, ArrayList<EmbedBuilder> pages, boolean wrapPages, Consumer<Message> finalAction, TvInfo tvinfo, MovieInfo movieInfo) {
@@ -40,16 +42,17 @@ public class SearchSubmenu extends Paginator {
         if (tvinfo != null) {
             //TV media type
             MEDIA_TYPE = 1;
-            MEDIA_ID = tvinfo.getId();
+            MEDIA_ID = String.valueOf(tvinfo.getId());
             IS_REQUESTED = tvinfo.getRequested();
             AVAILABILITY = tvinfo.getPlexAvailabilityInt();
+            TV_INFO = tvinfo;
         } else {
             //movie media type
             MEDIA_TYPE = 2;
-            MEDIA_ID = movieInfo.getId();
+            MEDIA_ID = String.valueOf(movieInfo.getId());
             IS_REQUESTED = movieInfo.getRequested();
             AVAILABILITY = movieInfo.getAvailable() ? 2 : 0;
-
+            MOVIE_INFO = movieInfo;
         }
 
     }
@@ -63,9 +66,9 @@ public class SearchSubmenu extends Paginator {
             //we need to determine the media type so we can make the proper API call
             //Media type 1 is for TV; media type 2 is for movies
             if (MEDIA_TYPE == 1) {
-                //TODO: Implement ombi TV caller
+                event.getChannel().sendMessage(caller.requestTv(MEDIA_ID, false, AVAILABILITY, TV_INFO)).queue();
             } else if (MEDIA_TYPE == 2) {
-                //TODO: Implement ombi movie caller
+                event.getChannel().sendMessage(caller.requestMovie(MEDIA_ID)).queue();
             }
 
         } else if (REACTIONS[1].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the second item in the array is 👎
@@ -76,7 +79,7 @@ public class SearchSubmenu extends Paginator {
         } else if (REACTIONS[2].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the third item in the array is 🆕
             //there *should* be no way to get here if the media type isnt 1, but still
             if (MEDIA_TYPE == 1) {
-                //TODO: Implement ombi latest TV caller
+                event.getChannel().sendMessage(caller.requestTv(MEDIA_ID, true, AVAILABILITY, TV_INFO)).queue();
             }
 
         } //the stop emote will do nothing but it will still end the paginator
@@ -108,7 +111,7 @@ public class SearchSubmenu extends Paginator {
             if (MEDIA_TYPE == 1) {
                 m.addReaction(REACTIONS[2].getUnicode()).queue();
             }
-            m.addReaction(STOP).queue(v -> pagination(m, pageNum), t -> pagination(m, pageNum));
+            m.addReaction(REACTIONS[3].getUnicode()).queue(v -> pagination(m, pageNum), t -> pagination(m, pageNum));
         });
     }
 

@@ -2,7 +2,6 @@ package com.github.tcn.plexi.discordBot;
 
 import com.github.tcn.plexi.settingsManager.Settings;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 
@@ -34,13 +33,12 @@ public class PlexiBot {
         JDA botInstance;
 
         try {
-            botInstance = new JDABuilder(AccountType.BOT)
-                    .setToken(Settings.getToken())
-                    .addEventListeners(commandList.build(), waiter)
-                    .build();
+            botInstance = JDABuilder.createDefault(Settings.getToken()).build();
+            botInstance.addEventListener(commandList.build(), waiter);
+
+
         } catch (Exception e) {
             System.out.println("Error: " + e.getLocalizedMessage());
-            botInstance = null;
             return;
         }
         try {

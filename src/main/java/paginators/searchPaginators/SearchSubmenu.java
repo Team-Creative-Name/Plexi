@@ -3,9 +3,7 @@ package paginators.searchPaginators;
 import apis.ombi.OmbiCallers;
 import apis.ombi.templateClasses.movies.moreInfo.MovieInfo;
 import apis.ombi.templateClasses.tv.moreInfo.TvInfo;
-import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.jagrosh.jdautilities.menu.Menu;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -23,6 +21,8 @@ import java.util.function.Consumer;
 public class SearchSubmenu extends Paginator {
 
     //this class has some additional variables to keep track of
+    TvInfo TV_INFO;
+    MovieInfo MOVIE_INFO;
 
     //automatically filled in globals
     int MEDIA_TYPE;
@@ -31,12 +31,10 @@ public class SearchSubmenu extends Paginator {
     //this can be a bit funky, but tv shows can have 3 forms all, partial or nothing available.
     // 0 = nothing  -- 1 = partial -- 2 = full
     int AVAILABILITY;
-    TvInfo TV_INFO;
-    MovieInfo MOVIE_INFO;
 
 
-    public SearchSubmenu(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit timeUnit, ArrayList<EmbedBuilder> pages, boolean wrapPages, Consumer<Message> finalAction, TvInfo tvinfo, MovieInfo movieInfo) {
-        super(waiter, users, roles, timeout, timeUnit, new String[]{":thumbsup:", "thumbsdown", ":new:", ":stop_sign:"}, pages, wrapPages, finalAction);
+    public SearchSubmenu(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit timeUnit, String[] reactions, ArrayList<EmbedBuilder> pages, boolean wrapPages, Consumer<Message> finalAction, TvInfo tvinfo, MovieInfo movieInfo) {
+        super(waiter, users, roles, timeout, timeUnit, reactions, pages, wrapPages, finalAction);
 
         //globals need to be set differently depending on the media type
         if (tvinfo != null) {
@@ -115,72 +113,35 @@ public class SearchSubmenu extends Paginator {
         });
     }
 
-    //create temp builder class
-    //TODO: Remove builder and replace
-    public static class Builder extends Menu.Builder<Builder, SearchSubmenu> {
+    public static class Builder extends Paginator.Builder<SearchSubmenu.Builder, SearchSubmenu> {
 
-        private ArrayList<EmbedBuilder> embeds = new ArrayList<>();
+        //mediaInfo Objects
+        TvInfo tvInfo = null;
+        MovieInfo movieInfo = null;
 
-        private boolean wrapPageEnds = false;
-        private Consumer<Message> finalAction = m -> m.delete().queue();
-        private String text = null;
-        private int type = 1;
-        private CommandEvent event;
-        private TvInfo tvInfo = null;
-        private MovieInfo movieInfo = null;
+        //this class' reaction array
+        String[] reactions = new String[]{":thumbsup:", "thumbsdown", ":new:", ":stop_sign:"};
+
 
         @Override
         public SearchSubmenu build() {
-            Checks.check(waiter != null, "Must set an EventWaiter");
-            Checks.check(!embeds.isEmpty(), "Must include at least one item to paginate");
+            //run some checks
+            runBasicChecks();
             Checks.check(tvInfo == null ^ movieInfo == null, "Must include info object!");
-
-            return new SearchSubmenu(waiter, users, roles, timeout, unit, embeds, wrapPageEnds, finalAction, tvInfo, movieInfo);
-
+            //return the completed paginator object
+            return new SearchSubmenu(waiter, users, roles, timeout, unit, reactions, pages, wrapPages, finalAction, tvInfo, movieInfo);
         }
 
-        public Builder setEmbedArray(ArrayList<EmbedBuilder> embeds) {
-            this.embeds = embeds;
+        //since we added a variable, we need to add a setter
+        public SearchSubmenu.Builder setTvInfo(TvInfo tvInfo) {
+            this.tvInfo = tvInfo;
+
             return this;
         }
 
-
-        public Builder setText(String text) {
-            this.text = text;
+        public SearchSubmenu.Builder setMovieInfo(MovieInfo movieInfo) {
+            this.movieInfo = movieInfo;
             return this;
-        }
-
-        public Builder setFinalAction(Consumer<Message> finalAction) {
-            this.finalAction = finalAction;
-            return this;
-        }
-
-        public Builder setTvType() {
-            this.type = 1;
-            return this;
-        }
-
-        public Builder setMovieType() {
-            this.type = 2;
-            return this;
-        }
-
-        public Builder setTvInfo(TvInfo newTvInfo) {
-            tvInfo = newTvInfo;
-            return this;
-        }
-
-        public Builder setMovieInfo(MovieInfo newMovieInfo) {
-            movieInfo = newMovieInfo;
-            return this;
-        }
-
-        public void setCommandEvent(CommandEvent event) {
-            this.event = event;
-        }
-
-        public void setWrapPageEnds(boolean wrapPageEnds) {
-            this.wrapPageEnds = wrapPageEnds;
         }
     }
 

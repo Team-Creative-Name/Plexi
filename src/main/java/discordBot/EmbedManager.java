@@ -191,6 +191,7 @@ public class EmbedManager {
     }
 
     //random footer messages
+    @Deprecated
     private String getRandFooter(int max) {
         Random rand = new Random();
 
@@ -208,7 +209,7 @@ public class EmbedManager {
         try {
             footerPath = getClass().getResource("/assets/footer.plexi").toURI();
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
             return "Missing Footer File!";
         }
 
@@ -249,7 +250,6 @@ public class EmbedManager {
 
     //wraps EmbedBuilder in an arrayList
     public ArrayList<EmbedBuilder> toArrayList(EmbedBuilder toAdd) {
-        System.out.println("Is the embedBuilder empty? " + toAdd.isEmpty());
         ArrayList<EmbedBuilder> newArrayList = new ArrayList<>();
         newArrayList.add(toAdd);
         return newArrayList;

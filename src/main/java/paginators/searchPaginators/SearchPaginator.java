@@ -3,9 +3,7 @@ package paginators.searchPaginators;
 import apis.ombi.OmbiCallers;
 import apis.ombi.templateClasses.movies.moreInfo.MovieInfo;
 import apis.ombi.templateClasses.tv.moreInfo.TvInfo;
-import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.jagrosh.jdautilities.menu.Menu;
 import discordBot.EmbedManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -35,8 +33,8 @@ public class SearchPaginator extends Paginator {
     private final int MEDIA_TYPE;
 
 
-    public SearchPaginator(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit timeUnit, ArrayList<EmbedBuilder> pages, boolean wrapPages, Consumer<Message> finalAction, int mediaType) {
-        super(waiter, users, roles, timeout, timeUnit, new String[]{":arrow_backward:", ":stop_sign:", ":white_check_mark:", ":arrow_forward:"}, pages, wrapPages, finalAction);
+    public SearchPaginator(EventWaiter waiter, Set<User> users, Set<Role> roles, long timeout, TimeUnit timeUnit, String[] reactions, ArrayList<EmbedBuilder> pages, boolean wrapPages, Consumer<Message> finalAction, int mediaType) {
+        super(waiter, users, roles, timeout, timeUnit, reactions, pages, wrapPages, finalAction);
         MEDIA_TYPE = mediaType;
     }
 
@@ -112,8 +110,7 @@ public class SearchPaginator extends Paginator {
 
 
             submenuBuilder.setTvInfo(info);
-            submenuBuilder.setEmbedArray(embedManager.toArrayList(embedManager.createTvMoreInfoEmbed(info)));
-            submenuBuilder.setTvType();
+            submenuBuilder.setPages(embedManager.toArrayList(embedManager.createTvMoreInfoEmbed(info)));
         } else if (MEDIA_TYPE == 2) {
             //extract the media ID from the tvEmbed
             int mediaID = Integer.parseInt(Objects.requireNonNull(EMBED_ARRAYLIST.get(pageNum).getFields().get(0).getValue(), "Media ID is null! Impossible to continue!"));
@@ -121,8 +118,7 @@ public class SearchPaginator extends Paginator {
             //we need to generate the MovieInfo object in order to pass it to the paginator and get the required embedArray
             MovieInfo info = caller.ombiMovieInfo(String.valueOf(mediaID));
 
-            submenuBuilder.setMovieType();
-            submenuBuilder.setEmbedArray(embedManager.toArrayList(embedManager.createMovieMoreInfoEmbed(info)));
+            submenuBuilder.setPages(embedManager.toArrayList(embedManager.createMovieMoreInfoEmbed(info)));
             submenuBuilder.setMovieInfo(info);
         }
         SearchSubmenu p = submenuBuilder
@@ -132,63 +128,28 @@ public class SearchPaginator extends Paginator {
 
     }
 
-    public static class Builder extends Menu.Builder<SearchPaginator.Builder, SearchPaginator> {
+    public static class Builder extends Paginator.Builder<SearchPaginator.Builder, SearchPaginator> {
 
-        private ArrayList<EmbedBuilder> embeds = new ArrayList<>();
-        private ArrayList<Integer> submenuEmbeds = new ArrayList<Integer>();
+        //media type
+        int mediaType = -1;
+        //this class' reaction array
+        String[] reactions = new String[]{":arrow_backward:", ":stop_sign:", ":white_check_mark:", ":arrow_forward:"};
 
-        private boolean wrapPageEnds = false;
-        private Consumer<Message> finalAction = m -> m.delete().queue();
-        private String text = null;
-        private int type = 1;
-        private CommandEvent event;
 
         @Override
         public SearchPaginator build() {
-            Checks.check(waiter != null, "Must set an EventWaiter");
-            Checks.check(!embeds.isEmpty(), "Must include at least one item to paginate");
-
-            return new SearchPaginator(waiter, users, roles, timeout, unit, embeds, wrapPageEnds, finalAction, type);
+            //run some checks
+            runBasicChecks();
+            Checks.check(mediaType != -1, "A media type must be set for this paginator!");
+            //return the completed paginator object
+            return new SearchPaginator(waiter, users, roles, timeout, unit, reactions, pages, wrapPages, finalAction, mediaType);
 
         }
 
-        public SearchPaginator.Builder setEmbedArray(ArrayList<EmbedBuilder> embeds) {
-            this.embeds = embeds;
+        //since we added a variable, we need to add a setter
+        public Builder setMediaType(int mediaType) {
+            this.mediaType = mediaType;
             return this;
-        }
-
-        public SearchPaginator.Builder setSubmenuEmbedArray(ArrayList<Integer> submenuEmbeds) {
-            this.submenuEmbeds = submenuEmbeds;
-            return this;
-        }
-
-        public SearchPaginator.Builder setText(String text) {
-            this.text = text;
-            return this;
-        }
-
-        public SearchPaginator.Builder setFinalAction(Consumer<Message> finalAction) {
-            this.finalAction = finalAction;
-            return this;
-        }
-
-        public SearchPaginator.Builder setTvType() {
-            this.type = 1;
-            return this;
-        }
-
-        public SearchPaginator.Builder setMovieType() {
-            this.type = 2;
-            return this;
-        }
-
-        public void setCommandEvent(CommandEvent event) {
-            this.event = event;
-        }
-
-        public void setWrapPageEnds(boolean wrapPageEnds) {
-            this.wrapPageEnds = wrapPageEnds;
         }
     }
-
 }

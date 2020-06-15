@@ -12,8 +12,11 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -88,13 +91,10 @@ public abstract class Paginator extends Menu {
     }
 
     protected void pagination(Message m, int n) {
-        System.out.println("Here1!");
         waiter.waitForEvent(MessageReactionAddEvent.class,
                 event -> checkReaction(event, m.getIdLong()), // Check Reaction
                 event -> handleMessageReactionAddAction(event, m, n), // Handle Reaction
                 timeout, unit, () -> FINAL_ACTION.accept(m));
-
-        System.out.println("Exited Pagination waiter");
     }
 
     private Message embedToMessage(int pageNum) {
@@ -135,7 +135,6 @@ public abstract class Paginator extends Menu {
             if (MENU_PAGE_COUNT > 1) {
                 for (int i = 0; i < REACTIONS.length - 1; i++) {
                     m.addReaction(REACTIONS[i].getUnicode()).queue();
-                    System.out.println("Adding emote: " + REACTIONS[i].getUnicode());
                 }
                 m.addReaction(REACTIONS[REACTIONS.length - 1].getUnicode()).queue(v -> pagination(m, pageNum), t -> pagination(m, pageNum));
             } else if (MENU_PAGE_COUNT == 1) {
@@ -162,5 +161,80 @@ public abstract class Paginator extends Menu {
         return toReturn;
     }
 
+    //Builder patter that *should* make it pretty easy to create this object properly
+    @SuppressWarnings("unchecked")
+    public abstract static class Builder<T extends Builder<T, V>, V extends Paginator> {
+        //global vars
+        protected EventWaiter waiter;
+        protected Set<User> users = new HashSet<>();
+        protected Set<Role> roles = new HashSet<>();
+        protected long timeout = 1;
+        protected TimeUnit unit = TimeUnit.MINUTES;
+        protected ArrayList<EmbedBuilder> pages = new ArrayList<>();
+        protected boolean wrapPages = true;
+        protected Consumer<Message> finalAction = m -> m.delete().queue();
+
+        //This generic abstract method needs to build the object and return it
+        public abstract V build();
+
+        //A method that does basic checking
+        public final void runBasicChecks() {
+            //check for an eventwaiter
+            Checks.check(waiter != null, "An eventwaiter must be set for this object!");
+            //check to make sure there are items to paginate
+            Checks.check(!pages.isEmpty(), "You need at least one item for a menu!");
+
+        }
+
+        //setters
+        public final T setEventWaiter(EventWaiter waiter) {
+            this.waiter = waiter;
+            return (T) this;
+        }
+
+        public final T addUsers(User... users) {
+            this.users.addAll(Arrays.asList(users));
+            return (T) this;
+        }
+
+        public final T setUsers(User... users) {
+            this.users.clear();
+            this.users.addAll(Arrays.asList(users));
+            return (T) this;
+        }
+
+        public final T addRoles(Role... roles) {
+            this.roles.addAll(Arrays.asList(roles));
+            return (T) this;
+        }
+
+        public final T setRoles(Role... roles) {
+            this.roles.clear();
+            this.roles.addAll(Arrays.asList(roles));
+            return (T) this;
+        }
+
+        public final T setTimeout(long timeout, TimeUnit unit) {
+            this.timeout = timeout;
+            this.unit = unit;
+            return (T) this;
+        }
+
+        public final T setPages(ArrayList<EmbedBuilder> pages) {
+            this.pages = pages;
+            return (T) this;
+        }
+
+        public final T setWrapPages(boolean wrapPages) {
+            this.wrapPages = wrapPages;
+            return (T) this;
+        }
+
+        public final T setFinalAction(Consumer<Message> finalAction) {
+            this.finalAction = finalAction;
+            return (T) this;
+        }
+
+    }
 
 }

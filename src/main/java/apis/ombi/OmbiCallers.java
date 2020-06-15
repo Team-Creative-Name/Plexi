@@ -48,7 +48,7 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             TvSearch[] result = gson.fromJson(downloadedJson, TvSearch[].class);
             //Log the number of items in the array
-            System.out.println("The array is " + result.length + " items long");
+            System.out.println("The search result " + result.length + " pages long");
             //return the array
             return result;
         } catch (IOException e) {
@@ -83,7 +83,7 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             MovieSearch[] result = gson.fromJson(downloadedJson, MovieSearch[].class);
             //Log the number of items in the array
-            System.out.println("There are  " + result.length + " results");
+            System.out.println("There result is  " + result.length + " pages long");
             //return the array
             return result;
         } catch (IOException e) {
@@ -195,7 +195,7 @@ public class OmbiCallers {
     public String requestTv(String id, boolean latest, int availabilityInt, TvInfo tvInfo) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
-        RequestBody requestBody = null;
+        RequestBody requestBody;
 
 
         //fully available == 2 partial == 1 not == 0
@@ -272,7 +272,7 @@ public class OmbiCallers {
 
 
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
             return "Unable to add media to request list";
         }
 
@@ -280,7 +280,6 @@ public class OmbiCallers {
 
     public EmbedBuilder getMissingEpisodeEmbed(String id) {
 
-        System.out.println("TEST");
         //get the TvInfo Object
         TvInfo tvInfo = ombiTvInfo(id);
         EmbedManager eb = new EmbedManager();

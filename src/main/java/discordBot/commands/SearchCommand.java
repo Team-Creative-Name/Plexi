@@ -54,7 +54,7 @@ public class SearchCommand extends Command {
             OmbiCallers tvSearcher = new OmbiCallers();
             EmbedManager embedManager = new EmbedManager();
 
-            System.out.println(args[1]);
+            System.out.println(event.getAuthor().getName() + " has searched for " + args[1]);
             //Retrieve array of TvSearch Objects - each object is a search result
             TvSearch[] result = tvSearcher.ombiTvSearch(args[1]);
 
@@ -64,11 +64,8 @@ public class SearchCommand extends Command {
             } else {
 
                 //Return the name of the first show on the calendar
-                ePBuilder.setTvType();
-                ePBuilder.setEmbedArray(embedManager.getPostTvSearchEmbed(result));
-                ePBuilder.setSubmenuEmbedArray(generateEpisodeIdArray(result));
-                ePBuilder.setCommandEvent(event);
-                ePBuilder.setWrapPageEnds(true);
+                ePBuilder.setMediaType(1);
+                ePBuilder.setPages(embedManager.getPostTvSearchEmbed(result));
 
 
                 SearchPaginator p = ePBuilder
@@ -84,7 +81,7 @@ public class SearchCommand extends Command {
 
             OmbiCallers moviesearcher = new OmbiCallers();
             EmbedManager embedManager = new EmbedManager();
-            System.out.println(args[1]);
+            System.out.println(event.getAuthor().getName() + " has searched for " + args[1]);
 
             MovieSearch[] result = moviesearcher.ombiMovieSearch(args[1]);
 
@@ -93,10 +90,8 @@ public class SearchCommand extends Command {
             if (result.length == 0) {
                 event.reply("No Results Found!");
             } else {
-                ePBuilder.setMovieType();
-                ePBuilder.setEmbedArray(embedManager.getPostMovieSearchEmbed(result));
-                ePBuilder.setSubmenuEmbedArray(generateMovieIdArray(result));
-                ePBuilder.setWrapPageEnds(true);
+                ePBuilder.setMediaType(2).setPages(embedManager.getPostMovieSearchEmbed(result));
+
 
                 SearchPaginator p = ePBuilder
                         .setUsers(event.getAuthor())

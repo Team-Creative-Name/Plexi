@@ -191,6 +191,7 @@ public class EmbedManager {
     }
 
     //random footer messages
+    @Deprecated
     private String getRandFooter(int max) {
         Random rand = new Random();
 
@@ -208,7 +209,7 @@ public class EmbedManager {
         try {
             footerPath = getClass().getResource("/assets/footer.plexi").toURI();
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
             return "Missing Footer File!";
         }
 
@@ -245,6 +246,13 @@ public class EmbedManager {
     public EmbedBuilder getTvInfoEmbed(int id) {
         OmbiCallers caller = new OmbiCallers();
         return createTvMoreInfoEmbed(caller.ombiTvInfo(String.valueOf(id)));
+    }
+
+    //wraps EmbedBuilder in an arrayList
+    public ArrayList<EmbedBuilder> toArrayList(EmbedBuilder toAdd) {
+        ArrayList<EmbedBuilder> newArrayList = new ArrayList<>();
+        newArrayList.add(toAdd);
+        return newArrayList;
     }
 
 }

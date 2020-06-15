@@ -17,7 +17,7 @@ public class Settings {
 
     //this is NOT user configurable
     //TODO find a better way to store the version num. This string works, but there must be a way to automate changes.
-    private static final String version = "v1.0-beta.2";
+    private static final String version = "v1.0-beta.3";
     private boolean exists;
 
     //begin getters/setters

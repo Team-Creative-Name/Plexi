@@ -11,13 +11,28 @@ repositories {
     mavenCentral()
     jcenter()
 }
-
+def mainClassName
+mainClassName = "Main"
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    compile group: 'junit', name: 'junit', version: '4.12'
+    compile 'com.google.code.gson:gson:2.8.6'
     compile 'com.jagrosh:jda-utilities:3.0.2'
     compile 'net.dv8tion:JDA:4.0.0_73'
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
     implementation 'com.typesafe:config:1.4.0'
+    compile 'com.vdurmont:emoji-java:5.1.1'
+}
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'Main'
+    }
+    from {
+        configurations
+                .compile
+                .findAll { !it.name.endsWith('pom') }
+                .collect {
+            it.isDirectory()? it: zipTree(it)
+        }
+    }
 }

@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+//TODO: Is this a good way to handle settings? It is certainly easier to use (Settings.getSetting) but there must be some convention
 public class Settings {
 
     //This class loads values from a config file - if one does not exits, we make one
@@ -15,7 +16,8 @@ public class Settings {
 
 
     //this is NOT user configurable
-    private static String version = "v1.0-beta.2";
+    //TODO find a better way to store the version num. This string works, but there must be a way to automate changes.
+    private static final String version = "v1.0-beta.3";
     private boolean exists;
 
     //begin getters/setters
@@ -77,17 +79,20 @@ public class Settings {
             generateConfig();
             System.exit(0);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error Reading file!");
+            throw new IllegalArgumentException("Error reading settings file!");
         }
 
 
     }
 
+    //TODO determine if we should attempt a reload or not. Maybe add a gui button or something... 
     public static void reload() {
         init();
     }
 
+    //this will create a new config file in the same folder as the plexi jar
     private static void generateConfig() {
+
 
     }
 

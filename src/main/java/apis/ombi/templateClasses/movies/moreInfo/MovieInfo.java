@@ -313,6 +313,14 @@ public class MovieInfo {
         return available;
     }
 
+    public int getAvailabilityInt(){
+        if(available){
+            return 2;
+        }else{
+            return 0;
+        }
+    }
+
     public void setAvailable(Boolean available) {
         this.available = available;
     }

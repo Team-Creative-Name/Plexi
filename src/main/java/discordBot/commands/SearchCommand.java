@@ -8,14 +8,14 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import discordBot.EmbedManager;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import paginators.pWithSubmenu.SearchEmbedMenu;
+import paginators.searchPaginators.SearchPaginator;
 
 import java.util.ArrayList;
 
 
 public class SearchCommand extends Command {
 
-    private final SearchEmbedMenu.Builder ePBuilder;
+    private final SearchPaginator.Builder ePBuilder;
 
     public SearchCommand(EventWaiter waiter) {
         this.name = "search";
@@ -26,7 +26,7 @@ public class SearchCommand extends Command {
         this.guildOnly = true;
 
 
-        ePBuilder = new SearchEmbedMenu.Builder()
+        ePBuilder = new SearchPaginator.Builder()
 
                 .setFinalAction(message -> {
                     try {
@@ -48,28 +48,27 @@ public class SearchCommand extends Command {
             return;
         }
 
-        if (args[0].toLowerCase().matches("tv|television|telly|tele|t")) {
+        if (args[0].toLowerCase().matches("tv|television|telly|tele|t|s|show")) {
 
             //Create new objects
             OmbiCallers tvSearcher = new OmbiCallers();
-            EmbedManager embeder = new EmbedManager();
+            EmbedManager embedManager = new EmbedManager();
 
-            System.out.println(args[1]);
+            System.out.println(event.getAuthor().getName() + " has searched for " + args[1]);
             //Retrieve array of TvSearch Objects - each object is a search result
-            TvSearch[] tester = tvSearcher.ombiTvSearch(args[1]);
+            TvSearch[] result = tvSearcher.ombiTvSearch(args[1]);
 
             //check to see if there were any results{
-            if (tester.length == 0) {
+            if (result.length == 0) {
                 event.reply("No Results Found!");
             } else {
 
                 //Return the name of the first show on the calendar
-                ePBuilder.setTvType();
-                ePBuilder.setEmbedArray(embeder.getPostTvSearchEmbed(tester));
-                ePBuilder.setSubmenuEmbedArray(generateEpisodeIdArray(tester));
-                ePBuilder.setCommandEvent(event);
-                ePBuilder.setWrapPageEnds(true);
-                SearchEmbedMenu p = ePBuilder
+                ePBuilder.setMediaType(1);
+                ePBuilder.setPages(embedManager.getPostTvSearchEmbed(result));
+
+
+                SearchPaginator p = ePBuilder
                         .setUsers(event.getAuthor())
                         .build();
 
@@ -77,12 +76,12 @@ public class SearchCommand extends Command {
             }
 
 
-            //event.getChannel().sendMessage("Here is the first result: " + tester[0].getTitle()).queue();
+            //event.getChannel().sendMessage("Here is the first result: " + result[0].getTitle()).queue();
         } else if (args[0].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks|m")) {
 
             OmbiCallers moviesearcher = new OmbiCallers();
-            EmbedManager embeder = new EmbedManager();
-            System.out.println(args[1]);
+            EmbedManager embedManager = new EmbedManager();
+            System.out.println(event.getAuthor().getName() + " has searched for " + args[1]);
 
             MovieSearch[] result = moviesearcher.ombiMovieSearch(args[1]);
 
@@ -91,12 +90,10 @@ public class SearchCommand extends Command {
             if (result.length == 0) {
                 event.reply("No Results Found!");
             } else {
-                ePBuilder.setMovieType();
-                ePBuilder.setEmbedArray(embeder.getPostMovieSearchEmbed(result));
-                ePBuilder.setSubmenuEmbedArray(generateMovieIdArray(result));
-                ePBuilder.setWrapPageEnds(true);
+                ePBuilder.setMediaType(2).setPages(embedManager.getPostMovieSearchEmbed(result));
 
-                SearchEmbedMenu p = ePBuilder
+
+                SearchPaginator p = ePBuilder
                         .setUsers(event.getAuthor())
                         .build();
 
@@ -112,8 +109,8 @@ public class SearchCommand extends Command {
 
         ArrayList<Integer> toReturn = new ArrayList<>();
 
-        for (int i = 0; i < tvArray.length; i++) {
-            toReturn.add(tvArray[i].getId());
+        for (TvSearch tvSearch : tvArray) {
+            toReturn.add(tvSearch.getId());
         }
 
         return toReturn;
@@ -122,8 +119,8 @@ public class SearchCommand extends Command {
     private ArrayList<Integer> generateMovieIdArray(MovieSearch[] movieArray) {
         ArrayList<Integer> toReturn = new ArrayList<>();
 
-        for (int i = 0; i < movieArray.length; i++) {
-            toReturn.add(movieArray[i].getId());
+        for (MovieSearch movieSearch : movieArray) {
+            toReturn.add(movieSearch.getId());
         }
         return toReturn;
     }

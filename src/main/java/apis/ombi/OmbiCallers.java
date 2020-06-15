@@ -48,7 +48,7 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             TvSearch[] result = gson.fromJson(downloadedJson, TvSearch[].class);
             //Log the number of items in the array
-            System.out.println("The array is " + result.length + " items long");
+            System.out.println("The search result " + result.length + " pages long");
             //return the array
             return result;
         } catch (IOException e) {
@@ -83,7 +83,7 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             MovieSearch[] result = gson.fromJson(downloadedJson, MovieSearch[].class);
             //Log the number of items in the array
-            System.out.println("There are  " + result.length + " results");
+            System.out.println("There result is  " + result.length + " pages long");
             //return the array
             return result;
         } catch (IOException e) {
@@ -192,18 +192,61 @@ public class OmbiCallers {
         return "Unable to request media";
     }
 
-    public String requestTv(String id) {
+    public String requestTv(String id, boolean latest, int availabilityInt, TvInfo tvInfo) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
+        RequestBody requestBody;
 
 
-        RequestBody requestBody = RequestBody.create("{\"theMovieDbId\": " + id + ",\"languageCode\":\"string\"}", MediaType.parse("text"));
+        //fully available == 2 partial == 1 not == 0
+
+        //We need to form the request differently depending on if the show is available already or not.
+        if (availabilityInt == 0) {
+
+            //Check to see if the user only wants to request the latest season
+            if(latest){
+
+                //In this case, nothing is available and the user wants to request everything
+                requestBody = RequestBody.create("{" + "\"latestSeason\": " + "\"true\"" +
+                        ",\"tvDbId\": " + id +
+                        ",\"languageCode\":\"string\"}", MediaType.parse("text"));
+            }else{
+                //In this case, nothing is available and the user wants to request everything
+                requestBody = RequestBody.create("{" + "\"requestAll\": " + "\"true\"" +
+                                ",\"tvDbId\": " + id +
+                                ",\"languageCode\":\"string\"}",
+                        MediaType.parse("text"));
+            }
+
+        }else{
+
+
+            //here, we have a show that already has some episodes on plex. We need to determine which ones they are and request the others
+            String toJSON;
+
+
+            //check to see if the user only wants the latest season
+            TvRequestTemplate requestTemplate;
+            if (latest) {
+                requestTemplate = tvInfo.getLatestMissingSeasonArray();
+                requestTemplate.setLatestSeason(true);
+
+            } else {
+                requestTemplate = tvInfo.getMissingEpisodeArray();
+
+            }
+            requestTemplate.setTvDbId(Integer.decode(id));
+            toJSON = gson.toJson(requestTemplate);
+            requestBody = RequestBody.create(toJSON, MediaType.parse("text"));
+        }
+
         Request request = new Request.Builder()
                 .url(Settings.getOmbiUrl() + "/api/v1/request/tv")
                 .post(requestBody)
                 .addHeader("Accept", "application/json")
                 .addHeader("ApiKey", Settings.getOmbiKey())
                 .addHeader("Content-Type", "text/json")
+
                 .build();
 
         try {
@@ -219,12 +262,17 @@ public class OmbiCallers {
             if (requestObj.getIsError()) {
                 return requestObj.getErrorMessage().toString();
             } else {
-                return requestObj.getMessage();
+                //inform the user that media was requested
+                if (latest) {
+                    return "The latest season from " + tvInfo.getTitle() + " has been requested!";
+                } else {
+                    return tvInfo.getTitle() + " has been successfully requested!";
+                }
             }
 
 
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
             return "Unable to add media to request list";
         }
 
@@ -232,7 +280,6 @@ public class OmbiCallers {
 
     public EmbedBuilder getMissingEpisodeEmbed(String id) {
 
-        System.out.println("TEST");
         //get the TvInfo Object
         TvInfo tvInfo = ombiTvInfo(id);
         EmbedManager eb = new EmbedManager();
@@ -256,8 +303,13 @@ public class OmbiCallers {
 
     //Helper methods
     private String formatSearchTerm(String query) {
+        String formattedString = query;
+
+        formattedString = formattedString.toLowerCase().replaceAll(" ", "%20");
+        formattedString = formattedString.replaceAll("\""," ");
+        formattedString = formattedString.replaceAll("/", " ");
         //format searchQuery
-        return query.toLowerCase().replaceAll(" ", "%20");
+        return formattedString;
     }
 
     @Deprecated

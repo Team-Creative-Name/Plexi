@@ -26,8 +26,9 @@ public class Main {
 
         //boolean settingsSuccess = false;
 
+        //call getInstance just to make sure that we can load it
         try {
-            Settings.init();
+            Settings.getInstance();
            // settingsSuccess = true;
         } catch (IllegalArgumentException e) {
            // settingsSuccess = false;

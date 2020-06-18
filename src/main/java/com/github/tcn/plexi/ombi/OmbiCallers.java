@@ -19,6 +19,9 @@ import java.util.ArrayList;
 
 public class OmbiCallers {
 
+    //get Settings reference
+    Settings settings = Settings.getInstance();
+
 
     //This method returns an Object array that contains the value returned by the Ombi Api
     public TvSearch[] ombiTvSearch(String toSearch) {
@@ -32,9 +35,9 @@ public class OmbiCallers {
 
         //Create the request
         Request request = new Request.Builder()
-                .url(Settings.getOmbiUrl() + "/api/v1/Search/tv/" + formatSearchTerm(toSearch))
+                .url(settings.getOmbiURL() + "/api/v1/Search/tv/" + formatSearchTerm(toSearch))
                 .addHeader("accept", "application/json")
-                .addHeader("ApiKey", Settings.getOmbiKey())
+                .addHeader("ApiKey", settings.getOmbiKey())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -68,9 +71,9 @@ public class OmbiCallers {
 
         //Create the request
         Request request = new Request.Builder()
-                .url(Settings.getOmbiUrl() + "/api/v1/Search/movie/" + formatSearchTerm(toSearch))
+                .url(settings.getOmbiURL() + "/api/v1/Search/movie/" + formatSearchTerm(toSearch))
                 .addHeader("accept", "application/json")
-                .addHeader("ApiKey", Settings.getOmbiKey())
+                .addHeader("ApiKey", settings.getOmbiKey())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -104,9 +107,9 @@ public class OmbiCallers {
 
         //create the request
         Request request = new Request.Builder()
-                .url(Settings.getOmbiUrl() + "/api/v1/search/tv/info/" + id)
+                .url(settings.getOmbiURL() + "/api/v1/search/tv/info/" + id)
                 .addHeader("accept", "application/json")
-                .addHeader("ApiKey", Settings.getOmbiKey())
+                .addHeader("ApiKey", settings.getOmbiKey())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -134,9 +137,9 @@ public class OmbiCallers {
 
         //create the request
         Request request = new Request.Builder()
-                .url(Settings.getOmbiUrl() + "/api/v1/search/movie/info/" + id)
+                .url(settings.getOmbiURL() + "/api/v1/search/movie/info/" + id)
                 .addHeader("accept", "application/json")
-                .addHeader("ApiKey", Settings.getOmbiKey())
+                .addHeader("ApiKey", settings.getOmbiKey())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -161,10 +164,10 @@ public class OmbiCallers {
 
         RequestBody requestBody = RequestBody.create("{\"theMovieDbId\": " + id + ",\"languageCode\":\"string\"}", MediaType.parse("text"));
         Request request = new Request.Builder()
-                .url(Settings.getOmbiUrl() + "/api/v1/request/movie")
+                .url(settings.getOmbiURL() + "/api/v1/request/movie")
                 .post(requestBody)
                 .addHeader("Accept", "application/json")
-                .addHeader("ApiKey", Settings.getOmbiKey())
+                .addHeader("ApiKey", settings.getOmbiKey())
                 .addHeader("Content-Type", "text/json")
                 .build();
 
@@ -241,10 +244,10 @@ public class OmbiCallers {
         }
 
         Request request = new Request.Builder()
-                .url(Settings.getOmbiUrl() + "/api/v1/request/tv")
+                .url(settings.getOmbiURL() + "/api/v1/request/tv")
                 .post(requestBody)
                 .addHeader("Accept", "application/json")
-                .addHeader("ApiKey", Settings.getOmbiKey())
+                .addHeader("ApiKey", settings.getOmbiKey())
                 .addHeader("Content-Type", "text/json")
 
                 .build();

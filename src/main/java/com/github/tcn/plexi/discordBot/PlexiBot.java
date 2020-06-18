@@ -15,6 +15,9 @@ public class PlexiBot {
 
 
     public static void startBot() throws LoginException {
+        //create Settings Object reference
+        Settings settings = Settings.getInstance();
+
         //Create Commands object
         Commands commandList = new Commands();
 
@@ -22,8 +25,8 @@ public class PlexiBot {
         EventWaiter waiter = new EventWaiter();
 
         //grab this from the settings object
-        commandList.setOwnerId(Settings.getOwnerId());
-        commandList.setPrefix(Settings.getPrefix());
+        commandList.setOwnerId(settings.getOwnerID());
+        commandList.setPrefix(settings.getPrefix());
 
         //send the waiter to the CommandList object
         commandList.commandList(waiter);
@@ -33,7 +36,7 @@ public class PlexiBot {
         JDA botInstance;
 
         try {
-            botInstance = JDABuilder.createDefault(Settings.getToken()).build();
+            botInstance = JDABuilder.createDefault(settings.getToken()).build();
             botInstance.addEventListener(commandList.build(), waiter);
 
 
@@ -56,10 +59,14 @@ public class PlexiBot {
     }
 
     public static void shutdownBot() {
+        if (bot != null) {
+            bot.shutdown();
+            bot = null;
+            System.out.println("Shutdown Complete");
+        } else {
+            System.out.println("Error while shutting down: There is no bot running!");
+        }
 
-        bot.shutdown();
-        bot = null;
-        System.out.println("Shutdown Complete");
     }
 
     public static void restartBot(JDA botInstance) throws LoginException {

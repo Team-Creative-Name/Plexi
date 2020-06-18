@@ -17,9 +17,13 @@ public class MainView extends JFrame {
     //This button will have different labels depending on current state of bot - "Start" or "Stop" - default to "Start"
     private final JButton buttonState = new JButton("Start");
 
+    //get reference to settings obj
+    Settings settings = Settings.getInstance();
+
     public MainView() {
         //set title of window
-        super("Plexi " + Settings.getVersion());
+        //TODO: Fix this
+        super("Plexi ");
 
         //create textarea - console output (not editable)
         textArea = new JTextArea(50, 10);

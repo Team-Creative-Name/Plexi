@@ -1,16 +1,14 @@
 package com.github.tcn.plexi.settingsManager;
 
 import com.github.tcn.plexi.discordBot.PlexiBot;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 import javax.swing.*;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Properties;
@@ -51,10 +49,10 @@ public class Settings {
 
     //attempt to set all of the global variables
     private void initVariables() {
-
         try {
             //first attempt to get the resource path and jar path
-            JAR_PATH = Paths.get(Settings.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            //JAR_PATH = Paths.get(Settings.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            JAR_PATH = new File(Settings.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).toPath();
             INTERNAL_CONFIG_PATH = this.getClass().getResource("/assets/config.txt");
 
             //now attempt to read from the configuration file and set values accordingly
@@ -73,17 +71,18 @@ public class Settings {
             ombiURL = properties.getProperty("ombiURL").replaceAll("^\"|\"$", "");
             ombiKey = properties.getProperty("ombiKey").replaceAll("^\"|\"$", "");
 
+            if (!validateGlobals()) {
+                JOptionPane.showMessageDialog(null, "The config file contains invalid settings, please check it and try again.", "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
+                System.exit(0);
+            }
+
         } catch (FileNotFoundException e) {
             System.out.println("Unable to locate configuration file!");
-            try {
-                generateConfigFile();
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
+            generateConfigFile();
             System.out.println("A new one has been generated in " + JAR_PATH.getParent().toString());
             JOptionPane.showMessageDialog(null, "The config file was unable to be found. A new one has been generated at: " + JAR_PATH.getParent().toString(), "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
             PlexiBot.shutdownBot();
-            System.exit(1);
+            System.exit(0);
 
         } catch (Exception e) {
             //if we cant get these two, there is absolutely no way to continue program execution. We inform the user of an issue and terminate
@@ -99,10 +98,6 @@ public class Settings {
         }
     }
 
-    //destroys the reference class and creates a new one. Also re-reads the config.txt file
-    public void reloadSettings() {
-
-    }
 
     //if the initVariables method is unable to locate the config file, we need to create a new one.
     private void generateConfigFile() {
@@ -126,7 +121,66 @@ public class Settings {
             PlexiBot.shutdownBot();
             System.exit(-1);
         }
+    }
 
+    //we need a way to validate as many of the settings variables as possible
+    //This is very rudimentary validation that checks to ensure that values are not empty and arent default. The Ombi API is checked to see if it can connect.
+    //TODO: Make this method a bit less clunky
+    private boolean validateGlobals() {
+        boolean isValid = true;
+
+        //check to ensure token != null
+        if (token.equals("") || token.equals("BOT_TOKEN_HERE")) {
+            isValid = false;
+        }
+        //check to ensure prefix != null;
+        if (prefix.equals("")) {
+            isValid = false;
+        }
+        //check to ensure ombiURL != null;
+        if (ombiURL.equals("") || ombiURL.equals("URL_HERE")) {
+            isValid = false;
+        }
+        //check to ensure ombiKey != null;
+        if (ombiKey.equals("") || ombiKey.equals("KEY_HERE")) {
+            isValid = false;
+        }
+        //check to ensure ownerID != null;
+        if (ownerID.equals("") || ownerID.equals("0")) {
+            isValid = false;
+        }
+
+        //ping the ombi API to see if we have valid settings
+        //if this throws an exception, we have invalid values
+
+        if (!checkObiConnectivity()) {
+            isValid = false;
+            //inform the user that we cannot connect to ombi
+            JOptionPane.showMessageDialog(null, "Unable to connect to Ombi - Please check your settings", "Plexi - Connectivity Issue", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        return isValid;
+    }
+
+
+    //returns true if we are able to connect to the Ombi API
+    private boolean checkObiConnectivity() {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(ombiURL + "/api/v1/Status")
+                .addHeader("Accept", "application/json")
+                .addHeader("ApiKey", ombiKey)
+                .build();
+
+        try {
+            client.newCall(request).execute();
+            //if that call didnt fail, we were able to connect
+            return true;
+        } catch (Exception e) {
+            //if that call failed, we couldn't connect to ombi
+            return false;
+        }
     }
 
 

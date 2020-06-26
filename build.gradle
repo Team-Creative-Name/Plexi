@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.github.tcn.plexi'
-version 'v1.0-beta.4'
+version 'v1.0-beta.5.1'
 
 sourceCompatibility = 1.8
 
@@ -21,6 +21,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:4.2.2'
     compile 'com.typesafe:config:1.4.0'
     compile 'com.vdurmont:emoji-java:5.1.1'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.2'
 }
 
 jar {

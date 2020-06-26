@@ -26,13 +26,8 @@ public class Main {
 
         //boolean settingsSuccess = false;
 
-        //call getInstance just to make sure that we can load it
-        try {
-            Settings.getInstance();
-           // settingsSuccess = true;
-        } catch (IllegalArgumentException e) {
-           // settingsSuccess = false;
-        }
+        //call getInstance in order to ensure that it is loaded
+        Settings.getInstance();
 
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -45,8 +40,6 @@ public class Main {
 
             }
         });
-
-
     }
 }
 

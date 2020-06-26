@@ -35,7 +35,7 @@ public class OmbiCallers {
 
         //Create the request
         Request request = new Request.Builder()
-                .url(settings.getOmbiURL() + "/api/v1/Search/tv/" + formatSearchTerm(toSearch))
+                .url(settings.getOmbiUrl() + "/api/v1/Search/tv/" + formatSearchTerm(toSearch))
                 .addHeader("accept", "application/json")
                 .addHeader("ApiKey", settings.getOmbiKey())
                 .build();
@@ -71,7 +71,7 @@ public class OmbiCallers {
 
         //Create the request
         Request request = new Request.Builder()
-                .url(settings.getOmbiURL() + "/api/v1/Search/movie/" + formatSearchTerm(toSearch))
+                .url(settings.getOmbiUrl() + "/api/v1/Search/movie/" + formatSearchTerm(toSearch))
                 .addHeader("accept", "application/json")
                 .addHeader("ApiKey", settings.getOmbiKey())
                 .build();
@@ -107,7 +107,7 @@ public class OmbiCallers {
 
         //create the request
         Request request = new Request.Builder()
-                .url(settings.getOmbiURL() + "/api/v1/search/tv/info/" + id)
+                .url(settings.getOmbiUrl() + "/api/v1/search/tv/info/" + id)
                 .addHeader("accept", "application/json")
                 .addHeader("ApiKey", settings.getOmbiKey())
                 .build();
@@ -137,7 +137,7 @@ public class OmbiCallers {
 
         //create the request
         Request request = new Request.Builder()
-                .url(settings.getOmbiURL() + "/api/v1/search/movie/info/" + id)
+                .url(settings.getOmbiUrl() + "/api/v1/search/movie/info/" + id)
                 .addHeader("accept", "application/json")
                 .addHeader("ApiKey", settings.getOmbiKey())
                 .build();
@@ -164,7 +164,7 @@ public class OmbiCallers {
 
         RequestBody requestBody = RequestBody.create("{\"theMovieDbId\": " + id + ",\"languageCode\":\"string\"}", MediaType.parse("text"));
         Request request = new Request.Builder()
-                .url(settings.getOmbiURL() + "/api/v1/request/movie")
+                .url(settings.getOmbiUrl() + "/api/v1/request/movie")
                 .post(requestBody)
                 .addHeader("Accept", "application/json")
                 .addHeader("ApiKey", settings.getOmbiKey())
@@ -244,7 +244,7 @@ public class OmbiCallers {
         }
 
         Request request = new Request.Builder()
-                .url(settings.getOmbiURL() + "/api/v1/request/tv")
+                .url(settings.getOmbiUrl() + "/api/v1/request/tv")
                 .post(requestBody)
                 .addHeader("Accept", "application/json")
                 .addHeader("ApiKey", settings.getOmbiKey())

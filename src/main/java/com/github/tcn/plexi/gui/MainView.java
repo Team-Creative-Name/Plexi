@@ -22,8 +22,7 @@ public class MainView extends JFrame {
 
     public MainView() {
         //set title of window
-        //TODO: Fix this
-        super("Plexi ");
+        setTitle("Plexi " + settings.getVersionNumber());
 
         //create textarea - console output (not editable)
         textArea = new JTextArea(50, 10);

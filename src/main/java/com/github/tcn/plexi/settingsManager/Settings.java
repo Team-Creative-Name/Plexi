@@ -20,16 +20,18 @@ public class Settings {
 
     //reference to this object - the only one
     private static Settings SETTINGS_INSTANCE = null;
+    //the version number
+    private final String VERSION_NUMBER = "v1.0-beta.5.1";
     //stuff loaded from the config file
-    private String token = null;
-    private String prefix = null;
-    private String ombiURL = null;
-    private String ombiKey = null;
-    private String ownerID = null;
-    //Variables useful
-    private Path JAR_PATH;
+    private String TOKEN = null;
+    private String PREFIX = null;
+    private String OMBI_URL = null;
+    private String OMBI_KEY = null;
+    private String OWNER_ID = null;
     private URL INTERNAL_CONFIG_PATH;
     private Path USER_CONFIG_PATH;
+    //Variables useful for class operations
+    private Path JAR_PATH;
 
     //privatized constructor to ensure that nothing else is able to instantiate this class
     private Settings() {
@@ -63,13 +65,13 @@ public class Settings {
             properties.load(config);
 
             //Load settings
-            token = properties.getProperty("token").replaceAll("^\"|\"$", "");
-            System.out.println(token);
-            ownerID = properties.getProperty("ownerID").replaceAll("^\"|\"$", "");
-            System.out.println("Owner ID: " + ownerID);
-            prefix = properties.getProperty("prefix").replaceAll("^\"|\"$", "");
-            ombiURL = properties.getProperty("ombiURL").replaceAll("^\"|\"$", "");
-            ombiKey = properties.getProperty("ombiKey").replaceAll("^\"|\"$", "");
+            TOKEN = properties.getProperty("token").replaceAll("^\"|\"$", "");
+            System.out.println(TOKEN);
+            OWNER_ID = properties.getProperty("ownerID").replaceAll("^\"|\"$", "");
+            System.out.println("Owner ID: " + OWNER_ID);
+            PREFIX = properties.getProperty("prefix").replaceAll("^\"|\"$", "");
+            OMBI_URL = properties.getProperty("ombiURL").replaceAll("^\"|\"$", "");
+            OMBI_KEY = properties.getProperty("ombiKey").replaceAll("^\"|\"$", "");
 
             if (!validateGlobals()) {
                 JOptionPane.showMessageDialog(null, "The config file contains invalid settings, please check it and try again.", "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
@@ -130,23 +132,23 @@ public class Settings {
         boolean isValid = true;
 
         //check to ensure token != null
-        if (token.equals("") || token.equals("BOT_TOKEN_HERE")) {
+        if (TOKEN.equals("") || TOKEN.equals("BOT_TOKEN_HERE")) {
             isValid = false;
         }
         //check to ensure prefix != null;
-        if (prefix.equals("")) {
+        if (PREFIX.equals("")) {
             isValid = false;
         }
         //check to ensure ombiURL != null;
-        if (ombiURL.equals("") || ombiURL.equals("URL_HERE")) {
+        if (OMBI_URL.equals("") || OMBI_URL.equals("URL_HERE")) {
             isValid = false;
         }
         //check to ensure ombiKey != null;
-        if (ombiKey.equals("") || ombiKey.equals("KEY_HERE")) {
+        if (OMBI_KEY.equals("") || OMBI_KEY.equals("KEY_HERE")) {
             isValid = false;
         }
         //check to ensure ownerID != null;
-        if (ownerID.equals("") || ownerID.equals("0")) {
+        if (OWNER_ID.equals("") || OWNER_ID.equals("0")) {
             isValid = false;
         }
 
@@ -168,9 +170,9 @@ public class Settings {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url(ombiURL + "/api/v1/Status")
+                .url(OMBI_URL + "/api/v1/Status")
                 .addHeader("Accept", "application/json")
-                .addHeader("ApiKey", ombiKey)
+                .addHeader("ApiKey", OMBI_KEY)
                 .build();
 
         try {
@@ -186,23 +188,27 @@ public class Settings {
 
     //getters and setters for globals
     public String getToken() {
-        return token;
+        return TOKEN;
     }
 
     public String getPrefix() {
-        return prefix;
+        return PREFIX;
     }
 
-    public String getOmbiURL() {
-        return ombiURL;
+    public String getOmbiUrl() {
+        return OMBI_URL;
     }
 
     public String getOmbiKey() {
-        return ombiKey;
+        return OMBI_KEY;
     }
 
     public String getOwnerID() {
-        return ownerID;
+        return OWNER_ID;
+    }
+
+    public String getVersionNumber() {
+        return VERSION_NUMBER;
     }
 }
 

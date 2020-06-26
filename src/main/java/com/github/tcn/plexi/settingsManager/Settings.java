@@ -21,7 +21,7 @@ public class Settings {
     //reference to this object - the only one
     private static Settings SETTINGS_INSTANCE = null;
     //the version number
-    private final String VERSION_NUMBER = "v1.0-beta.5.1";
+    private final String VERSION_NUMBER = "v1.0-beta.5.2";
     //stuff loaded from the config file
     private String TOKEN = null;
     private String PREFIX = null;
@@ -154,28 +154,31 @@ public class Settings {
 
         //ping the ombi API to see if we have valid settings
         //if this throws an exception, we have invalid values
-
-        if (!checkObiConnectivity()) {
-            isValid = false;
-            //inform the user that we cannot connect to ombi
-            JOptionPane.showMessageDialog(null, "Unable to connect to Ombi - Please check your settings", "Plexi - Connectivity Issue", JOptionPane.INFORMATION_MESSAGE);
+        //NOTE: There is no reason to check this if isValid is false
+        if (isValid) {
+            if (!checkOmbiConnectivity()) {
+                isValid = false;
+                //inform the user that we cannot connect to ombi
+                JOptionPane.showMessageDialog(null, "Unable to connect to Ombi - Please check your settings", "Plexi - Connectivity Issue", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
+
 
         return isValid;
     }
 
 
     //returns true if we are able to connect to the Ombi API
-    private boolean checkObiConnectivity() {
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url(OMBI_URL + "/api/v1/Status")
-                .addHeader("Accept", "application/json")
-                .addHeader("ApiKey", OMBI_KEY)
-                .build();
-
+    private boolean checkOmbiConnectivity() {
         try {
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url(OMBI_URL + "/api/v1/Status")
+                    .addHeader("Accept", "application/json")
+                    .addHeader("ApiKey", OMBI_KEY)
+                    .build();
+
             client.newCall(request).execute();
             //if that call didnt fail, we were able to connect
             return true;

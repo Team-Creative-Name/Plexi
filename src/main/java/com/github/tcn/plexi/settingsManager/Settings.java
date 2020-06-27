@@ -3,6 +3,7 @@ package com.github.tcn.plexi.settingsManager;
 import com.github.tcn.plexi.discordBot.PlexiBot;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 import javax.swing.*;
 import java.io.*;
@@ -170,6 +171,7 @@ public class Settings {
 
     //returns true if we are able to connect to the Ombi API
     private boolean checkOmbiConnectivity() {
+        Response response = null;
         try {
             OkHttpClient client = new OkHttpClient();
 
@@ -179,12 +181,17 @@ public class Settings {
                     .addHeader("ApiKey", OMBI_KEY)
                     .build();
 
-            client.newCall(request).execute();
+            response = client.newCall(request).execute();
             //if that call didnt fail, we were able to connect
             return true;
         } catch (Exception e) {
             //if that call failed, we couldn't connect to ombi
             return false;
+        } finally {
+            //close the response if one was created 
+            if (response != null) {
+                response.close();
+            }
         }
     }
 
@@ -214,8 +221,3 @@ public class Settings {
         return VERSION_NUMBER;
     }
 }
-
-
-
-
-

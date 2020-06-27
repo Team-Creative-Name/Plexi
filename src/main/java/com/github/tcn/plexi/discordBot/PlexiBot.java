@@ -59,14 +59,15 @@ public class PlexiBot {
     }
 
     public static void shutdownBot() {
+        //ensure that there is a bot instance running
         if (bot != null) {
             bot.shutdown();
+            //remove reference to other bot
             bot = null;
             System.out.println("Shutdown Complete");
         } else {
             System.out.println("Error while shutting down: There is no bot running!");
         }
-
     }
 
     public static void restartBot(JDA botInstance) throws LoginException {

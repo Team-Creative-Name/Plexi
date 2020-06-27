@@ -30,15 +30,11 @@ public class Main {
         Settings.getInstance();
 
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new MainView().setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            new MainView().setVisible(true);
 
-                System.out.println(logo);
-                System.out.println("\n\nPress the start button to start Plexi.");
-
-            }
+            System.out.println(logo);
+            System.out.println("\n\nPress the start button to start Plexi.");
         });
     }
 }

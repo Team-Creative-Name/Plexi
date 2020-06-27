@@ -88,13 +88,14 @@ public class PlexiBot {
     public void stopBot() {
         //ensure that there is a bot instance running
         if (botInstance != null) {
-            botInstance.shutdown();
+            botInstance.shutdownNow();
             //remove reference to other bot
             botInstance = null;
             System.out.println("Shutdown Complete");
         } else {
             System.out.println("Error while shutting down: There is no bot running!");
         }
+
     }
 
     public void restartBot() {

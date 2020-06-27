@@ -4,7 +4,6 @@ import com.github.tcn.plexi.discordBot.PlexiBot;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import javax.security.auth.login.LoginException;
 
 public class RestartCommand extends Command {
 
@@ -18,14 +17,6 @@ public class RestartCommand extends Command {
     @Override
     protected void execute(CommandEvent event) {
         event.reply("Plexi will be back in 1 second. Please wait.");
-        try {
-            PlexiBot.restartBot(event.getJDA());
-        } catch (LoginException e) {
-            System.out.println("ERROR RESTARTING JDA");
-            e.printStackTrace();
-        }
-
+        PlexiBot.getInstance().restartBot();
     }
-
-
 }

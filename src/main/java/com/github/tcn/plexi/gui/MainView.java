@@ -3,7 +3,6 @@ package com.github.tcn.plexi.gui;
 import com.github.tcn.plexi.discordBot.PlexiBot;
 import com.github.tcn.plexi.settingsManager.Settings;
 
-import javax.security.auth.login.LoginException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,6 +18,9 @@ public class MainView extends JFrame {
 
     //get reference to settings obj
     Settings settings = Settings.getInstance();
+
+    //get reference to plexi obj
+    PlexiBot botInstance = PlexiBot.getInstance();
 
     public MainView() {
         //set title of window
@@ -78,26 +80,22 @@ public class MainView extends JFrame {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                if (PlexiBot.isRunning()) {
+                if (botInstance.isRunning()) {
                     //ask the user if they really want to shutdown
                     int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to shut down Plexi?");
                     if (choice == 0) {
-                        PlexiBot.shutdownBot();
+                        botInstance.stopBot();
                         //now that the bot is off, change button label
-                        if (!PlexiBot.isRunning()) {
+                        if (!botInstance.isRunning()) {
                             buttonState.setText("Start");
                         } else {
                             System.out.println("Error: Unable to stop bot");
                         }
                     }
                 } else {
-                    try {
-                        PlexiBot.startBot();
-                    } catch (LoginException e) {
-                        System.out.println("It died");
-                    }
+                    botInstance.startBot();
                     //now that the bot is on, change button label
-                    if (PlexiBot.isRunning()) {
+                    if (botInstance.isRunning()) {
                         buttonState.setText("Stop");
                     }
                 }

@@ -33,6 +33,8 @@ public class Settings {
     private Path USER_CONFIG_PATH;
     //Variables useful for class operations
     private Path JAR_PATH;
+    //reference to plexi object
+    PlexiBot plexiBot = PlexiBot.getInstance();
 
     //privatized constructor to ensure that nothing else is able to instantiate this class
     private Settings() {
@@ -84,7 +86,7 @@ public class Settings {
             generateConfigFile();
             System.out.println("A new one has been generated in " + JAR_PATH.getParent().toString());
             JOptionPane.showMessageDialog(null, "The config file was unable to be found. A new one has been generated at: " + JAR_PATH.getParent().toString(), "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
-            PlexiBot.shutdownBot();
+            plexiBot.stopBot();
             System.exit(0);
 
         } catch (Exception e) {
@@ -96,7 +98,7 @@ public class Settings {
             //pop open a dialog box to ensure the user is aware of what happened
             JOptionPane.showMessageDialog(null, "Unknown error, unable to continue program execution. Error: " + e.getLocalizedMessage() + "\nCheck the log for a bit more info (Hopefully)", "Plexi - Unknown Error", JOptionPane.INFORMATION_MESSAGE);
             //after the user closes that, shut down the bot if it is running and terminate the program
-            PlexiBot.shutdownBot();
+            plexiBot.stopBot();
             System.exit(-1);
         }
     }
@@ -116,12 +118,12 @@ public class Settings {
         } catch (IOException e) {
             System.out.println("Error creating config file: ");
             e.printStackTrace();
-            PlexiBot.shutdownBot();
+            plexiBot.stopBot();
             System.exit(-1);
         } catch (Exception e) {
             System.out.println("Unknown Error: ");
             e.printStackTrace();
-            PlexiBot.shutdownBot();
+            plexiBot.stopBot();
             System.exit(-1);
         }
     }
@@ -163,8 +165,6 @@ public class Settings {
                 JOptionPane.showMessageDialog(null, "Unable to connect to Ombi - Please check your settings", "Plexi - Connectivity Issue", JOptionPane.INFORMATION_MESSAGE);
             }
         }
-
-
         return isValid;
     }
 

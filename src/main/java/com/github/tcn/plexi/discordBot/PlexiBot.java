@@ -5,17 +5,45 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 
-import javax.security.auth.login.LoginException;
-
-
 public class PlexiBot {
 
-    //reference to JDA - also used to determine if the bot is running
-    private static JDA bot = null;
+    //globals
+
+    //reference to PlexiBot obj
+    private static PlexiBot botObj = null;
+    //reference to plexi object
+    private JDA botInstance = null;
 
 
-    public static void startBot() {
-        //create Settings Object reference
+    //lock the constructor
+    private PlexiBot() {
+
+    }
+
+    //static methods
+    public static PlexiBot getInstance() {
+        //if there is no plexi obj, create one.
+        if (botObj == null) {
+            botObj = new PlexiBot();
+        }
+        //return the bot object
+        return botObj;
+    }
+
+    //public methods
+    public JDA getJDAInstance() {
+        if (botInstance == null) {
+            return null;
+        }
+        return botInstance;
+    }
+
+    public boolean isRunning() {
+        return botInstance != null;
+    }
+
+    public void startBot() {
+        //get instance of settings class
         Settings settings = Settings.getInstance();
 
         //Create Commands object
@@ -50,35 +78,27 @@ public class PlexiBot {
         } catch (InterruptedException e) {
             e.printStackTrace();
             System.out.println("Error Starting Bot");
-            shutdownBot();
-
+            stopBot();
         }
+        //set global botInstance obj to the newly created one
+        this.botInstance = botInstance;
 
-        bot = botInstance;
     }
 
-    public static void shutdownBot() {
+    public void stopBot() {
         //ensure that there is a bot instance running
-        if (bot != null) {
-            bot.shutdown();
+        if (botInstance != null) {
+            botInstance.shutdown();
             //remove reference to other bot
-            bot = null;
+            botInstance = null;
             System.out.println("Shutdown Complete");
         } else {
             System.out.println("Error while shutting down: There is no bot running!");
         }
     }
 
-    public static void restartBot(JDA botInstance) throws LoginException {
-        shutdownBot();
+    public void restartBot() {
+        stopBot();
         startBot();
-    }
-
-    public static JDA getJDAInstance() {
-        return bot;
-    }
-
-    public static boolean isRunning() {
-        return bot != null;
     }
 }

@@ -58,11 +58,8 @@ public class MainView extends JFrame {
 
         //add event handler for start button
         buttonState.addActionListener(new ActionListener() {
-
-
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
                 startStopButton();
             }
         });
@@ -71,7 +68,7 @@ public class MainView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //set window properties
-        setSize(400, 300);
+        setSize(400, 335);
         setLocationRelativeTo(null);
 
     }

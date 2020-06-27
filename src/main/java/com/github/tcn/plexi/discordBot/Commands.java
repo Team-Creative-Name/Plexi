@@ -6,7 +6,6 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 public class Commands extends CommandClientBuilder {
 
-
     public void commandList(EventWaiter waiter) {
         this.addCommand(new SearchCommand(waiter));
         this.addCommand(new MediaInfoCommand());

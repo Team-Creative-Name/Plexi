@@ -126,13 +126,25 @@ public class EmbedManager {
         return eb;
     }
 
+    public EmbedBuilder createPingEmbed(long gatewayPing, long discordPing, long ombiPing) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(new Color(0x00Ae86));
+        eb.setTitle("Ping Times");
+        eb.setDescription("Current ping times for all enabled APIs");
+        eb.addField("Gateway", stringVerifier(gatewayPing + "ms", 5), true);
+        eb.addField("Discord", stringVerifier(String.valueOf(discordPing), 5) + "ms", true);
+        eb.addField("Ombi", stringVerifier(String.valueOf(ombiPing), 5) + "ms", true);
+
+        return eb;
+    }
+
     //Methods that clean up information
     //Field IDs-------------
     // 1. Title
     // 2. Description
     // 3. TVDB ID
     // 4. Original Network
-    // 5. Status - Original Language - URL
+    // 5. Status - Original Language - URL - number
     // 6. Monitored
     // 7. Footer
     // 8. Date

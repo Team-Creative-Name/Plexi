@@ -102,4 +102,13 @@ public class PlexiBot {
         stopBot();
         startBot();
     }
+
+    //methods to return discord ping times
+    public long getGatewayPing() {
+        return botInstance.getGatewayPing();
+    }
+
+    public long getRestPing() {
+        return botInstance.getRestPing().complete();
+    }
 }

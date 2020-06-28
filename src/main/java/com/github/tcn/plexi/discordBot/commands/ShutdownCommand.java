@@ -7,6 +7,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 public class ShutdownCommand extends Command {
     public ShutdownCommand() {
         this.name = "shutdown";
+        this.aliases = new String[]{"stop"};
         this.help = "safely shuts off the bot";
         this.guildOnly = false;
         this.ownerCommand = true;

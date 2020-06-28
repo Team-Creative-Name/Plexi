@@ -304,12 +304,40 @@ public class OmbiCallers {
 
     }
 
+    //Get the amount of time that it takes to communicate with the ombi AP in MS
+    public long getPingTime() {
+        long responseTime = -1;
+        Response response = null;
+        try {
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url(settings.getOmbiUrl() + "/api/v1/Status")
+                    .addHeader("Accept", "application/json")
+                    .addHeader("ApiKey", settings.getOmbiKey())
+                    .build();
+
+            response = client.newCall(request).execute();
+            //if that call didnt fail, we were able to connect
+
+        } catch (Exception e) {
+            //if that call failed, we couldn't connect to ombi
+            return -1;
+        } finally {
+            if (response != null) {
+                response.close();
+                responseTime = (response.receivedResponseAtMillis() - response.sentRequestAtMillis());
+            }
+        }
+        return responseTime;
+    }
+
     //Helper methods
     private String formatSearchTerm(String query) {
         String formattedString = query;
 
         formattedString = formattedString.toLowerCase().replaceAll(" ", "%20");
-        formattedString = formattedString.replaceAll("\""," ");
+        formattedString = formattedString.replaceAll("\"", " ");
         formattedString = formattedString.replaceAll("/", " ");
         //format searchQuery
         return formattedString;

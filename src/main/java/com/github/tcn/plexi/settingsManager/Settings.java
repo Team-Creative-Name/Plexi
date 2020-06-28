@@ -3,6 +3,7 @@ package com.github.tcn.plexi.settingsManager;
 import com.github.tcn.plexi.discordBot.PlexiBot;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 import javax.swing.*;
 import java.io.*;
@@ -21,7 +22,7 @@ public class Settings {
     //reference to this object - the only one
     private static Settings SETTINGS_INSTANCE = null;
     //the version number
-    private final String VERSION_NUMBER = "v1.0-beta.5.2";
+    private final String VERSION_NUMBER = "v1.0-beta.5.3";
     //stuff loaded from the config file
     private String TOKEN = null;
     private String PREFIX = null;
@@ -32,6 +33,8 @@ public class Settings {
     private Path USER_CONFIG_PATH;
     //Variables useful for class operations
     private Path JAR_PATH;
+    //reference to plexi object
+    PlexiBot plexiBot = PlexiBot.getInstance();
 
     //privatized constructor to ensure that nothing else is able to instantiate this class
     private Settings() {
@@ -83,7 +86,7 @@ public class Settings {
             generateConfigFile();
             System.out.println("A new one has been generated in " + JAR_PATH.getParent().toString());
             JOptionPane.showMessageDialog(null, "The config file was unable to be found. A new one has been generated at: " + JAR_PATH.getParent().toString(), "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
-            PlexiBot.shutdownBot();
+            plexiBot.stopBot();
             System.exit(0);
 
         } catch (Exception e) {
@@ -95,7 +98,7 @@ public class Settings {
             //pop open a dialog box to ensure the user is aware of what happened
             JOptionPane.showMessageDialog(null, "Unknown error, unable to continue program execution. Error: " + e.getLocalizedMessage() + "\nCheck the log for a bit more info (Hopefully)", "Plexi - Unknown Error", JOptionPane.INFORMATION_MESSAGE);
             //after the user closes that, shut down the bot if it is running and terminate the program
-            PlexiBot.shutdownBot();
+            plexiBot.stopBot();
             System.exit(-1);
         }
     }
@@ -115,12 +118,12 @@ public class Settings {
         } catch (IOException e) {
             System.out.println("Error creating config file: ");
             e.printStackTrace();
-            PlexiBot.shutdownBot();
+            plexiBot.stopBot();
             System.exit(-1);
         } catch (Exception e) {
             System.out.println("Unknown Error: ");
             e.printStackTrace();
-            PlexiBot.shutdownBot();
+            plexiBot.stopBot();
             System.exit(-1);
         }
     }
@@ -162,14 +165,13 @@ public class Settings {
                 JOptionPane.showMessageDialog(null, "Unable to connect to Ombi - Please check your settings", "Plexi - Connectivity Issue", JOptionPane.INFORMATION_MESSAGE);
             }
         }
-
-
         return isValid;
     }
 
 
     //returns true if we are able to connect to the Ombi API
     private boolean checkOmbiConnectivity() {
+        Response response = null;
         try {
             OkHttpClient client = new OkHttpClient();
 
@@ -179,12 +181,17 @@ public class Settings {
                     .addHeader("ApiKey", OMBI_KEY)
                     .build();
 
-            client.newCall(request).execute();
+            response = client.newCall(request).execute();
             //if that call didnt fail, we were able to connect
             return true;
         } catch (Exception e) {
             //if that call failed, we couldn't connect to ombi
             return false;
+        } finally {
+            //close the response if one was created 
+            if (response != null) {
+                response.close();
+            }
         }
     }
 
@@ -214,8 +221,3 @@ public class Settings {
         return VERSION_NUMBER;
     }
 }
-
-
-
-
-

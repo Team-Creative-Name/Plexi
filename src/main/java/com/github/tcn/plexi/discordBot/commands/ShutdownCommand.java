@@ -1,11 +1,13 @@
 package com.github.tcn.plexi.discordBot.commands;
 
+import com.github.tcn.plexi.discordBot.PlexiBot;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 public class ShutdownCommand extends Command {
     public ShutdownCommand() {
         this.name = "shutdown";
+        this.aliases = new String[]{"stop"};
         this.help = "safely shuts off the bot";
         this.guildOnly = false;
         this.ownerCommand = true;
@@ -14,10 +16,9 @@ public class ShutdownCommand extends Command {
     @Override
     protected void execute(CommandEvent event) {
         event.reply("Plexi is shutting down.");
-        event.reactWarning();
-        event.getJDA().retrieveApplicationInfo().queue();
 
-
+        //turn off plexi
+        PlexiBot.getInstance().stopBot();
         System.exit(0);
     }
 }

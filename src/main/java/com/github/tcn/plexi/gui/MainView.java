@@ -3,11 +3,12 @@ package com.github.tcn.plexi.gui;
 import com.github.tcn.plexi.discordBot.PlexiBot;
 import com.github.tcn.plexi.settingsManager.Settings;
 
-import javax.security.auth.login.LoginException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 
 public class MainView extends JFrame {
@@ -19,6 +20,9 @@ public class MainView extends JFrame {
 
     //get reference to settings obj
     Settings settings = Settings.getInstance();
+
+    //get reference to plexi obj
+    PlexiBot botInstance = PlexiBot.getInstance();
 
     public MainView() {
         //set title of window
@@ -56,20 +60,40 @@ public class MainView extends JFrame {
 
         //add event handler for start button
         buttonState.addActionListener(new ActionListener() {
-
-
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
                 startStopButton();
             }
         });
 
         //set default action to happen when closing window
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+        //register WindowListener for the window closing event
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //we only need to prompt the user for conformation if plexi is currently running
+                if (botInstance.isRunning()) {
+                    int usrChoice = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit? This will stop plexi.");
+                    if (usrChoice == 0) {
+                        //we need to properly shut the bot down at this point
+                        botInstance.stopBot();
+                    } else {
+                        //this means that the user decided to avoid shutdown. Print to log and return.
+                        System.out.println("Avoided Shutdown");
+                        return;
+                    }
+                }
+                //shut down Jframe and exit program
+                super.windowClosing(e);
+                dispose();
+                System.exit(0);
+            }
+        });
 
         //set window properties
-        setSize(400, 300);
+        setSize(400, 335);
         setLocationRelativeTo(null);
 
     }
@@ -78,26 +102,22 @@ public class MainView extends JFrame {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                if (PlexiBot.isRunning()) {
+                if (botInstance.isRunning()) {
                     //ask the user if they really want to shutdown
-                    int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to shut down Plexi?");
+                    int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to stop Plexi?");
                     if (choice == 0) {
-                        PlexiBot.shutdownBot();
+                        botInstance.stopBot();
                         //now that the bot is off, change button label
-                        if (!PlexiBot.isRunning()) {
+                        if (!botInstance.isRunning()) {
                             buttonState.setText("Start");
                         } else {
                             System.out.println("Error: Unable to stop bot");
                         }
                     }
                 } else {
-                    try {
-                        PlexiBot.startBot();
-                    } catch (LoginException e) {
-                        System.out.println("It died");
-                    }
+                    botInstance.startBot();
                     //now that the bot is on, change button label
-                    if (PlexiBot.isRunning()) {
+                    if (botInstance.isRunning()) {
                         buttonState.setText("Stop");
                     }
                 }

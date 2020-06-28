@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 
 public class MainView extends JFrame {
@@ -65,7 +67,30 @@ public class MainView extends JFrame {
         });
 
         //set default action to happen when closing window
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+        //register WindowListener for the window closing event
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //we only need to prompt the user for conformation if plexi is currently running
+                if (botInstance.isRunning()) {
+                    int usrChoice = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit? This will stop plexi.");
+                    if (usrChoice == 0) {
+                        //we need to properly shut the bot down at this point
+                        botInstance.stopBot();
+                    } else {
+                        //this means that the user decided to avoid shutdown. Print to log and return.
+                        System.out.println("Avoided Shutdown");
+                        return;
+                    }
+                }
+                //shut down Jframe and exit program
+                super.windowClosing(e);
+                dispose();
+                System.exit(0);
+            }
+        });
 
         //set window properties
         setSize(400, 335);
@@ -79,7 +104,7 @@ public class MainView extends JFrame {
             public void run() {
                 if (botInstance.isRunning()) {
                     //ask the user if they really want to shutdown
-                    int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to shut down Plexi?");
+                    int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to stop Plexi?");
                     if (choice == 0) {
                         botInstance.stopBot();
                         //now that the bot is off, change button label

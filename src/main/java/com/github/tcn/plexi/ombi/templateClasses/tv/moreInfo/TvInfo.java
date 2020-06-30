@@ -513,7 +513,17 @@ public class TvInfo {
         }
     }
 
-    //returns the status of a show via an int 2 is fully and 0 is not
+    public String getEpisodeRequestStatus() {
+        if (getRealFullyRequested()) {
+            return "Fully Requested";
+        } else if (requested) {
+            return "Partially Requested";
+        } else {
+            return "Not Requested";
+        }
+    }
+
+    //returns the status of a show via an int | 2 == fully | 1 == partial |0 == nothing
     public int getPlexAvailabilityInt() {
         if (fullyAvailable) {
             return 2;
@@ -553,7 +563,7 @@ public class TvInfo {
         ArrayList<RequestEpisode> missingEpisodes = new ArrayList<>();
         //loop through the episodes in a season
         for (int j = 0; j < seasonRequests.get(i - 1).getEpisodes().size(); j++) {
-            if (seasonRequests.get(i - 1).getEpisodes().get(j).getAvailable() == false) {
+            if (!seasonRequests.get(i - 1).getEpisodes().get(j).getAvailable() && !seasonRequests.get(i).getEpisodes().get(j).getRequested()) {
                 //create new Episode object
                 System.out.println("Season " + i + " Episode " + j + " is missing!");
                 RequestEpisode episode = new RequestEpisode();
@@ -574,6 +584,27 @@ public class TvInfo {
         return missing;
     }
 
+    //since the API seems to hate informing us of literally anything, we need to go through and manually check to see if episodes are fully requested
+    public boolean getRealFullyRequested() {
+
+        //in an attempt to avoid fully looping through the list, we dont need to run through the list unless this.requested is true
+        if (requested) {
+            //loop through the seasons in a show
+            for (int i = 0; i < seasonRequests.size(); i++) {
+                for (int j = 0; j < seasonRequests.get(i).getEpisodes().size(); j++) {
+                    //in this loop we check to see if the requested boolean is false. If it is, then the show is not fully requested.
+                    if (!seasonRequests.get(i).getEpisodes().get(j).getRequested()) {
+                        //if we reach this point, the var will be false so we can safely return false
+                        return false;
+                    }
+                }
+            }
+        }
+
+        //if we get to this point, the original requested var is correct. We can just return that.
+        return requested;
+    }
+
     public TvRequestTemplate getMissingEpisodeArray() {
         //Create a new requestTemplate obj
         TvRequestTemplate missing = new TvRequestTemplate();
@@ -590,7 +621,7 @@ public class TvInfo {
             ArrayList<RequestEpisode> missingEpisodes = new ArrayList<>();
             //loop through the episodes in a season
             for (int j = 0; j < seasonRequests.get(i).getEpisodes().size(); j++) {
-                if (seasonRequests.get(i).getEpisodes().get(j).getAvailable() == false) {
+                if (!seasonRequests.get(i).getEpisodes().get(j).getAvailable() && !seasonRequests.get(i).getEpisodes().get(j).getRequested()) {
                     //create new Episode object
                     System.out.println("Season " + i + " Episode " + j + " is missing!");
                     RequestEpisode episode = new RequestEpisode();

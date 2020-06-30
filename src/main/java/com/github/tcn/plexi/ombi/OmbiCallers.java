@@ -195,7 +195,7 @@ public class OmbiCallers {
         return "Unable to request media";
     }
 
-    public String requestTv(String id, boolean latest, int availabilityInt, TvInfo tvInfo) {
+    public String requestTv(String id, boolean latest, TvInfo tvInfo) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
         RequestBody requestBody;
@@ -203,17 +203,18 @@ public class OmbiCallers {
 
         //fully available == 2 partial == 1 not == 0
 
-        //We need to form the request differently depending on if the show is available already or not.
-        if (availabilityInt == 0) {
+        //We need to form the request differently depending on if the show is available already or not. We also need to check to see if it has been requested.
+        //if this check passes, there are no episodes on plex and there are no existing requests for a show.
+        if (tvInfo.getPlexAvailabilityInt() == 0 && !tvInfo.getRequested()) {
 
             //Check to see if the user only wants to request the latest season
-            if(latest){
+            if (latest) {
 
                 //In this case, nothing is available and the user wants to request everything
                 requestBody = RequestBody.create("{" + "\"latestSeason\": " + "\"true\"" +
                         ",\"tvDbId\": " + id +
                         ",\"languageCode\":\"string\"}", MediaType.parse("text"));
-            }else{
+            } else {
                 //In this case, nothing is available and the user wants to request everything
                 requestBody = RequestBody.create("{" + "\"requestAll\": " + "\"true\"" +
                                 ",\"tvDbId\": " + id +
@@ -224,7 +225,7 @@ public class OmbiCallers {
         }else{
 
 
-            //here, we have a show that already has some episodes on plex. We need to determine which ones they are and request the others
+            //here, we have a show that already has some episodes on plex or has requests on ombi. We need to determine which ones they are and request the others
             String toJSON;
 
 

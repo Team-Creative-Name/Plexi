@@ -102,6 +102,22 @@ public class SearchSubmenu extends Paginator {
         //This menu does not have a submenu
     }
 
+    @Override
+    protected boolean additionalReactionChecks(String emoteUnicode) {
+        //ensure the 👍 emoji is only used if not fully requested and not completely available
+        if (emoteUnicode.equals("\uD83D\uDC4D")) {
+            return !FULLY_REQUESTED && (AVAILABILITY == 1 || AVAILABILITY == 0); //returns false if not met
+        }
+
+        //ensure the 👎 emoji is only used if requested at all and not completely available
+        if (emoteUnicode.equals("\uD83D\uDC4E")) {
+            return REQUESTED && (AVAILABILITY == 1 || AVAILABILITY == 0); //returns false if not met
+        }
+
+        //these are the only valid reactions that need specific requirements to be valid. All others are good.
+        return true;
+    }
+
     //This is overridden because we need to do some special logic around adding emotes based upon media info
     @Override
     protected void initialize(RestAction<Message> action, int pageNum) {

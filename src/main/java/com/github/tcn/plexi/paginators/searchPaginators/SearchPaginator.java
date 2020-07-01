@@ -128,6 +128,12 @@ public class SearchPaginator extends Paginator {
 
     }
 
+    @Override
+    protected boolean additionalReactionChecks(String emoteUnicode) {
+        //there are no additional checks to run, return true for all emotes
+        return true;
+    }
+
     public static class Builder extends Paginator.Builder<SearchPaginator.Builder, SearchPaginator> {
 
         //media type

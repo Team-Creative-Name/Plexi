@@ -118,14 +118,21 @@ public abstract class Paginator extends Menu {
 
         //run through reaction array and check to see if a reaction is valid
         for (Emoji reactions : REACTIONS) {
+            //check to make sure the name is correct
             if (reactions.getUnicode().equals(event.getReactionEmote().getName())) {
-                return isValidUser(event.getUser(), event.isFromGuild() ? event.getGuild() : null);
+                //check to see if the child class defined any additional checks
+                if (additionalReactionChecks(event.getReactionEmote().getName())) {//should return true if no additional checks
+                    //returns true if a valid user created the reaction
+                    return isValidUser(event.getUser(), event.isFromGuild() ? event.getGuild() : null);
+                }
             }
         }
 
         //if that for loop doesnt return true, return false
         return false;
     }
+
+    protected abstract boolean additionalReactionChecks(String emoteUnicode);
 
     //adds reactions to the embed and sets final action
     protected void initialize(RestAction<Message> action, int pageNum) {

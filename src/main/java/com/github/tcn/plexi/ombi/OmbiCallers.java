@@ -8,6 +8,7 @@ import com.github.tcn.plexi.ombi.templateClasses.requests.movie.MovieRequest;
 import com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate.TvRequestTemplate;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
+import com.github.tcn.plexi.ombi.templateClasses.tv.tvLite.TvLite;
 import com.github.tcn.plexi.settingsManager.Settings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -302,7 +303,31 @@ public class OmbiCallers {
 
         return eb.createMissingEpisodeEmbed(missingEpisodeslist);
 
+    }
 
+    public TvLite[] getTvLiteArray() {
+        OkHttpClient client = new OkHttpClient();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+        //create the request
+        Request request = new Request.Builder()
+                .url(settings.getOmbiUrl() + "/api/v1/Request/tvlite")
+                .get()
+                .addHeader("accept", "application/json")
+                .addHeader("ApiKey", settings.getOmbiKey())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected Code: " + response);
+            }
+            String downloadedJSON = response.body().string();
+            return gson.fromJson(downloadedJSON, TvLite[].class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     //Get the amount of time that it takes to communicate with the ombi AP in MS
@@ -332,6 +357,44 @@ public class OmbiCallers {
         }
         return responseTime;
     }
+
+    //remove media request
+    public boolean removeMediaRequest(int requestID, int mediaType) {
+        OkHttpClient client = new OkHttpClient();
+        Gson gson = new Gson();
+        String url = null;
+
+
+        if (mediaType == 1) {//tv
+            url = settings.getOmbiUrl() + "/api/v1/Request/tv/" + requestID;
+        } else if (mediaType == 2) {
+            url = settings.getOmbiUrl() + "/api/v1/Request/movie/" + requestID;
+        }
+
+        Request request = new Request.Builder()
+                .url(url) //this has a possibility to be null if passed an invalid media type. Should still return false in this case
+                .delete()
+                .addHeader("Accept", "application/json")
+                .addHeader("ApiKey", settings.getOmbiKey())
+                .addHeader("Content-Type", "text/json")
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+
+            //write request to console
+            System.out.println("removing request ID" + requestID);
+            response.close();
+
+            //return true if delete was successful
+            return response.isSuccessful();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     //Helper methods
     private String formatSearchTerm(String query) {

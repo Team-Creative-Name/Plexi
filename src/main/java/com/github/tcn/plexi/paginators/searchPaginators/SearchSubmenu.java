@@ -3,6 +3,7 @@ package com.github.tcn.plexi.paginators.searchPaginators;
 import com.github.tcn.plexi.ombi.OmbiCallers;
 import com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo.MovieInfo;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
+import com.github.tcn.plexi.ombi.templateClasses.tv.tvLite.TvLite;
 import com.github.tcn.plexi.paginators.Paginator;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -27,7 +28,8 @@ public class SearchSubmenu extends Paginator {
     //automatically filled in globals
     int MEDIA_TYPE;
     String MEDIA_ID;
-    boolean IS_REQUESTED;
+    boolean FULLY_REQUESTED;
+    boolean REQUESTED;
     //this can be a bit funky, but tv shows can have 3 forms all, partial or nothing available.
     // 0 = nothing  -- 1 = partial -- 2 = full
     int AVAILABILITY;
@@ -41,14 +43,16 @@ public class SearchSubmenu extends Paginator {
             //TV media type
             MEDIA_TYPE = 1;
             MEDIA_ID = String.valueOf(tvinfo.getId());
-            IS_REQUESTED = tvinfo.getRequested();
+            FULLY_REQUESTED = tvinfo.getRealFullyRequested();
+            REQUESTED = tvinfo.getRequested();
             AVAILABILITY = tvinfo.getPlexAvailabilityInt();
             TV_INFO = tvinfo;
         } else {
             //movie media type
             MEDIA_TYPE = 2;
             MEDIA_ID = String.valueOf(movieInfo.getId());
-            IS_REQUESTED = movieInfo.getRequested();
+            FULLY_REQUESTED = movieInfo.getRequested();
+            REQUESTED = FULLY_REQUESTED;
             AVAILABILITY = movieInfo.getAvailable() ? 2 : 0;
             MOVIE_INFO = movieInfo;
         }
@@ -59,6 +63,7 @@ public class SearchSubmenu extends Paginator {
     protected void handleMessageReactionAddAction(MessageReactionAddEvent event, Message message, int pageNum) {
 
         OmbiCallers caller = new OmbiCallers();
+
 
         if (REACTIONS[0].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { // the first item in the array is 👍
             //we need to determine the media type so we can make the proper API call
@@ -71,14 +76,18 @@ public class SearchSubmenu extends Paginator {
 
         } else if (REACTIONS[1].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the second item in the array is 👎
             //remove media from the request list
-            //TODO: Make this do something - note, this is currently not implemented in OmbiCaller at all (fix that too)
-            event.getChannel().sendMessage("Sorry, we cant remove requests at the moment").queue();
+            boolean success = caller.removeMediaRequest(getRequestID(), MEDIA_TYPE);
+            if (success) {
+                event.getChannel().sendMessage("Successfully removed request for " + getMediaName()).queue();
+            } else {
+                event.getChannel().sendMessage("Unable to remove request for " + getMediaName()).queue();
+            }
 
         } else if (REACTIONS[2].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the third item in the array is 🆕
-            //there *should* be no way to get here if the media type isnt 1, but still
-            if (MEDIA_TYPE == 1) {
-                event.getChannel().sendMessage(caller.requestTv(MEDIA_ID, true, TV_INFO)).queue();
-            }
+
+            //We are currently not doing anything with this emote. We might remove it completely in the future
+            //event.getChannel().sendMessage(caller.requestTv(MEDIA_ID, true, TV_INFO)).queue();
+
 
         } //the stop emote will do nothing but it will still end the paginator
 
@@ -100,18 +109,65 @@ public class SearchSubmenu extends Paginator {
             m.clearReactions().queue();
 
             //add emotes depending on media status
-            if (!IS_REQUESTED && (AVAILABILITY == 1 || AVAILABILITY == 0)) {
-                m.addReaction(REACTIONS[0].getUnicode()).queue();
-            } else if (IS_REQUESTED && (AVAILABILITY == 1 || AVAILABILITY == 0)) {
-                m.addReaction(REACTIONS[1].getUnicode()).queue();
+            if (!FULLY_REQUESTED && (AVAILABILITY == 1 || AVAILABILITY == 0)) { //if not fully requested and not completely available
+                m.addReaction(REACTIONS[0].getUnicode()).queue(); //adds 👍
             }
-            //add new reaction if the media type is a tv show (1)
-            if (MEDIA_TYPE == 1) {
-                m.addReaction(REACTIONS[2].getUnicode()).queue();
+            if (REQUESTED && (AVAILABILITY == 1 || AVAILABILITY == 0)) {    //if requested at all and not completely available
+                m.addReaction(REACTIONS[1].getUnicode()).queue(); //adds 👎
             }
-            m.addReaction(REACTIONS[3].getUnicode()).queue(v -> pagination(m, pageNum), t -> pagination(m, pageNum));
+
+            //as of right now, I am removing the new emote. It does not work and I dont know how it differs from the normal add command
+
+            ////add new reaction if the media type is a tv show (1)
+            //if (MEDIA_TYPE == 1) {
+            //    m.addReaction(REACTIONS[2].getUnicode()).queue(); // adds 🆕
+            //}
+
+            //always add the stop sign
+            m.addReaction(REACTIONS[3].getUnicode()).queue(v -> pagination(m, pageNum), t -> pagination(m, pageNum)); //adds stop sign
         });
     }
+
+    //helper method
+    //Get the requestID of a particular show. Returns -1 if it does not exist
+    public int getRequestID() {
+        //create ombiCaller obj
+        OmbiCallers caller = new OmbiCallers();
+
+        if (MEDIA_TYPE == 1) { //tv
+            //for some reason, the tvInfo object's requestId field is broken, so we have to do this
+
+            //get a list of all tv requests
+            TvLite[] requestArray = caller.getTvLiteArray();
+            //loop through all requests in an attempt to find a matching ID
+            for (int i = 0; i < requestArray.length; i++) {
+                if (requestArray[i].getTvDbId().equals(Integer.valueOf(MEDIA_ID))) {
+                    return requestArray[i].getRequestId();
+                }
+            }
+            //return -1 if not found
+            return -1;
+        } else if (MEDIA_TYPE == 2) { //movie
+            if (MOVIE_INFO.getId() != 0) {
+                return MOVIE_INFO.getRequestId();
+            }
+            return -1;
+        } else { //unrecognized value
+            return -1;
+        }
+    }
+
+    //get name of current media
+    private String getMediaName() {
+        if (MEDIA_TYPE == 1) {//type 1
+            return TV_INFO.getTitle();
+        } else if (MEDIA_TYPE == 2) {
+            return MOVIE_INFO.getTitle();
+        } else {
+            return "Unknown";
+        }
+    }
+
 
     public static class Builder extends Paginator.Builder<SearchSubmenu.Builder, SearchSubmenu> {
 

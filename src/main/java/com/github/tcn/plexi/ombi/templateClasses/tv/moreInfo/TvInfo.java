@@ -487,7 +487,7 @@ public class TvInfo {
                 //add one to numOfEpisodes for each loop here
                 numOfEpisodes++;
                 //operations for the missing episodes
-                if (seasonRequests.get(i).getEpisodes().get(j).getAvailable() == false) {
+                if (!seasonRequests.get(i).getEpisodes().get(j).getAvailable()) {
                     //Increment the number of missing episodes
                     missingCount++;
 
@@ -527,7 +527,7 @@ public class TvInfo {
     public int getPlexAvailabilityInt() {
         if (fullyAvailable) {
             return 2;
-        } else if (!fullyAvailable && available) {
+        } else if (available) {
             return 1;
         } else {
             return 0;
@@ -592,8 +592,9 @@ public class TvInfo {
             //loop through the seasons in a show
             for (int i = 0; i < seasonRequests.size(); i++) {
                 for (int j = 0; j < seasonRequests.get(i).getEpisodes().size(); j++) {
-                    //in this loop we check to see if the requested boolean is false. If it is, then the show is not fully requested.
-                    if (!seasonRequests.get(i).getEpisodes().get(j).getRequested()) {
+                    //in this loop we check to see if the requested boolean is false while the getAvailable boolean is false. If it is, then the show is not fully requested.
+                    //we dont request available episodes, so we dont need to worry about them in our requested bool
+                    if (!seasonRequests.get(i).getEpisodes().get(j).getRequested() && !seasonRequests.get(i).getEpisodes().get(j).getAvailable()) {
                         //if we reach this point, the var will be false so we can safely return false
                         return false;
                     }

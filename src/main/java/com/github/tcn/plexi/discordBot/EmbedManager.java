@@ -70,7 +70,7 @@ public class EmbedManager {
         eb.addField("Status", stringVerifier(info.getStatus(), 5), true);
         eb.addField("Release Date", stringVerifier(info.getFirstAired(), 8), true);
         eb.addField("RunTime", stringVerifier(info.getRuntime(), 5) + " minutes", true);
-        eb.addField("Requested", stringVerifier(info.getRequestAll().toString(), 9), true);
+        eb.addField("Requested", info.getEpisodeRequestStatus(), true);
         eb.addField("Network", stringVerifier(info.getNetwork(), 4), true);
         eb.addField("TVDb ID", stringVerifier(info.getId().toString(), 3), true);
         eb.addField("Last Episode Air Date", stringVerifier(info.getLatestEpisodeDate(), 8), true);
@@ -201,6 +201,7 @@ public class EmbedManager {
             return null;
         }
     }
+
 
     //random footer messages
     @Deprecated

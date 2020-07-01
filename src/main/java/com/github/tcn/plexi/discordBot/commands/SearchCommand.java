@@ -54,7 +54,7 @@ public class SearchCommand extends Command {
             OmbiCallers tvSearcher = new OmbiCallers();
             EmbedManager embedManager = new EmbedManager();
 
-            System.out.println(event.getAuthor().getName() + " has searched for " + args[1]);
+            System.out.println(event.getAuthor().getName() + " has searched for: " + args[1]);
             //Retrieve array of TvSearch Objects - each object is a search result
             TvSearch[] result = tvSearcher.ombiTvSearch(args[1]);
 
@@ -63,10 +63,9 @@ public class SearchCommand extends Command {
                 event.reply("No Results Found!");
             } else {
 
-                //Return the name of the first show on the calendar
+                //Create an embed for the result array and send it to the paginator
                 ePBuilder.setMediaType(1);
                 ePBuilder.setPages(embedManager.getPostTvSearchEmbed(result));
-
 
                 SearchPaginator p = ePBuilder
                         .setUsers(event.getAuthor())

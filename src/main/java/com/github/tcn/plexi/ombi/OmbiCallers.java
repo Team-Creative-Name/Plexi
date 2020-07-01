@@ -8,6 +8,7 @@ import com.github.tcn.plexi.ombi.templateClasses.requests.movie.MovieRequest;
 import com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate.TvRequestTemplate;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
+import com.github.tcn.plexi.ombi.templateClasses.tv.tvLite.TvLite;
 import com.github.tcn.plexi.settingsManager.Settings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -51,7 +52,7 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             TvSearch[] result = gson.fromJson(downloadedJson, TvSearch[].class);
             //Log the number of items in the array
-            System.out.println("The search result " + result.length + " pages long");
+            System.out.println("The search result  is " + result.length + " page(s) long");
             //return the array
             return result;
         } catch (IOException e) {
@@ -86,7 +87,7 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             MovieSearch[] result = gson.fromJson(downloadedJson, MovieSearch[].class);
             //Log the number of items in the array
-            System.out.println("There result is  " + result.length + " pages long");
+            System.out.println("The result is " + result.length + " page(s) long");
             //return the array
             return result;
         } catch (IOException e) {
@@ -195,7 +196,7 @@ public class OmbiCallers {
         return "Unable to request media";
     }
 
-    public String requestTv(String id, boolean latest, int availabilityInt, TvInfo tvInfo) {
+    public String requestTv(String id, boolean latest, TvInfo tvInfo) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
         RequestBody requestBody;
@@ -203,17 +204,18 @@ public class OmbiCallers {
 
         //fully available == 2 partial == 1 not == 0
 
-        //We need to form the request differently depending on if the show is available already or not.
-        if (availabilityInt == 0) {
+        //We need to form the request differently depending on if the show is available already or not. We also need to check to see if it has been requested.
+        //if this check passes, there are no episodes on plex and there are no existing requests for a show.
+        if (tvInfo.getPlexAvailabilityInt() == 0 && !tvInfo.getRequested()) {
 
             //Check to see if the user only wants to request the latest season
-            if(latest){
+            if (latest) {
 
                 //In this case, nothing is available and the user wants to request everything
                 requestBody = RequestBody.create("{" + "\"latestSeason\": " + "\"true\"" +
                         ",\"tvDbId\": " + id +
                         ",\"languageCode\":\"string\"}", MediaType.parse("text"));
-            }else{
+            } else {
                 //In this case, nothing is available and the user wants to request everything
                 requestBody = RequestBody.create("{" + "\"requestAll\": " + "\"true\"" +
                                 ",\"tvDbId\": " + id +
@@ -224,7 +226,7 @@ public class OmbiCallers {
         }else{
 
 
-            //here, we have a show that already has some episodes on plex. We need to determine which ones they are and request the others
+            //here, we have a show that already has some episodes on plex or has requests on ombi. We need to determine which ones they are and request the others
             String toJSON;
 
 
@@ -301,7 +303,31 @@ public class OmbiCallers {
 
         return eb.createMissingEpisodeEmbed(missingEpisodeslist);
 
+    }
 
+    public TvLite[] getTvLiteArray() {
+        OkHttpClient client = new OkHttpClient();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+        //create the request
+        Request request = new Request.Builder()
+                .url(settings.getOmbiUrl() + "/api/v1/Request/tvlite")
+                .get()
+                .addHeader("accept", "application/json")
+                .addHeader("ApiKey", settings.getOmbiKey())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected Code: " + response);
+            }
+            String downloadedJSON = response.body().string();
+            return gson.fromJson(downloadedJSON, TvLite[].class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     //Get the amount of time that it takes to communicate with the ombi AP in MS
@@ -331,6 +357,44 @@ public class OmbiCallers {
         }
         return responseTime;
     }
+
+    //remove media request
+    public boolean removeMediaRequest(int requestID, int mediaType) {
+        OkHttpClient client = new OkHttpClient();
+        Gson gson = new Gson();
+        String url = null;
+
+
+        if (mediaType == 1) {//tv
+            url = settings.getOmbiUrl() + "/api/v1/Request/tv/" + requestID;
+        } else if (mediaType == 2) {
+            url = settings.getOmbiUrl() + "/api/v1/Request/movie/" + requestID;
+        }
+
+        Request request = new Request.Builder()
+                .url(url) //this has a possibility to be null if passed an invalid media type. Should still return false in this case
+                .delete()
+                .addHeader("Accept", "application/json")
+                .addHeader("ApiKey", settings.getOmbiKey())
+                .addHeader("Content-Type", "text/json")
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+
+            //write request to console
+            System.out.println("removing request ID" + requestID);
+            response.close();
+
+            //return true if delete was successful
+            return response.isSuccessful();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     //Helper methods
     private String formatSearchTerm(String query) {

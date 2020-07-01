@@ -52,7 +52,7 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             TvSearch[] result = gson.fromJson(downloadedJson, TvSearch[].class);
             //Log the number of items in the array
-            System.out.println("The search result " + result.length + " pages long");
+            System.out.println("The search result  is " + result.length + " page(s) long");
             //return the array
             return result;
         } catch (IOException e) {
@@ -87,7 +87,7 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             MovieSearch[] result = gson.fromJson(downloadedJson, MovieSearch[].class);
             //Log the number of items in the array
-            System.out.println("There result is  " + result.length + " pages long");
+            System.out.println("The result is " + result.length + " page(s) long");
             //return the array
             return result;
         } catch (IOException e) {

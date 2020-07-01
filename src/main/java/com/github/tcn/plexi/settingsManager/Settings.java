@@ -22,7 +22,7 @@ public class Settings {
     //reference to this object - the only one
     private static Settings SETTINGS_INSTANCE = null;
     //the version number
-    private final String VERSION_NUMBER = "v1.0-beta.5.3";
+    private final String VERSION_NUMBER = "v1.0-beta.6";
     //stuff loaded from the config file
     private String TOKEN = null;
     private String PREFIX = null;

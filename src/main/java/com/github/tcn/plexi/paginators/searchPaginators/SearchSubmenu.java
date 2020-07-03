@@ -69,7 +69,7 @@ public class SearchSubmenu extends Paginator {
             //we need to determine the media type so we can make the proper API call
             //Media type 1 is for TV; media type 2 is for movies
             if (MEDIA_TYPE == 1) {
-                event.getChannel().sendMessage(caller.requestTv(MEDIA_ID, false, TV_INFO)).queue();
+                event.getChannel().sendMessage(caller.requestTv(false, TV_INFO)).queue();
             } else if (MEDIA_TYPE == 2) {
                 event.getChannel().sendMessage(caller.requestMovie(MEDIA_ID)).queue();
             }

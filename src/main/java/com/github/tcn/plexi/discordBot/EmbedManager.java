@@ -126,6 +126,7 @@ public class EmbedManager {
         return eb;
     }
 
+
     public EmbedBuilder createPingEmbed(long gatewayPing, long discordPing, long ombiPing) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(new Color(0x00Ae86));

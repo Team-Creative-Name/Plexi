@@ -76,7 +76,7 @@ public class SearchCommand extends Command {
 
 
             //event.getChannel().sendMessage("Here is the first result: " + result[0].getTitle()).queue();
-        } else if (args[0].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks|m")) {
+        } else if (args[0].toLowerCase().matches("((m(ovie)?|film|feature|flick)s?)|(cine(matic)?)")) {
 
             OmbiCallers moviesearcher = new OmbiCallers();
             EmbedManager embedManager = new EmbedManager();

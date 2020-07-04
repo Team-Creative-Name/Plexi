@@ -1,13 +1,25 @@
-package com.github.tcn.plexi.discordBot;
+package discordBot;
 
+<<<<<<< Updated upstream:src/main/java/discordBot/EmbedManager.java
+import apis.ombi.OmbiCallers;
+import apis.ombi.templateClasses.movies.moreInfo.MovieInfo;
+import apis.ombi.templateClasses.movies.search.MovieSearch;
+import apis.ombi.templateClasses.tv.moreInfo.TvInfo;
+import apis.ombi.templateClasses.tv.search.TvSearch;
+=======
 import com.github.tcn.plexi.ombi.OmbiCallers;
 import com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo.MovieInfo;
+import com.github.tcn.plexi.ombi.templateClasses.movies.recentlyAdded.RecentMovie;
 import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
+import com.github.tcn.plexi.ombi.templateClasses.tv.recentlyAdded.RecentTv;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
+>>>>>>> Stashed changes:src/main/java/com/github/tcn/plexi/discordBot/EmbedManager.java
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.internal.handle.PresenceUpdateHandler;
 
 import java.awt.*;
+import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -59,6 +71,55 @@ public class EmbedManager {
         return eb;
     }
 
+    public EmbedBuilder createRecentTVEmbed(RecentTv[] recentArray, int index) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(new Color(0x00AE86));
+        eb.setTitle(stringVerifier(recentArray[index].getTitle(), 1), getTvDbUrl(recentArray[index].getId()));
+        eb.addField("TVDB ID:", stringVerifier(recentArray[index].getId().toString(), 3), true);
+
+        /*
+        // This stuff is broken, valve pls fix
+        eb.setDescription(stringVerifier(recentArray[index].getOzzverview(), 2));
+        eb.addField("Network:", stringVerifier(recentArray[index].getNetwork(), 4), true);
+        eb.addField("Status:", stringVerifier(recentArray[index].getStatus(), 5), true);
+        if (recentArray[index].getBanner() != null) {
+            eb.setImage(stringVerifier(recentArray[index].getBanner(), 1));
+        } else {
+            eb.setImage("https://cdn.discordapp.com/attachments/592540131097837578/656822685912793088/poster.png");
+        }
+        eb.setFooter(getRandFooter(settings.getFooterMax()));
+        */
+
+        eb.setFooter(stringVerifier("Page " + (index + 1) + " of " + (recentArray.length), 7));
+        return eb;
+    }
+
+    public EmbedBuilder createRecentMovieEmbed(RecentMovie[] recentArray, int index) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(new Color(0x00AE86));
+        eb.setTitle(stringVerifier(recentArray[index].getTitle(), 1));
+
+        // This also doesn't work wow!!!!!!!!!!!!!!!!!!!!!!!!!! That's a problem for future us.
+        /*
+        eb.addField("TMDb ID:", stringVerifier(recentArray[index].getTheMovieDbId(), 3), true);
+        eb.setDescription(stringVerifier(recentArray[index].getOverview(), 2));
+        */
+
+        eb.addField("Release date", stringVerifier(recentArray[index].getReleaseYear(), 8), true);
+
+        /*
+        if (recentArray[index].getPosterPath() != null) {
+            eb.setImage(stringVerifier("https://image.tmdb.org/t/p/original" + recentArray[index].getPosterPath(), 1));
+        } else {
+            eb.setImage("https://cdn.discordapp.com/attachments/592540131097837578/656822685912793088/poster.png");
+        }
+        //eb.setFooter(getRandFooter(settings.getFooterMax()));
+        */
+
+        eb.setFooter(stringVerifier("Page " + (index + 1) + " of " + (recentArray.length), 7));
+        return eb;
+    }
+
     //more info methods
     public EmbedBuilder createTvMoreInfoEmbed(TvInfo info) {
         EmbedBuilder eb = new EmbedBuilder();
@@ -70,7 +131,7 @@ public class EmbedManager {
         eb.addField("Status", stringVerifier(info.getStatus(), 5), true);
         eb.addField("Release Date", stringVerifier(info.getFirstAired(), 8), true);
         eb.addField("RunTime", stringVerifier(info.getRuntime(), 5) + " minutes", true);
-        eb.addField("Requested", info.getEpisodeRequestStatus(), true);
+        eb.addField("Requested", stringVerifier(info.getRequestAll().toString(), 9), true);
         eb.addField("Network", stringVerifier(info.getNetwork(), 4), true);
         eb.addField("TVDb ID", stringVerifier(info.getId().toString(), 3), true);
         eb.addField("Last Episode Air Date", stringVerifier(info.getLatestEpisodeDate(), 8), true);
@@ -126,25 +187,13 @@ public class EmbedManager {
         return eb;
     }
 
-    public EmbedBuilder createPingEmbed(long gatewayPing, long discordPing, long ombiPing) {
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setColor(new Color(0x00Ae86));
-        eb.setTitle("Ping Times");
-        eb.setDescription("Current ping times for all enabled APIs");
-        eb.addField("Gateway", stringVerifier(gatewayPing + "ms", 5), true);
-        eb.addField("Discord", stringVerifier(String.valueOf(discordPing), 5) + "ms", true);
-        eb.addField("Ombi", stringVerifier(String.valueOf(ombiPing), 5) + "ms", true);
-
-        return eb;
-    }
-
     //Methods that clean up information
     //Field IDs-------------
     // 1. Title
     // 2. Description
     // 3. TVDB ID
     // 4. Original Network
-    // 5. Status - Original Language - URL - number
+    // 5. Status - Original Language - URL
     // 6. Monitored
     // 7. Footer
     // 8. Date
@@ -202,7 +251,6 @@ public class EmbedManager {
         }
     }
 
-
     //random footer messages
     @Deprecated
     private String getRandFooter(int max) {
@@ -235,6 +283,26 @@ public class EmbedManager {
             return "Unable to generate footer!";
         }
 
+    }
+
+    public ArrayList<EmbedBuilder> getRecentMovieArray(RecentMovie[] tester) {
+
+        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
+        for (int i = 0; i < tester.length; i++) {
+            newArray.add(i, createRecentMovieEmbed(tester, i));
+        }
+
+        return newArray;
+    }
+
+    public ArrayList<EmbedBuilder> getRecentTVArray(RecentTv[] tester) {
+
+        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
+        for (int i = 0; i < tester.length; i++) {
+            newArray.add(i, createRecentTVEmbed(tester, i));
+        }
+
+        return newArray;
     }
 
     public ArrayList<EmbedBuilder> getPostMovieSearchEmbed(MovieSearch[] tester) {

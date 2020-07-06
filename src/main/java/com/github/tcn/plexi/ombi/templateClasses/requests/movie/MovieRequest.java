@@ -4,6 +4,15 @@ package com.github.tcn.plexi.ombi.templateClasses.requests.movie;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+
+/**
+ * A class representing data returned via Ombi's {@code /api/v1/request/movie} endpoint
+ * <br>
+ * This class is used internally by {@link com.github.tcn.plexi.ombi.OmbiCallers#requestMovie(String)} to get a movie's request
+ * status.
+ * <br>
+ * There is no way to get a completed version of this object.
+ */
 public class MovieRequest {
 
     @SerializedName("result")

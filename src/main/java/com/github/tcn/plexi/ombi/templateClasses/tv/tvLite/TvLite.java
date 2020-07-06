@@ -1,8 +1,17 @@
 package com.github.tcn.plexi.ombi.templateClasses.tv.tvLite;
 
+import com.github.tcn.plexi.ombi.OmbiCallers;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+
+/**
+ * A stripped down object of the one returned via Ombi's {@code /api/v1/Request/tvlite} endpoint
+ * <br>
+ * This class is, as far as I know, the only way to obtain the internal OMBI request ID number
+ * <br><br>
+ * To get an array of this object, use {@link OmbiCallers#getTvLiteArray()}
+ */
 //this is a super stripped down version of this request. The API supports more, but this is all I need rn.
 public class TvLite {
     @SerializedName("tvDbId")

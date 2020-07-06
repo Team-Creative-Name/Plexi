@@ -17,6 +17,11 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+/**
+ * OmbiCallers is the heart of Plexi.
+ * <br>It is responsible for making almost every request to the ombi API. Contained in this class are methods that call
+ * Ombi endpoints and return objects of the resulting data
+ */
 public class OmbiCallers {
 
     Settings settings;
@@ -260,10 +265,8 @@ public class OmbiCallers {
         //We need to form the request differently depending on if the show is available already or not. We also need to check to see if it has been requested.
         //if this check passes, there are no episodes on plex and there are no existing requests for a show.
         if (tvInfo.getPlexAvailabilityInt() == 0 && !tvInfo.getRequested()) {
-
             //Check to see if the user only wants to request the latest season
             if (latest) {
-
                 //In this case, nothing is available and the user wants to request everything
                 requestBody = RequestBody.create("{" + "\"latestSeason\": " + "\"true\"" +
                         ",\"tvDbId\": " + id +

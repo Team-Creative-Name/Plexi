@@ -15,6 +15,12 @@ import java.util.Arrays;
 import java.util.Properties;
 
 
+/**
+ * The Settings class for Plexi
+ * <br>
+ * This class follows a singleton pattern in an attempt to stop superfluous reloading of the settings text file located
+ * in the same folder as the Plexi jar. There is currently NO way to change any of these settings values once they are set.
+ */
 public class Settings {
 
     //Variables

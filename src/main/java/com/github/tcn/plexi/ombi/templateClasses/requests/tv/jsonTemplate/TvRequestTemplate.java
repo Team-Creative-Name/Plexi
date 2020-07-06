@@ -1,11 +1,19 @@
 
 package com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate;
 
+import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+/**
+ * A class representing data sent to Ombi's {@code /api/v1/request/tv} endpoint
+ * <br>
+ * This class is used internally by {@link com.github.tcn.plexi.ombi.OmbiCallers#requestTv(boolean, TvInfo)} to request a tv show.
+ * <br>
+ * There is no way to get a completed version of this object.
+ */
 public class TvRequestTemplate {
 
     @SerializedName("requestAll")

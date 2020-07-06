@@ -10,6 +10,27 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A class representing data returned via Ombi's {@code /api/v1/Search/tv/info/{TVDb_ID}} endpoint
+ * <br>
+ * There are a couple of fields in this class that always seem to be null. They are:
+ * <p><ul>
+ * <li>aliases
+ * <li>genre
+ * <li>airDaysOfWeek
+ * <li>airsTime
+ * <li>trailer
+ * <li>homepage
+ * <li>theMovieDbId
+ * </ul>
+ * While these fields might not always be null, I have not come across a show with them filled during testing
+ * and should probably not be required for something to work.
+ * </p>
+ * <br><br>
+ * Please note that this class has been modified to provide some additional data not found in ombi's API.
+ * <br><br>
+ * To get a complete version of this object, use {@link com.github.tcn.plexi.ombi.OmbiCallers#ombiTvInfo(String)}
+ */
 public class TvInfo {
 
     @SerializedName("title")

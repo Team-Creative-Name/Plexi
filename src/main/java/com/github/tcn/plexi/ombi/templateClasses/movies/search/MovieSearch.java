@@ -6,6 +6,25 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+/**
+ * A class representing data returned via Ombi's {@code /api/v1/Search/movie/{QUERY}} endpoint
+ * <br>
+ * There are a couple of fields in this class that always seem to be null. They are:
+ * <p><ul>
+ * <li>backdropPath
+ * <li>genreIds
+ * <li>trailer
+ * <li>homepage
+ * <li>releaseDates -- Please see releaseDate for that information
+ * <li>digitalReleaseDate
+ * <li>theTvDbID
+ * </ul>
+ * While these fields might not always be null, I have not come across a movie with them filled during testing
+ * and should probably not be required for something to work.
+ * </p>
+ * <br><br>
+ * To get an array of this object, use {@link com.github.tcn.plexi.ombi.OmbiCallers#ombiMovieSearch(String)}
+ */
 public class MovieSearch {
 
     @SerializedName("adult")

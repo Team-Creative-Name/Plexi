@@ -26,7 +26,7 @@ public class EmbedManager {
      * Creates a TvSearch Embed
      * <br>
      * Takes in a {@link TvSearch TvSearch} array and the desired index number to form a {@link EmbedBuilder} object containing a show's:
-     * <p><ul>
+     * <ul>
      * <li>Name
      * <li>Description
      * <li>TVDb ID
@@ -34,7 +34,7 @@ public class EmbedManager {
      * <li>Airing status {Running | Ended}
      * <li>Cover art
      * <li>Page Number (place in array + 1)
-     * </ul></p>
+     * </ul>
      *
      * @param resultArray A {@link TvSearch TvSearch} array with all values filled
      * @param resultNum   The index of the show that needs to be put into an embed.
@@ -63,14 +63,14 @@ public class EmbedManager {
      * Creates a MovieSearch Embed
      * <br>
      * Takes in a {@link MovieSearch} array and the desired index number to form a {@link EmbedBuilder} object containing a movie's:
-     * <p><ul>
+     * <ul>
      * <li>Name
      * <li>Description
      * <li>TMDb ID
      * <li>Release Date
      * <li>Cover art
      * <li>Page Number (place in array + 1)
-     * </ul></p>
+     * </ul>
      *
      * @param resultArray A {@link MovieSearch MovieSearch} array with all values filled
      * @param resultNum   The index of the movie that needs to be put into an embed.
@@ -97,7 +97,7 @@ public class EmbedManager {
      * Creates a TvInfo Embed
      * <br>
      * Takes in a {@link TvInfo} object to form a {@link EmbedBuilder} object containing a show's:
-     * <p><ul>
+     * <ul>
      * <li>Name
      * <li>Description
      * <li>Plex Availability
@@ -110,7 +110,7 @@ public class EmbedManager {
      * <li>TVDb ID
      * <li>Last Episode Air Date
      * <li>Cover art
-     * </ul></p>
+     * </ul>
      *
      * @param info A {@link TvInfo TvInfo} object with all values filled
      * @return A {@link EmbedBuilder} object containing above information.
@@ -138,7 +138,7 @@ public class EmbedManager {
      * Creates a MovieInfo Embed
      * <br>
      * Takes in a {@link MovieInfo} object to form a {@link EmbedBuilder} object containing a movie's:
-     * <p><ul>
+     * <ul>
      * <li>Name
      * <li>Description
      * <li>Plex Availability
@@ -148,7 +148,7 @@ public class EmbedManager {
      * <li>TMDb ID
      * <li>Request Status
      * <li>Cover art
-     * </ul></p>
+     * </ul>
      *
      * @param info A {@link MovieInfo} object with all values filled
      * @return A {@link EmbedBuilder} object containing above information.

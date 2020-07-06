@@ -71,7 +71,7 @@ public abstract class Paginator extends Menu {
     }
 
     /**
-     * Calls {@link Paginator#paginate(MessageChannel channel, int 1)} which creates a menu and displays the first page in
+     * Calls {@link Paginator#paginate(MessageChannel channel, int)} which creates a menu and displays the first page in
      * a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
      *
      * @param channel The channel that the menu is to be displayed in
@@ -84,7 +84,7 @@ public abstract class Paginator extends Menu {
 
 
     /**
-     * Calls {@link Paginator#paginate(Message message, int 1)} which creates a menu and replaces a passed
+     * Calls {@link Paginator#paginate(Message message, int)} which creates a menu and replaces a passed
      * a {@link net.dv8tion.jda.api.entities.Message Message's} contents with the first page of a menu
      *
      * @param message The message to replace with a menu
@@ -289,8 +289,8 @@ public abstract class Paginator extends Menu {
 
     /**
      * An extendable frame for a chain-method builder that constructs a specified type of
-     * {@link com.jagrosh.jdautilities.menu.Menu Menu}.<p>
-     * <p>
+     * {@link com.jagrosh.jdautilities.menu.Menu Menu}.
+     *
      * Conventionally, implementations of Menu should have a static nested class called
      * {@code Builder}, which extends this superclass:
      * <pre><code>
@@ -334,10 +334,10 @@ public abstract class Paginator extends Menu {
         /**
          * runs checks on some of the data entered into the builder to ensure that it can be built
          * checks run:
-         * <p><ul>
+         * <ul>
          * <li>checks that an {@link com.jagrosh.jdautilities.commons.waiter.EventWaiter EventWaiter} was set
          * <li>checks to see if there are {@link Builder#pages pages} instead of an empty arraylist
-         * </ul></p>
+         * </ul>
          */
         //A method that does basic checking
         public final void runBasicChecks() {

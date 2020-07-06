@@ -14,7 +14,7 @@ import java.util.List;
  * A class representing data returned via Ombi's {@code /api/v1/Search/tv/info/{TVDb_ID}} endpoint
  * <br>
  * There are a couple of fields in this class that always seem to be null. They are:
- * <p><ul>
+ * <ul>
  * <li>aliases
  * <li>genre
  * <li>airDaysOfWeek
@@ -25,7 +25,7 @@ import java.util.List;
  * </ul>
  * While these fields might not always be null, I have not come across a show with them filled during testing
  * and should probably not be required for something to work.
- * </p>
+ *
  * <br><br>
  * Please note that this class has been modified to provide some additional data not found in ombi's API.
  * <br><br>

@@ -2,8 +2,10 @@ package com.github.tcn.plexi.discordBot;
 
 import com.github.tcn.plexi.ombi.OmbiCallers;
 import com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo.MovieInfo;
+import com.github.tcn.plexi.ombi.templateClasses.movies.recentlyAdded.RecentMovie;
 import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
+import com.github.tcn.plexi.ombi.templateClasses.tv.recentlyAdded.RecentTv;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -90,6 +92,87 @@ public class EmbedManager {
         }
         //eb.setFooter(getRandFooter(settings.getFooterMax()));
         eb.setFooter(stringVerifier("Page " + (resultNum + 1) + " of " + (resultArray.length), 7));
+        return eb;
+    }
+
+    /**
+     * Creates a RecentTv Embed
+     * <br>
+     * Takes in a {@link RecentTv} array and the desired index number to form a {@link EmbedBuilder} object containing a show's:
+     * <p><ul>
+     * <li>Name
+     * <li>TVDb ID
+     * <li>Page Number (place in array + 1)
+      </ul></p>
+     * @param recentArray
+     *          A {@link RecentTv} array with all values filled
+     * @param index
+     *          The index of the show that needs to be put into an embed
+     * @return
+     *          A {@link EmbedBuilder} object containing above information.
+     */
+    public EmbedBuilder createRecentTVEmbed(RecentTv[] recentArray, int index) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(new Color(0x00AE86));
+        eb.setTitle(stringVerifier(recentArray[index].getTitle(), 1), getTvDbUrl(recentArray[index].getId()));
+        eb.addField("TVDB ID:", stringVerifier(recentArray[index].getId().toString(), 3), true);
+
+        /*
+        // This stuff is broken, valve pls fix
+        eb.setDescription(stringVerifier(recentArray[index].getOzzverview(), 2));
+        eb.addField("Network:", stringVerifier(recentArray[index].getNetwork(), 4), true);
+        eb.addField("Status:", stringVerifier(recentArray[index].getStatus(), 5), true);
+        if (recentArray[index].getBanner() != null) {
+            eb.setImage(stringVerifier(recentArray[index].getBanner(), 1));
+        } else {
+            eb.setImage("https://cdn.discordapp.com/attachments/592540131097837578/656822685912793088/poster.png");
+        }
+        eb.setFooter(getRandFooter(settings.getFooterMax()));
+        */
+
+        eb.setFooter(stringVerifier("Page " + (index + 1) + " of " + (recentArray.length), 7));
+        return eb;
+    }
+
+    /**
+     * Creates a RecentMovie Embed
+     * <br>
+     * Takes in a {@link RecentMovie} array and the desired index number to form a {@link EmbedBuilder} object containing a movie's:
+     * <p><ul>
+     * <li>Name
+     * <li>Release Date
+     * <li>Page Number (place in array + 1)
+     </ul></p>
+     * @param recentArray
+     *          A {@link RecentMovie} array with all values filled
+     * @param index
+     *          The index of the show that needs to be put into an embed
+     * @return
+     *          A {@link EmbedBuilder} object containing above information.
+     */
+    public EmbedBuilder createRecentMovieEmbed(RecentMovie[] recentArray, int index) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(new Color(0x00AE86));
+        eb.setTitle(stringVerifier(recentArray[index].getTitle(), 1));
+
+        // This also doesn't work wow!!!!!!!!!!!!!!!!!!!!!!!!!! That's a problem for future us.
+        /*
+        eb.addField("TMDb ID:", stringVerifier(recentArray[index].getTheMovieDbId(), 3), true);
+        eb.setDescription(stringVerifier(recentArray[index].getOverview(), 2));
+        */
+
+        eb.addField("Release date", stringVerifier(recentArray[index].getReleaseYear(), 8), true);
+
+        /*
+        if (recentArray[index].getPosterPath() != null) {
+            eb.setImage(stringVerifier("https://image.tmdb.org/t/p/original" + recentArray[index].getPosterPath(), 1));
+        } else {
+            eb.setImage("https://cdn.discordapp.com/attachments/592540131097837578/656822685912793088/poster.png");
+        }
+        //eb.setFooter(getRandFooter(settings.getFooterMax()));
+        */
+
+        eb.setFooter(stringVerifier("Page " + (index + 1) + " of " + (recentArray.length), 7));
         return eb;
     }
 
@@ -271,6 +354,45 @@ public class EmbedManager {
         return newArray;
     }
 
+    /**
+     * Creates an ArrayList of RecentMovie EmbedBuilder objects
+     * Takes in a {@link RecentMovie} array and calls {@link EmbedManager#createRecentMovieEmbed(RecentMovie[], int) createRecentMovieEmbed()}
+     * for each index of the given array.
+     * @param recentMovieArray
+     *          The non-empty {@link RecentMovie} array
+     * @return
+     *          An ArrayList of EmbedBuilder objects from {@link EmbedManager#createRecentMovieEmbed(RecentMovie[], int) createRecentMovieEmbed()}
+     */
+    public ArrayList<EmbedBuilder> getRecentMovieArray(RecentMovie[] recentMovieArray) {
+
+        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
+        for (int i = 0; i < recentMovieArray.length; i++) {
+            newArray.add(i, createRecentMovieEmbed(recentMovieArray, i));
+        }
+
+        return newArray;
+    }
+
+    /**
+     * Creates an ArrayList of RecentMovie EmbedBuilder objects
+     * <br>
+     * Takes in a {@link RecentTv} array and calls {@link EmbedManager#createRecentTVEmbed(RecentTv[], int)}  createRecentTvEmbed()}
+     * for each index of the given array.
+     * @param recentTvArray
+     *          The non-empty {@link RecentTv} array
+     * @return
+     *          An ArrayList of EmbedBuilder objects from {@link EmbedManager#createRecentTVEmbed(RecentTv[], int)}  createRecentTvEmbed()}
+     */
+    public ArrayList<EmbedBuilder> getRecentTVArray(RecentTv[] recentTvArray) {
+
+        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
+        for (int i = 0; i < recentTvArray.length; i++) {
+            newArray.add(i, createRecentTVEmbed(recentTvArray, i));
+        }
+
+        return newArray;
+    }
+
 
     /**
      * Create TvInfo embed with only the TVDb ID number
@@ -298,6 +420,8 @@ public class EmbedManager {
         newArrayList.add(toAdd);
         return newArrayList;
     }
+
+
 
 
 //private helper methods

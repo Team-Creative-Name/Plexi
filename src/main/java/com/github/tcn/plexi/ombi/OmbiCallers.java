@@ -2,10 +2,12 @@ package com.github.tcn.plexi.ombi;
 
 
 import com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo.MovieInfo;
+import com.github.tcn.plexi.ombi.templateClasses.movies.recentlyAdded.RecentMovie;
 import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
 import com.github.tcn.plexi.ombi.templateClasses.requests.movie.MovieRequest;
 import com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate.TvRequestTemplate;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
+import com.github.tcn.plexi.ombi.templateClasses.tv.recentlyAdded.RecentTv;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
 import com.github.tcn.plexi.ombi.templateClasses.tv.tvLite.TvLite;
 import com.github.tcn.plexi.settingsManager.Settings;
@@ -111,6 +113,94 @@ public class OmbiCallers {
             MovieSearch[] result = gson.fromJson(downloadedJson, MovieSearch[].class);
             //Log the number of items in the array
             System.out.println("The result is " + result.length + " page(s) long");
+            //return the array
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("error");
+        return null;
+    }
+
+    /**
+     * Forms a connection to the Ombi API and gets a list of recently added TV Shows.
+     * The downloaded JSON is then converted into a RecentTv array via {@link Gson#fromJson(String downloadedJSON, Type RecentTv[].class)}
+     * @return
+     *      An array of {@link RecentTv} objects. Each object is one TV show that was added.
+     * @implNote
+     *      This method gets its info via the {@code /api/v1/Request/tv/} endpoint
+     */
+    public RecentTv[] getRecentTvArray() {
+        //Create new objects
+        OkHttpClient client = new OkHttpClient();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+        //write request to console
+        System.out.println("Getting recently added TV shows");
+
+        //Create the request
+        Request request = new Request.Builder()
+                .url(settings.getOmbiUrl() + "/api/v1/Request/tv/")
+                .addHeader("accept", "application/json")
+                .addHeader("ApiKey", settings.getOmbiKey())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            //Download the Json returned by the API and make it into a string
+            String downloadedJson = response.body().string();
+
+            //Pass the String to Gson and have it turned into a TvSearch Array
+            RecentTv[] result = gson.fromJson(downloadedJson, RecentTv[].class);
+            //Log the number of items in the array
+            System.out.println("Recent Tv array is " + result.length + " items long");
+            //return the array
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("error");
+        return null;
+    }
+
+    /**
+     * Forms a connection to the Ombi API and gets a list of recently added Movies.
+     * The downloaded JSON is then converted into a RecentTv array via {@link Gson#fromJson(String downloadedJSON, Type RecentMovie[].class)}
+     * @return
+     *      An array of {@link RecentMovie} objects. Each object is one movie that was added.
+     * @implNote
+     *      This method gets its info via the {@code /api/v1/Request/movie/} endpoint
+     */
+    public RecentMovie[] getRecentMovieArray() {
+        //Create new objects
+        OkHttpClient client = new OkHttpClient();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+        //write request to console
+        System.out.println("Getting recently added movies");
+
+        //Create the request
+        Request request = new Request.Builder()
+                .url(settings.getOmbiUrl() + "/api/v1/Request/movie/")
+                .addHeader("accept", "application/json")
+                .addHeader("ApiKey", settings.getOmbiKey())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            //Download the Json returned by the API and make it into a string
+            String downloadedJson = response.body().string();
+
+            //Pass the String to Gson and have it turned into a TvSearch Array
+            RecentMovie[] result = gson.fromJson(downloadedJson, RecentMovie[].class);
+            //Log the number of items in the array
+            System.out.println("Recent movie array is " + result.length + " items long");
             //return the array
             return result;
         } catch (IOException e) {
@@ -372,7 +462,6 @@ public class OmbiCallers {
 
     }
 
-
     /**
      * Forms a connection to Ombi and requests a list of all requested TV shows in the form of a TvLite object array. The downloaded
      * JSON is then converted into a {@link TvLite TvLite} array via {@link Gson#fromJson(String downloadedJSON, Type TvLite[].class)}
@@ -495,7 +584,6 @@ public class OmbiCallers {
             return false;
         }
     }
-
 
     /**
      * Changes a string to be more URL friendly

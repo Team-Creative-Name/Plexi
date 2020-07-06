@@ -29,7 +29,7 @@ public class RequestCommand extends Command {
                 OmbiCallers caller = new OmbiCallers();
                 TvInfo tvInfo = caller.ombiTvInfo(args[1]);
 
-                event.reply(ombiCallers.requestTv(args[1], true, tvInfo));
+                event.reply(ombiCallers.requestTv(true, tvInfo));
             } catch (IllegalArgumentException e) {
                 event.reply("Error requesting media");
             }

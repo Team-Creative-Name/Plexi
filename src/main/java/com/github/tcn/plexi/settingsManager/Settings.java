@@ -15,6 +15,12 @@ import java.util.Arrays;
 import java.util.Properties;
 
 
+/**
+ * The Settings class for Plexi
+ * <br>
+ * This class follows a singleton pattern in an attempt to stop superfluous reloading of the settings text file located
+ * in the same folder as the Plexi jar. There is currently NO way to change any of these settings values once they are set.
+ */
 public class Settings {
 
     //Variables
@@ -36,12 +42,21 @@ public class Settings {
     //reference to plexi object
     PlexiBot plexiBot = PlexiBot.getInstance();
 
+    /**
+     * No other classes are allowed to instantiate this class
+     */
     //privatized constructor to ensure that nothing else is able to instantiate this class
     private Settings() {
         //calls initVariables
         initVariables();
     }
 
+    /**
+     * Returns the Settings object associated with this instance of Plexi. Allows any class to get a copy of what was contained in the settings file
+     * without having to reload it every time we wanted to get relevant information
+     *
+     * @return The {@link Settings} object associated with this instance of Plexi
+     */
     //this is the only way for an outside class to obtain a reference to this object
     public static Settings getInstance() {
         //if the object does not exist, create it
@@ -52,6 +67,11 @@ public class Settings {
         return SETTINGS_INSTANCE;
     }
 
+    /**
+     * Attempts to load the associated `config.txt` for this Plexi instance and reads from it. If it finds invalid information,
+     * it informs the user and terminates execution. If it is unable to locate the config file, it will call {@link Settings#generateConfigFile()}
+     * in an attempt to create a new one.
+     */
     //attempt to set all of the global variables
     private void initVariables() {
         try {
@@ -104,6 +124,9 @@ public class Settings {
     }
 
 
+    /**
+     * Generates a config file in the current jar path. If there is an issue, the bot prints the error and terminates.
+     */
     //if the initVariables method is unable to locate the config file, we need to create a new one.
     private void generateConfigFile() {
         try {
@@ -128,6 +151,13 @@ public class Settings {
         }
     }
 
+
+    /**
+     * Checks all of the global variables for basic correctness. At the minimum, the values cannot be empty and cannot be
+     * the same as the default config file's settings. The exception here is the prefix; the default is `.` and is able to stay that way.
+     *
+     * @return {@code false} if any of the loaded settings are invalid, {@code true} otherwise.
+     */
     //we need a way to validate as many of the settings variables as possible
     //This is very rudimentary validation that checks to ensure that values are not empty and arent default. The Ombi API is checked to see if it can connect.
     //TODO: Make this method a bit less clunky
@@ -169,6 +199,9 @@ public class Settings {
     }
 
 
+    /**
+     * @return {@code false} if we are unable to form a successful connection to Ombi, {@code true} otherwise.
+     */
     //returns true if we are able to connect to the Ombi API
     private boolean checkOmbiConnectivity() {
         Response response = null;

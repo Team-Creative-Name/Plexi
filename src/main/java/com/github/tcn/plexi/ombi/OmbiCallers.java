@@ -1,7 +1,6 @@
 package com.github.tcn.plexi.ombi;
 
 
-import com.github.tcn.plexi.discordBot.EmbedManager;
 import com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo.MovieInfo;
 import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
 import com.github.tcn.plexi.ombi.templateClasses.requests.movie.MovieRequest;
@@ -12,18 +11,34 @@ import com.github.tcn.plexi.ombi.templateClasses.tv.tvLite.TvLite;
 import com.github.tcn.plexi.settingsManager.Settings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.dv8tion.jda.api.EmbedBuilder;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+/**
+ * OmbiCallers is the heart of Plexi.
+ * <br>It is responsible for making almost every request to the ombi API. Contained in this class are methods that call
+ * Ombi endpoints and return objects of the resulting data
+ */
 public class OmbiCallers {
 
-    //get Settings reference
-    Settings settings = Settings.getInstance();
+    Settings settings;
 
+    public OmbiCallers() {
+        //get Settings reference
+        settings = Settings.getInstance();
+    }
 
+    /**
+     * Forms a connection to the Ombi API and performs a search for the string passed via the toSearch parameter.
+     * The downloaded JSON is then converted into a TvSearch array via {@link Gson#fromJson(String downloadedJSON, Type TvSearch[].class)}
+     *
+     * @param toSearch The String that should be passed to the Ombi search API
+     * @return An array of {@link TvSearch TvSearch} objects. Each object is one search result
+     * @implNote This method gets its info via the {@code /api/v1/Search/tv/{string}} Ombi endpoint
+     */
     //This method returns an Object array that contains the value returned by the Ombi Api
     public TvSearch[] ombiTvSearch(String toSearch) {
 
@@ -62,6 +77,14 @@ public class OmbiCallers {
         return null;
     }
 
+    /**
+     * Forms a connection to the Ombi API and performs a search for the string passed via the toSearch parameter.
+     * The downloaded JSON is then converted into a MovieSearch array via {@link Gson#fromJson(String downloadedJSON, Type MovieSearch[].class)}
+     *
+     * @param toSearch The String that should be passed to the Ombi search API
+     * @return An array of {@link MovieSearch MovieSearch} objects. Each object is one search result
+     * @implNote This method gets its info via the {@code /api/v1/Search/movie/{string}} Ombi endpoint
+     */
     public MovieSearch[] ombiMovieSearch(String toSearch) {
         //Create new objects
         OkHttpClient client = new OkHttpClient();
@@ -97,6 +120,14 @@ public class OmbiCallers {
         return null;
     }
 
+    /**
+     * Forms a connection to the Ombi API and requests more info about a tv show given its TVDb id number.
+     * The downloaded JSON is then converted into a TVInfo object via {@link Gson#fromJson(String downloadedJSON, Type TvInfo.class)}
+     *
+     * @param id The TVDb ID number of the show you want more info on
+     * @return A {@link TvInfo} object
+     * @implNote This method gets its info via the {@code /api/v1/search/tv/info/{id}} endpoint
+     */
     //Methods to get the JSON for the more info endpoint of the Ombi API
     public TvInfo ombiTvInfo(String id) {
 
@@ -129,6 +160,14 @@ public class OmbiCallers {
         return null;
     }
 
+    /**
+     * Forms a connection to the Ombi API and requests more info about a movie given its TMDb id number.
+     * The downloaded JSON is then converted into a MovieInfo object via {@link Gson#fromJson(String downloadedJSON, Type MovieInfo.class)}
+     *
+     * @param id The TMDb id number of the movie you want more info on
+     * @return A {@link MovieInfo} object
+     * @implNote This method gets its info via the {@code /api/v1/search/movie/info/{id}} endpoint
+     */
     public MovieInfo ombiMovieInfo(String id) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -158,6 +197,14 @@ public class OmbiCallers {
         return null;
     }
 
+    /**
+     * Forms a connection to the Ombi API and requests a movie given its TMDb id number.
+     * The downloaded JSON is converted into an object internally and the response is extracted from that.
+     *
+     * @param id The TMDb id number of the movie to request
+     * @return The string response from the API
+     * @implNote This method performs the request via the {@code /api/v1/request/movie} endpoint
+     */
     public String requestMovie(String id) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
@@ -196,21 +243,30 @@ public class OmbiCallers {
         return "Unable to request media";
     }
 
-    public String requestTv(String id, boolean latest, TvInfo tvInfo) {
+    /**
+     * Forms a connection to the Ombi API and requests a TV show given its TVDb id number, tvInfo object, and if you want to request
+     * only the latest episodes.
+     *
+     * @param latest A boolean value that states if the request should only request the latest episodes of a show
+     * @param tvInfo A {@link TvInfo} object build from the show that you want to request
+     * @return A string stating request success status
+     * @implNote This method performs the request via the {@code /api/v1/request/tv} endpoint
+     */
+    public String requestTv(boolean latest, TvInfo tvInfo) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
         RequestBody requestBody;
 
+        //get a reference to the TMDB id for easy access later
+        String id = tvInfo.getTheTvDbId();
 
         //fully available == 2 partial == 1 not == 0
 
         //We need to form the request differently depending on if the show is available already or not. We also need to check to see if it has been requested.
         //if this check passes, there are no episodes on plex and there are no existing requests for a show.
         if (tvInfo.getPlexAvailabilityInt() == 0 && !tvInfo.getRequested()) {
-
             //Check to see if the user only wants to request the latest season
             if (latest) {
-
                 //In this case, nothing is available and the user wants to request everything
                 requestBody = RequestBody.create("{" + "\"latestSeason\": " + "\"true\"" +
                         ",\"tvDbId\": " + id +
@@ -283,11 +339,22 @@ public class OmbiCallers {
 
     }
 
-    public EmbedBuilder getMissingEpisodeEmbed(String id) {
+    /**
+     * Creates a String ArrayList containing all episodes that are not marked as available and are not requested in ombi.
+     * If an episode is missing and requested, it WILL NOT be in this list.
+     *
+     * @implNote
+     *          This method gets its information from {@link OmbiCallers#ombiTvInfo(String id)}
+     *
+     * @param id
+     *          The TVDb id number of the show
+     * @return
+     *          An ArrayList containing all missing && not requested episodes of a show
+     */
+    public ArrayList<String> getMissingEpisodeArray(String id) {
 
         //get the TvInfo Object
         TvInfo tvInfo = ombiTvInfo(id);
-        EmbedManager eb = new EmbedManager();
 
         //get the TvRequest Template object that contains the missing episodes
         TvRequestTemplate missingEpisodes = tvInfo.getMissingEpisodeArray();
@@ -301,10 +368,18 @@ public class OmbiCallers {
             }
         }
 
-        return eb.createMissingEpisodeEmbed(missingEpisodeslist);
+        return missingEpisodeslist;
 
     }
 
+
+    /**
+     * Forms a connection to Ombi and requests a list of all requested TV shows in the form of a TvLite object array. The downloaded
+     * JSON is then converted into a {@link TvLite TvLite} array via {@link Gson#fromJson(String downloadedJSON, Type TvLite[].class)}
+     *
+     * @return An Array of TvLite objects
+     * @implNote This method performs the request via the {@code /api/v1/request/tvlite} endpoint
+     */
     public TvLite[] getTvLiteArray() {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -330,6 +405,16 @@ public class OmbiCallers {
         return null;
     }
 
+    /**
+     * Forms a connection to Ombi and counts the amount of time it took for it to respond to an API request.
+     *
+     * @implNote
+     *      This method gets info via the {@code /api/v1/Status} endpoint which takes ombi very little time to calculate.
+     *      This means that this method will return the best case response time. Other endpoints in Ombi will take a much
+     *      longer time to respond.
+     * @return
+     *      the amount of time it took for Ombi to respond in milliseconds
+     */
     //Get the amount of time that it takes to communicate with the ombi AP in MS
     public long getPingTime() {
         long responseTime = -1;
@@ -358,10 +443,26 @@ public class OmbiCallers {
         return responseTime;
     }
 
+    /**
+     * Given a request id and the media type, this method removes a request from Ombi. This CANNOT be passed the media ID,
+     * which means that you must get the request ID from another API call.
+     * <p><br></p>
+     * For movies, see {@link MovieInfo#getId()}
+     * <p><br></p>
+     * For TV, the TvInfo API call seems to provide an invalid request id. This means that you MUST get it another way.
+     * One way is via looping through {@link OmbiCallers#getTvLiteArray()} until you find a matching TVDb ID. (Annoying, I know)
+     * <p><br></p>
+     * @implNote This method completes the Delete action via the {@code /api/v1/Request/tv/{REQUEST_ID}} and {@code /api/v1/Request/movie/{REQUEST_ID}} endpoints
+     * @param requestID
+     *          The internal Ombi request ID for a movie or show
+     * @param mediaType
+     *          The media type of the object. 1 == TV Show || 2 == Movie
+     * @return
+     *          {@code false} if the API fails to remove the request, {@code true} otherwise.
+     */
     //remove media request
     public boolean removeMediaRequest(int requestID, int mediaType) {
         OkHttpClient client = new OkHttpClient();
-        Gson gson = new Gson();
         String url = null;
 
 
@@ -396,6 +497,13 @@ public class OmbiCallers {
     }
 
 
+    /**
+     * Changes a string to be more URL friendly
+     * @param query
+     *          The String to format
+     * @return
+     *          The formatted String
+     */
     //Helper methods
     private String formatSearchTerm(String query) {
         String formattedString = query;
@@ -407,23 +515,4 @@ public class OmbiCallers {
         return formattedString;
     }
 
-    @Deprecated
-    public TvInfo[] getTvInfoArray(TvSearch[] searchArray) {
-        TvInfo[] infoArray = new TvInfo[searchArray.length];
-
-        for (int i = 0; i < searchArray.length; i++) {
-            infoArray[i] = ombiTvInfo(String.valueOf(searchArray[i].getId()));
-        }
-        return infoArray;
-    }
-
-    @Deprecated
-    public MovieInfo[] getMovieInfoArray(MovieInfo[] searchArray) {
-        MovieInfo[] infoArray = new MovieInfo[searchArray.length];
-
-        for (int i = 0; i < searchArray.length; i++) {
-            infoArray[i] = ombiMovieInfo(String.valueOf(searchArray[i].getId()));
-        }
-        return infoArray;
-    }
 }

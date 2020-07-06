@@ -65,7 +65,7 @@ public class SearchCommand extends Command {
 
                 //Create an embed for the result array and send it to the paginator
                 ePBuilder.setMediaType(1);
-                ePBuilder.setPages(embedManager.getPostTvSearchEmbed(result));
+                ePBuilder.setPages(embedManager.getTvSearchEmbedArray(result));
 
                 SearchPaginator p = ePBuilder
                         .setUsers(event.getAuthor())
@@ -76,7 +76,7 @@ public class SearchCommand extends Command {
 
 
             //event.getChannel().sendMessage("Here is the first result: " + result[0].getTitle()).queue();
-        } else if (args[0].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks|m")) {
+        } else if (args[0].toLowerCase().matches("((m(ovie)?|film|feature|flick)s?)|(cine(matic)?)")) {
 
             OmbiCallers moviesearcher = new OmbiCallers();
             EmbedManager embedManager = new EmbedManager();
@@ -89,7 +89,7 @@ public class SearchCommand extends Command {
             if (result.length == 0) {
                 event.reply("No Results Found!");
             } else {
-                ePBuilder.setMediaType(2).setPages(embedManager.getPostMovieSearchEmbed(result));
+                ePBuilder.setMediaType(2).setPages(embedManager.getMovieSearchEmbedArray(result));
 
 
                 SearchPaginator p = ePBuilder

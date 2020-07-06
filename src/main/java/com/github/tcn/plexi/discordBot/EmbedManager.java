@@ -6,6 +6,7 @@ import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 
 import java.awt.*;
 import java.io.IOException;
@@ -21,8 +22,24 @@ import java.util.Random;
 //This class will create the embeds and post them
 public class EmbedManager {
 
-
-
+    /**
+     * Creates a TvSearch Embed
+     * <br>
+     * Takes in a {@link TvSearch TvSearch} array and the desired index number to form a {@link EmbedBuilder} object containing a show's:
+     * <p><ul>
+     * <li>Name
+     * <li>Description
+     * <li>TVDb ID
+     * <li>Original Airing Network
+     * <li>Airing status {Running | Ended}
+     * <li>Cover art
+     * <li>Page Number (place in array + 1)
+     * </ul></p>
+     *
+     * @param resultArray A {@link TvSearch TvSearch} array with all values filled
+     * @param resultNum   The index of the show that needs to be put into an embed.
+     * @return A {@link EmbedBuilder} object containing above information.
+     */
     //search methods
     public EmbedBuilder createTVSearchEmbed(TvSearch[] resultArray, int resultNum) {
         EmbedBuilder eb = new EmbedBuilder();
@@ -42,6 +59,23 @@ public class EmbedManager {
         return eb;
     }
 
+    /**
+     * Creates a MovieSearch Embed
+     * <br>
+     * Takes in a {@link MovieSearch} array and the desired index number to form a {@link EmbedBuilder} object containing a movie's:
+     * <p><ul>
+     * <li>Name
+     * <li>Description
+     * <li>TMDb ID
+     * <li>Release Date
+     * <li>Cover art
+     * <li>Page Number (place in array + 1)
+     * </ul></p>
+     *
+     * @param resultArray A {@link MovieSearch MovieSearch} array with all values filled
+     * @param resultNum   The index of the movie that needs to be put into an embed.
+     * @return A {@link EmbedBuilder} object containing above information.
+     */
     public EmbedBuilder createMovieSearchEmbed(MovieSearch[] resultArray, int resultNum) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(new Color(0x00AE86));
@@ -59,6 +93,28 @@ public class EmbedManager {
         return eb;
     }
 
+    /**
+     * Creates a TvInfo Embed
+     * <br>
+     * Takes in a {@link TvInfo} object to form a {@link EmbedBuilder} object containing a show's:
+     * <p><ul>
+     * <li>Name
+     * <li>Description
+     * <li>Plex Availability
+     * <li>Number of Episodes
+     * <li>Airing status {Running | Ended}
+     * <li>Release Date
+     * <li>Avg. Run Time
+     * <li>Ombi Request Status
+     * <li>Original Airing Network
+     * <li>TVDb ID
+     * <li>Last Episode Air Date
+     * <li>Cover art
+     * </ul></p>
+     *
+     * @param info A {@link TvInfo TvInfo} object with all values filled
+     * @return A {@link EmbedBuilder} object containing above information.
+     */
     //more info methods
     public EmbedBuilder createTvMoreInfoEmbed(TvInfo info) {
         EmbedBuilder eb = new EmbedBuilder();
@@ -78,6 +134,25 @@ public class EmbedManager {
         return eb;
     }
 
+    /**
+     * Creates a MovieInfo Embed
+     * <br>
+     * Takes in a {@link MovieInfo} object to form a {@link EmbedBuilder} object containing a movie's:
+     * <p><ul>
+     * <li>Name
+     * <li>Description
+     * <li>Plex Availability
+     * <li>Original Language
+     * <li>Premiere Date
+     * <li>Website
+     * <li>TMDb ID
+     * <li>Request Status
+     * <li>Cover art
+     * </ul></p>
+     *
+     * @param info A {@link MovieInfo} object with all values filled
+     * @return A {@link EmbedBuilder} object containing above information.
+     */
     public EmbedBuilder createMovieMoreInfoEmbed(MovieInfo info) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(new Color(0x00Ae86));
@@ -97,6 +172,14 @@ public class EmbedManager {
         return eb;
     }
 
+    /**
+     * Creates an embed out of an array of missing episodes
+     * <br>
+     * Takes in a String Arraylist and puts the first 10 elements of the array into a {@link EmbedBuilder} object.
+     *
+     * @param missingEpisodeArray A String ArrayList where each string is information about a missing episode.
+     * @return A {@link EmbedBuilder} object containing the first 10 items in missingEpisodeArray
+     */
     public EmbedBuilder createMissingEpisodeEmbed(ArrayList<String> missingEpisodeArray) {
 
         String episodes = "";
@@ -126,7 +209,19 @@ public class EmbedManager {
         return eb;
     }
 
-
+    /**
+     * Creates an embed out of ping times
+     * <br>
+     * Takes in multiple ping times and returns a A {@link EmbedBuilder} object containing them.
+     * @param gatewayPing
+     *          The ping time from {@link JDA#getGatewayPing()}
+     * @param discordPing
+     *          The ping time from {@link JDA#getRestPing()}
+     * @param ombiPing
+     *          The ping time from {@link OmbiCallers#getPingTime()}
+     * @return
+     *          A {@link EmbedBuilder} object containing the above ping times
+     */
     public EmbedBuilder createPingEmbed(long gatewayPing, long discordPing, long ombiPing) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(new Color(0x00Ae86));
@@ -138,6 +233,74 @@ public class EmbedManager {
 
         return eb;
     }
+
+    /**
+     * Creates an ArrayList of MovieSearch EmbedBuilder Objects
+     * <br>
+     * Takes in a {@link MovieSearch} array and calls {@link EmbedManager#createMovieSearchEmbed(MovieSearch[], int) createMovieSearchEmbed()} for each index
+     * of the given array.
+     *
+     * @param movieSearchArray The non-empty {@link MovieSearch} array
+     * @return An ArrayList of EmbedBuilder objects from {@link EmbedManager#createMovieSearchEmbed(MovieSearch[], int) createMovieSearchEmbed()}
+     */
+    public ArrayList<EmbedBuilder> getMovieSearchEmbedArray(MovieSearch[] movieSearchArray) {
+
+        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
+        for (int i = 0; i < movieSearchArray.length; i++) {
+            newArray.add(i, createMovieSearchEmbed(movieSearchArray, i));
+        }
+
+        return newArray;
+    }
+
+    /**
+     * Creates an ArrayList of TvSearch EmbedBuilder objects
+     * <br>
+     * Takes in a {@link TvSearch} array and calls {@link EmbedManager#createTVSearchEmbed(TvSearch[], int) createTVSearchEmbed()} for each index
+     * of the given array.
+     *
+     * @param tvSearchArray The non-empty {@link TvSearch} array
+     * @return An ArrayList of EmbedBuilder objects from {@link EmbedManager#createTVSearchEmbed(TvSearch[], int) createTVSearchEmbed()}
+     */
+    public ArrayList<EmbedBuilder> getTvSearchEmbedArray(TvSearch[] tvSearchArray) {
+        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
+        for (int i = 0; i < tvSearchArray.length; i++) {
+            newArray.add(i, createTVSearchEmbed(tvSearchArray, i));
+        }
+
+        return newArray;
+    }
+
+
+    /**
+     * Create TvInfo embed with only the TVDb ID number
+     * <br>
+     * Calls {@link EmbedManager#createTvMoreInfoEmbed(TvInfo)} and passes that the TvInfo object obtained by calling
+     * {@link OmbiCallers#ombiTvInfo(String)}
+     *
+     * @param id The TVDb ID number of the show
+     * @return A TvInfo EmbedBuilder from {@link EmbedManager#createTvMoreInfoEmbed(TvInfo)}
+     */
+    public EmbedBuilder getTvInfoEmbed(int id) {
+        OmbiCallers caller = new OmbiCallers();
+        return createTvMoreInfoEmbed(caller.ombiTvInfo(String.valueOf(id)));
+    }
+
+    /**
+     * wraps EmbedBuilder object into an ArrayList
+     *
+     * @param toAdd The EmbedBuilder object to be wrapped
+     * @return An EmbedBuilder ArrayList containing the passed EmbedBuilder object
+     */
+    //wraps EmbedBuilder in an arrayList
+    public ArrayList<EmbedBuilder> toArrayList(EmbedBuilder toAdd) {
+        ArrayList<EmbedBuilder> newArrayList = new ArrayList<>();
+        newArrayList.add(toAdd);
+        return newArrayList;
+    }
+
+
+//private helper methods
 
     //Methods that clean up information
     //Field IDs-------------
@@ -238,35 +401,6 @@ public class EmbedManager {
 
     }
 
-    public ArrayList<EmbedBuilder> getPostMovieSearchEmbed(MovieSearch[] tester) {
 
-        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
-        for (int i = 0; i < tester.length; i++) {
-            newArray.add(i, createMovieSearchEmbed(tester, i));
-        }
-
-        return newArray;
-    }
-
-    public ArrayList<EmbedBuilder> getPostTvSearchEmbed(TvSearch[] tester) {
-        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
-        for (int i = 0; i < tester.length; i++) {
-            newArray.add(i, createTVSearchEmbed(tester, i));
-        }
-
-        return newArray;
-    }
-
-    public EmbedBuilder getTvInfoEmbed(int id) {
-        OmbiCallers caller = new OmbiCallers();
-        return createTvMoreInfoEmbed(caller.ombiTvInfo(String.valueOf(id)));
-    }
-
-    //wraps EmbedBuilder in an arrayList
-    public ArrayList<EmbedBuilder> toArrayList(EmbedBuilder toAdd) {
-        ArrayList<EmbedBuilder> newArrayList = new ArrayList<>();
-        newArrayList.add(toAdd);
-        return newArrayList;
-    }
 
 }

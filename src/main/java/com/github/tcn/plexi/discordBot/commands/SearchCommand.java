@@ -65,7 +65,7 @@ public class SearchCommand extends Command {
 
                 //Create an embed for the result array and send it to the paginator
                 ePBuilder.setMediaType(1);
-                ePBuilder.setPages(embedManager.getPostTvSearchEmbed(result));
+                ePBuilder.setPages(embedManager.getTvSearchEmbedArray(result));
 
                 SearchPaginator p = ePBuilder
                         .setUsers(event.getAuthor())
@@ -89,7 +89,7 @@ public class SearchCommand extends Command {
             if (result.length == 0) {
                 event.reply("No Results Found!");
             } else {
-                ePBuilder.setMediaType(2).setPages(embedManager.getPostMovieSearchEmbed(result));
+                ePBuilder.setMediaType(2).setPages(embedManager.getMovieSearchEmbedArray(result));
 
 
                 SearchPaginator p = ePBuilder

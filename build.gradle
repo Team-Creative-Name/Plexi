@@ -37,3 +37,14 @@ jar {
         }
     }
 }
+
+javadoc {
+    configure( options ) {
+        tags(
+                'todo:X"',
+                'apiNote:a:"API Note:"',
+                'implSpec:a:"Implementation Requirements:"',
+                'implNote:a:"Implementation Note:"'
+        )
+    }
+}

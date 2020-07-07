@@ -1,0 +1,16 @@
+com.github.tcn.plexi
+com.github.tcn.plexi.discordBot
+com.github.tcn.plexi.discordBot.commands
+com.github.tcn.plexi.gui
+com.github.tcn.plexi.ombi
+com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo
+com.github.tcn.plexi.ombi.templateClasses.movies.search
+com.github.tcn.plexi.ombi.templateClasses.requests.movie
+com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate
+com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo
+com.github.tcn.plexi.ombi.templateClasses.tv.search
+com.github.tcn.plexi.ombi.templateClasses.tv.tvLite
+com.github.tcn.plexi.paginators
+com.github.tcn.plexi.paginators.searchPaginators
+com.github.tcn.plexi.settingsManager
+com.github.tcn.plexi.utils

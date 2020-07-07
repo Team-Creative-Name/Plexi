@@ -35,7 +35,7 @@ public class OmbiCallers {
 
     /**
      * Forms a connection to the Ombi API and performs a search for the string passed via the toSearch parameter.
-     * The downloaded JSON is then converted into a TvSearch array via {@link Gson#fromJson(String downloadedJSON, Type TvSearch[].class)}
+     * The downloaded JSON is then converted into a TvSearch array via {@link Gson#fromJson(String, Type)}
      *
      * @param toSearch The String that should be passed to the Ombi search API
      * @return An array of {@link TvSearch TvSearch} objects. Each object is one search result
@@ -81,7 +81,7 @@ public class OmbiCallers {
 
     /**
      * Forms a connection to the Ombi API and performs a search for the string passed via the toSearch parameter.
-     * The downloaded JSON is then converted into a MovieSearch array via {@link Gson#fromJson(String downloadedJSON, Type MovieSearch[].class)}
+     * The downloaded JSON is then converted into a MovieSearch array via {@link Gson#fromJson(String, Type)}
      *
      * @param toSearch The String that should be passed to the Ombi search API
      * @return An array of {@link MovieSearch MovieSearch} objects. Each object is one search result
@@ -212,7 +212,7 @@ public class OmbiCallers {
 
     /**
      * Forms a connection to the Ombi API and requests more info about a tv show given its TVDb id number.
-     * The downloaded JSON is then converted into a TVInfo object via {@link Gson#fromJson(String downloadedJSON, Type TvInfo.class)}
+     * The downloaded JSON is then converted into a TVInfo object via {@link Gson#fromJson(String, Type)}
      *
      * @param id The TVDb ID number of the show you want more info on
      * @return A {@link TvInfo} object
@@ -252,7 +252,7 @@ public class OmbiCallers {
 
     /**
      * Forms a connection to the Ombi API and requests more info about a movie given its TMDb id number.
-     * The downloaded JSON is then converted into a MovieInfo object via {@link Gson#fromJson(String downloadedJSON, Type MovieInfo.class)}
+     * The downloaded JSON is then converted into a MovieInfo object via {@link Gson#fromJson(String, Type)}
      *
      * @param id The TMDb id number of the movie you want more info on
      * @return A {@link MovieInfo} object
@@ -439,7 +439,7 @@ public class OmbiCallers {
      * @param id
      *          The TVDb id number of the show
      * @return
-     *          An ArrayList containing all missing && not requested episodes of a show
+     *          An ArrayList containing all missing and not requested episodes of a show
      */
     public ArrayList<String> getMissingEpisodeArray(String id) {
 
@@ -464,7 +464,7 @@ public class OmbiCallers {
 
     /**
      * Forms a connection to Ombi and requests a list of all requested TV shows in the form of a TvLite object array. The downloaded
-     * JSON is then converted into a {@link TvLite TvLite} array via {@link Gson#fromJson(String downloadedJSON, Type TvLite[].class)}
+     * JSON is then converted into a {@link TvLite TvLite} array via {@link Gson#fromJson(String, Type)}
      *
      * @return An Array of TvLite objects
      * @implNote This method performs the request via the {@code /api/v1/request/tvlite} endpoint

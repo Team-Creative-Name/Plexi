@@ -31,7 +31,7 @@ public class MainView extends JFrame {
         //create textarea - console output (not editable)
         textArea = new JTextArea(50, 10);
         textArea.setEditable(false);
-        PrintStream guiOut = new PrintStream(new SwingOutputStream(textArea));
+        PrintStream guiOut = new PrintStream(new DualOutputStream(textArea));
 
         //set system output
         System.setErr(guiOut);

@@ -4,6 +4,8 @@ import com.github.tcn.plexi.discordBot.PlexiBot;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.*;
@@ -41,6 +43,9 @@ public class Settings {
     private Path JAR_PATH;
     //reference to plexi object
     PlexiBot plexiBot = PlexiBot.getInstance();
+
+    //The Main logger for Plexi
+    Logger plexiLogger = LoggerFactory.getLogger("Plexi");
 
     /**
      * No other classes are allowed to instantiate this class
@@ -89,9 +94,9 @@ public class Settings {
 
             //Load settings
             TOKEN = properties.getProperty("token").replaceAll("^\"|\"$", "");
-            System.out.println(TOKEN);
+            plexiLogger.info("Bot Token: " + TOKEN);
             OWNER_ID = properties.getProperty("ownerID").replaceAll("^\"|\"$", "");
-            System.out.println("Owner ID: " + OWNER_ID);
+            plexiLogger.info("Owner ID: " + OWNER_ID);
             PREFIX = properties.getProperty("prefix").replaceAll("^\"|\"$", "");
             OMBI_URL = properties.getProperty("ombiURL").replaceAll("^\"|\"$", "");
             OMBI_KEY = properties.getProperty("ombiKey").replaceAll("^\"|\"$", "");
@@ -102,19 +107,17 @@ public class Settings {
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("Unable to locate configuration file!");
+            plexiLogger.error("Unable to locate existing configuration file!");
             generateConfigFile();
-            System.out.println("A new one has been generated in " + JAR_PATH.getParent().toString());
+            plexiLogger.info("A new configuration file has been generated at: " + JAR_PATH.getParent().toString() );
             JOptionPane.showMessageDialog(null, "The config file was unable to be found. A new one has been generated at: " + JAR_PATH.getParent().toString(), "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
             plexiBot.stopBot();
             System.exit(0);
 
         } catch (Exception e) {
             //if we cant get these two, there is absolutely no way to continue program execution. We inform the user of an issue and terminate
-            System.out.println("Error while initializing settings. We should never have this issue; what did you do? Eh, it was probably my fault.");
-            System.out.println("Anyway, have a stacktrace. I've heard it can be useful when debugging");
-            System.out.println(e.getMessage());
-            System.out.println(Arrays.toString(e.getStackTrace()));
+            plexiLogger.error("Error reading the settings file: " + e.getLocalizedMessage());
+            plexiLogger.trace(Arrays.toString(e.getStackTrace()));
             //pop open a dialog box to ensure the user is aware of what happened
             JOptionPane.showMessageDialog(null, "Unknown error, unable to continue program execution. Error: " + e.getLocalizedMessage() + "\nCheck the log for a bit more info (Hopefully)", "Plexi - Unknown Error", JOptionPane.INFORMATION_MESSAGE);
             //after the user closes that, shut down the bot if it is running and terminate the program
@@ -134,18 +137,18 @@ public class Settings {
             InputStream resourceConfigStream = INTERNAL_CONFIG_PATH.openStream();
             //make sure that it was initialized properly
             if (resourceConfigStream == null) {
-                System.out.println();
+                plexiLogger.error("Unable to find config path!");
             }
             //now attempt to copy the file to the destination
             Files.copy(resourceConfigStream, USER_CONFIG_PATH, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            System.out.println("Error creating config file: ");
-            e.printStackTrace();
+            plexiLogger.error("Unable to create config file!");
+            plexiLogger.trace(Arrays.toString(e.getStackTrace()));
             plexiBot.stopBot();
             System.exit(-1);
         } catch (Exception e) {
-            System.out.println("Unknown Error: ");
-            e.printStackTrace();
+            plexiLogger.error("Unknown error occurred while generating new config file!");
+            plexiLogger.trace(Arrays.toString(e.getStackTrace()));
             plexiBot.stopBot();
             System.exit(-1);
         }
@@ -216,9 +219,11 @@ public class Settings {
 
             response = client.newCall(request).execute();
             //if that call didnt fail, we were able to connect
+            plexiLogger.info("Successfully performed first connection to Ombi");
             return true;
         } catch (Exception e) {
             //if that call failed, we couldn't connect to ombi
+            plexiLogger.error("Unable to connect to Ombi during startup");
             return false;
         } finally {
             //close the response if one was created 
@@ -252,5 +257,9 @@ public class Settings {
 
     public String getVersionNumber() {
         return VERSION_NUMBER;
+    }
+
+    public Logger getLogger(){
+        return plexiLogger;
     }
 }

@@ -13,7 +13,7 @@ public class PlexiBot {
     private static PlexiBot botObj = null;
     //reference to plexi object
     private JDA botInstance = null;
-
+    
 
     //lock the constructor
     private PlexiBot() {
@@ -68,16 +68,16 @@ public class PlexiBot {
             botInstance.addEventListener(commandList.build(), waiter);
 
 
+
         } catch (Exception e) {
-            System.out.println("Error: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().warn("Unable to start discord bot: " + e.getLocalizedMessage() );
             return;
         }
         try {
             botInstance.awaitReady();
-            System.out.println("Startup Complete!");
+            Settings.getInstance().getLogger().info("Startup Complete!");
         } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.out.println("Error Starting Bot");
+            Settings.getInstance().getLogger().error("Discord element interrupted while starting. Error: " + e.getLocalizedMessage());
             stopBot();
         }
         //set global botInstance obj to the newly created one
@@ -91,11 +91,10 @@ public class PlexiBot {
             botInstance.shutdownNow();
             //remove reference to other bot
             botInstance = null;
-            System.out.println("Shutdown Complete");
+            Settings.getInstance().getLogger().info("Shutdown Complete");
         } else {
-            System.out.println("Error while shutting down: There is no bot running!");
+            Settings.getInstance().getLogger().error("Error while shutting down: There is no bot running!");
         }
-
     }
 
     public void restartBot() {

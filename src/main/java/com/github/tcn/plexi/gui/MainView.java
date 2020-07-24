@@ -31,7 +31,7 @@ public class MainView extends JFrame {
         //create textarea - console output (not editable)
         textArea = new JTextArea(50, 10);
         textArea.setEditable(false);
-        PrintStream guiOut = new PrintStream(new DualOutputStream(textArea));
+        PrintStream guiOut = new PrintStream(new SwingOutputStream(textArea));
 
         //set system output
         System.setErr(guiOut);
@@ -81,7 +81,7 @@ public class MainView extends JFrame {
                         botInstance.stopBot();
                     } else {
                         //this means that the user decided to avoid shutdown. Print to log and return.
-                        System.out.println("Avoided Shutdown");
+                        Settings.getInstance().getLogger().debug("Exit attempted but avoided by user");
                         return;
                     }
                 }
@@ -111,7 +111,7 @@ public class MainView extends JFrame {
                         if (!botInstance.isRunning()) {
                             buttonState.setText("Start");
                         } else {
-                            System.out.println("Error: Unable to stop bot");
+                            Settings.getInstance().getLogger().error("Stop button failed to stop Plexi");
                         }
                     }
                 } else {

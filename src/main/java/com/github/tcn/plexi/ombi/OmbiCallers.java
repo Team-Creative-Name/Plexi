@@ -16,6 +16,7 @@ import okhttp3.*;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * OmbiCallers is the heart of Plexi.
@@ -46,8 +47,8 @@ public class OmbiCallers {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
-        //write request to console
-        System.out.println("Searching Ombi TV for: " + toSearch);
+        //log request
+        Settings.getInstance().getLogger().info("Searching Ombi TV for: " + toSearch);
 
         //Create the request
         Request request = new Request.Builder()
@@ -67,13 +68,14 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             TvSearch[] result = gson.fromJson(downloadedJson, TvSearch[].class);
             //Log the number of items in the array
-            System.out.println("The search result  is " + result.length + " page(s) long");
+            Settings.getInstance().getLogger().info("The search result  is " + result.length + " page(s) long");
             //return the array
             return result;
         } catch (IOException e) {
-            e.printStackTrace();
+            Settings.getInstance().getLogger().error("Unable to communicate with Ombi: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
         }
-        System.out.println("error");
+        Settings.getInstance().getLogger().error("An unknown error occurred while communicating with Ombi. Please try again later");
         return null;
     }
 
@@ -90,8 +92,8 @@ public class OmbiCallers {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
-        //write request to console
-        System.out.println("Searching Ombi Movie for: " + toSearch);
+        //log request
+        Settings.getInstance().getLogger().info("Searching Ombi movie for: " + toSearch);
 
         //Create the request
         Request request = new Request.Builder()
@@ -110,13 +112,14 @@ public class OmbiCallers {
             //Pass the String to Gson and have it turned into a TvSearch Array
             MovieSearch[] result = gson.fromJson(downloadedJson, MovieSearch[].class);
             //Log the number of items in the array
-            System.out.println("The result is " + result.length + " page(s) long");
+            Settings.getInstance().getLogger().info("The result is " + result.length + " page(s) long");
             //return the array
             return result;
         } catch (IOException e) {
-            e.printStackTrace();
+            Settings.getInstance().getLogger().error("Unable to communicate with Ombi: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
         }
-        System.out.println("error");
+        Settings.getInstance().getLogger().error("An unknown error occurred while communicating with Ombi. Please try again later");
         return null;
     }
 
@@ -134,8 +137,8 @@ public class OmbiCallers {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
-        //write request to console
-        System.out.println("Getting More TV Info for: " + id);
+        //log request
+        Settings.getInstance().getLogger().info("Getting More TV Info for: " + id);
 
         //create the request
         Request request = new Request.Builder()
@@ -154,9 +157,10 @@ public class OmbiCallers {
             return gson.fromJson(downloadedJSON, TvInfo.class);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Settings.getInstance().getLogger().error("Unable to communicate with Ombi: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
         }
-
+        Settings.getInstance().getLogger().error("An unknown error occurred while communicating with Ombi. Please try again later");
         return null;
     }
 
@@ -173,7 +177,7 @@ public class OmbiCallers {
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
         //write request to console
-        System.out.println("Making A Movie Info Request for: " + id);
+        Settings.getInstance().getLogger().info("Making A Movie Info Request for: " + id);
 
         //create the request
         Request request = new Request.Builder()
@@ -191,9 +195,10 @@ public class OmbiCallers {
             return gson.fromJson(downloadedJSON, MovieInfo.class);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Settings.getInstance().getLogger().error("Unable to communicate with Ombi: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
         }
-
+        Settings.getInstance().getLogger().error("An unknown error occurred while communicating with Ombi. Please try again later");
         return null;
     }
 
@@ -225,7 +230,7 @@ public class OmbiCallers {
             String downloadedJSON = response.body().string();
 
             //write request to console
-            System.out.println("Making a movie request for: " + id);
+            Settings.getInstance().getLogger().info("Making a movie request for: " + id);
 
 
             MovieRequest requestObj = gson.fromJson(downloadedJSON, MovieRequest.class);
@@ -238,8 +243,10 @@ public class OmbiCallers {
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Settings.getInstance().getLogger().error("Unable to communicate with Ombi: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
         }
+        Settings.getInstance().getLogger().error("An unknown error caused the movie request to fail");
         return "Unable to request media";
     }
 
@@ -316,7 +323,7 @@ public class OmbiCallers {
             String downloadedJSON = response.body().string();
 
             //write request to console
-            System.out.println("Making a tv request for: " + id);
+            Settings.getInstance().getLogger().info("Making a tv request for: " + id);
 
             MovieRequest requestObj = gson.fromJson(downloadedJSON, MovieRequest.class);
 
@@ -332,11 +339,12 @@ public class OmbiCallers {
             }
 
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return "Unable to add media to request list";
+        } catch (IOException e) {
+            Settings.getInstance().getLogger().error("Unable to communicate with Ombi: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
         }
-
+        Settings.getInstance().getLogger().error("An unknown error caused the TV request to fail");
+        return "Unable to add media to request list";
     }
 
     /**
@@ -483,15 +491,16 @@ public class OmbiCallers {
         try {
             Response response = client.newCall(request).execute();
 
-            //write request to console
-            System.out.println("removing request ID" + requestID);
+            //log request removal
+            Settings.getInstance().getLogger().info("Request ID: " + requestID + "was removed from the Ombi request list");
             response.close();
 
             //return true if delete was successful
             return response.isSuccessful();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Settings.getInstance().getLogger().error("Unable to communicate with Ombi: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
             return false;
         }
     }

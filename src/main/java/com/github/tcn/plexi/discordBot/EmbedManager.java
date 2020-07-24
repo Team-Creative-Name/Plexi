@@ -5,6 +5,7 @@ import com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo.MovieInfo;
 import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
+import com.github.tcn.plexi.settingsManager.Settings;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 
@@ -14,10 +15,8 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 //This class will create the embeds and post them
 public class EmbedManager {
@@ -387,6 +386,9 @@ public class EmbedManager {
             footerPath = getClass().getResource("/assets/footer.plexi").toURI();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            //log that the command was used
+            Settings.getInstance().getLogger().error("Error while generating a random footer: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
             return "Missing Footer File!";
         }
 

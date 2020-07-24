@@ -21,7 +21,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:4.2.2'
     compile 'com.typesafe:config:1.4.0'
     compile 'com.vdurmont:emoji-java:5.1.1'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.2'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 }
 
 jar {

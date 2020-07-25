@@ -3,7 +3,7 @@
 
     <!-- Settings for file logger -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>testLog-${fullTimeStamp}.log</file>
+        <file>logs/Plexi-Log-${fullTimeStamp}.log</file>
         <append>false</append>
         <encoder>
             <pattern>[%d{HH:mm:ss.SS}] [%level]: [%logger{35}] - %msg%n</pattern>

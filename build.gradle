@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.github.tcn.plexi'
-version 'v1.0-beta.6'
+version 'v1.0-RC.1'
 
 sourceCompatibility = 1.8
 

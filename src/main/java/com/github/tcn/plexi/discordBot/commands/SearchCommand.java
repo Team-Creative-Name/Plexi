@@ -10,15 +10,11 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 
 public class SearchCommand extends Command {
-
-    Logger logger = LoggerFactory.getLogger(SearchCommand.class);
 
     private final SearchPaginator.Builder ePBuilder;
 
@@ -58,7 +54,7 @@ public class SearchCommand extends Command {
             OmbiCallers tvSearcher = new OmbiCallers();
             EmbedManager embedManager = new EmbedManager();
 
-            logger.info(event.getAuthor().getName() + " has searched for: " + args[1]);
+            Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has searched for: " + args[1]);
             //Retrieve array of TvSearch Objects - each object is a search result
             TvSearch[] result = tvSearcher.ombiTvSearch(args[1]);
 
@@ -84,7 +80,7 @@ public class SearchCommand extends Command {
 
             OmbiCallers moviesearcher = new OmbiCallers();
             EmbedManager embedManager = new EmbedManager();
-            logger.info(event.getAuthor().getName() + " has searched for " + args[1]);
+            Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has searched for " + args[1]);
 
             MovieSearch[] result = moviesearcher.ombiMovieSearch(args[1]);
 

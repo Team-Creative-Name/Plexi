@@ -4,6 +4,8 @@ import com.github.tcn.plexi.settingsManager.Settings;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlexiBot {
 
@@ -91,9 +93,11 @@ public class PlexiBot {
             botInstance.shutdownNow();
             //remove reference to other bot
             botInstance = null;
-            Settings.getInstance().getLogger().info("Shutdown Complete");
+            Settings.getInstance().getLogger().info("Discord Shutdown Complete");
         } else {
-            Settings.getInstance().getLogger().error("Error while shutting down: There is no bot running!");
+            //we cant call the settings file version of the logger bc the settings file is calling this method on startup
+            Logger plexiLogger = LoggerFactory.getLogger("Plexi");
+            plexiLogger.error("Unable to shut down discord connection: no bot is currently running");
         }
     }
 

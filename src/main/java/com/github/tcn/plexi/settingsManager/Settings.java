@@ -30,7 +30,7 @@ public class Settings {
     //reference to this object - the only one
     private static Settings SETTINGS_INSTANCE = null;
     //the version number
-    private final String VERSION_NUMBER = "v1.0-beta.6";
+    private final String VERSION_NUMBER = "v1.0-RC.1";
     //stuff loaded from the config file
     private String TOKEN = null;
     private String PREFIX = null;
@@ -103,6 +103,7 @@ public class Settings {
 
             if (!validateGlobals()) {
                 JOptionPane.showMessageDialog(null, "The config file contains invalid settings, please check it and try again.", "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
+                plexiLogger.error("Invalid settings found in the configuration file. Plexi must exit");
                 System.exit(0);
             }
 
@@ -112,6 +113,7 @@ public class Settings {
             plexiLogger.info("A new configuration file has been generated at: " + JAR_PATH.getParent().toString() );
             JOptionPane.showMessageDialog(null, "The config file was unable to be found. A new one has been generated at: " + JAR_PATH.getParent().toString(), "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
             plexiBot.stopBot();
+            plexiLogger.info("Please fill out the configuration file and restart Plexi");
             System.exit(0);
 
         } catch (Exception e) {
@@ -124,6 +126,7 @@ public class Settings {
             plexiBot.stopBot();
             System.exit(-1);
         }
+        plexiLogger.info("Settings file loaded successfully!");
     }
 
 

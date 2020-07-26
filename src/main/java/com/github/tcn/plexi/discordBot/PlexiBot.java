@@ -4,6 +4,8 @@ import com.github.tcn.plexi.settingsManager.Settings;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlexiBot {
 
@@ -13,7 +15,7 @@ public class PlexiBot {
     private static PlexiBot botObj = null;
     //reference to plexi object
     private JDA botInstance = null;
-
+    
 
     //lock the constructor
     private PlexiBot() {
@@ -68,16 +70,16 @@ public class PlexiBot {
             botInstance.addEventListener(commandList.build(), waiter);
 
 
+
         } catch (Exception e) {
-            System.out.println("Error: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().warn("Unable to start discord bot: " + e.getLocalizedMessage() );
             return;
         }
         try {
             botInstance.awaitReady();
-            System.out.println("Startup Complete!");
+            Settings.getInstance().getLogger().info("Startup Complete!");
         } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.out.println("Error Starting Bot");
+            Settings.getInstance().getLogger().error("Discord element interrupted while starting. Error: " + e.getLocalizedMessage());
             stopBot();
         }
         //set global botInstance obj to the newly created one
@@ -91,11 +93,12 @@ public class PlexiBot {
             botInstance.shutdownNow();
             //remove reference to other bot
             botInstance = null;
-            System.out.println("Shutdown Complete");
+            Settings.getInstance().getLogger().info("Discord Shutdown Complete");
         } else {
-            System.out.println("Error while shutting down: There is no bot running!");
+            //we cant call the settings file version of the logger bc the settings file is calling this method on startup
+            Logger plexiLogger = LoggerFactory.getLogger("Plexi");
+            plexiLogger.error("Unable to shut down discord connection: no bot is currently running");
         }
-
     }
 
     public void restartBot() {

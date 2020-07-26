@@ -9,24 +9,20 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String logo = "               /$$                     /$$           \n" +
+        String logo =   "               /$$                     /$$           \n" +
                 "              | $$                    |__/           \n" +
                 "      /$$$$$$ | $$  /$$$$$$  /$$   /$$ /$$           \n" +
                 "     /$$__  $$| $$ /$$__  $$|  $$ /$$/| $$           \n" +
-                "    | $$  \\ $$| $$| $$$$$$$$ \\  $$$$/ | $$           \n" +
+                "    | $$  \\ $$| $$| $$$$$$$$ \\  $$$$/ | $$         \n" +
                 "    | $$  | $$| $$| $$_____/  >$$  $$ | $$           \n" +
-                "    | $$$$$$$/| $$|  $$$$$$$ /$$/\\  $$| $$           \n" +
-                "    | $$____/ |__/ \\_______/|__/  \\__/|__/           \n" +
+                "    | $$$$$$$/| $$|  $$$$$$$ /$$/\\  $$| $$          \n" +
+                "    | $$____/ |__/ \\_______/|__/  \\__/|__/         \n" +
                 "    | $$                                             \n" +
-                "    | $$                                             \n" +
+                "    | $$   Created by Team Creative Name             \n" +
                 "    |__/";
 
 
-        //check to make sure that we can find the config file - this will fail on first run
-
-        //boolean settingsSuccess = false;
-
-        //call getInstance in order to ensure that it is loaded
+        //call getInstance in order to ensure that it is loaded before anything else
         Settings.getInstance();
 
 

@@ -4,6 +4,8 @@ import com.github.tcn.plexi.discordBot.PlexiBot;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.*;
@@ -28,7 +30,7 @@ public class Settings {
     //reference to this object - the only one
     private static Settings SETTINGS_INSTANCE = null;
     //the version number
-    private final String VERSION_NUMBER = "v1.0-beta.6";
+    private final String VERSION_NUMBER = "v1.0";
     //stuff loaded from the config file
     private String TOKEN = null;
     private String PREFIX = null;
@@ -41,6 +43,9 @@ public class Settings {
     private Path JAR_PATH;
     //reference to plexi object
     PlexiBot plexiBot = PlexiBot.getInstance();
+
+    //The Main logger for Plexi
+    Logger plexiLogger;
 
     /**
      * No other classes are allowed to instantiate this class
@@ -76,12 +81,27 @@ public class Settings {
     private void initVariables() {
         try {
             //first attempt to get the resource path and jar path
-            //JAR_PATH = Paths.get(Settings.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
             JAR_PATH = new File(Settings.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).toPath();
             INTERNAL_CONFIG_PATH = this.getClass().getResource("/assets/config.txt");
 
             //now attempt to read from the configuration file and set values accordingly
-            USER_CONFIG_PATH = JAR_PATH.getParent().resolve("config.txt");
+            //if using Mac OS && are using the application bundle, we need to change the config and log paths
+            if (System.getProperty("os.name").toLowerCase().contains("mac") && JAR_PATH.getParent().getParent().getParent().toString().contains(".app")) {
+                //this should only fire if the jar is wrapped inside of a .app bundle
+                //set the logger to the same folder that the .app is located in
+                System.setProperty("LOG_PATH", JAR_PATH.getParent().getParent().getParent().getParent().toString());
+                //now attempt to load the config file
+                USER_CONFIG_PATH = JAR_PATH.getParent().getParent().getParent().getParent().resolve("config.txt");
+            } else {
+                //If not running within an application bundle, the user should have direct access to the jar. Set Everything to its path.
+                USER_CONFIG_PATH = JAR_PATH.getParent().resolve("config.txt");
+                //set the log path as well
+                System.setProperty("LOG_PATH", JAR_PATH.getParent().toString());
+            }
+
+            //now that we know where the logger needs to be, go ahead and create it
+            plexiLogger = LoggerFactory.getLogger("Plexi");
+
             FileInputStream config = new FileInputStream(USER_CONFIG_PATH.toString());
             Properties properties = new Properties();
 
@@ -89,38 +109,39 @@ public class Settings {
 
             //Load settings
             TOKEN = properties.getProperty("token").replaceAll("^\"|\"$", "");
-            System.out.println(TOKEN);
+            plexiLogger.info("Bot Token: " + TOKEN);
             OWNER_ID = properties.getProperty("ownerID").replaceAll("^\"|\"$", "");
-            System.out.println("Owner ID: " + OWNER_ID);
+            plexiLogger.info("Owner ID: " + OWNER_ID);
             PREFIX = properties.getProperty("prefix").replaceAll("^\"|\"$", "");
             OMBI_URL = properties.getProperty("ombiURL").replaceAll("^\"|\"$", "");
             OMBI_KEY = properties.getProperty("ombiKey").replaceAll("^\"|\"$", "");
 
             if (!validateGlobals()) {
                 JOptionPane.showMessageDialog(null, "The config file contains invalid settings, please check it and try again.", "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
+                plexiLogger.error("Invalid settings found in the configuration file. Plexi must exit");
                 System.exit(0);
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("Unable to locate configuration file!");
+            plexiLogger.error("Unable to locate existing configuration file!");
             generateConfigFile();
-            System.out.println("A new one has been generated in " + JAR_PATH.getParent().toString());
-            JOptionPane.showMessageDialog(null, "The config file was unable to be found. A new one has been generated at: " + JAR_PATH.getParent().toString(), "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
+            plexiLogger.info("A new configuration file has been generated at: " + USER_CONFIG_PATH.toString());
+            JOptionPane.showMessageDialog(null, "The config file was unable to be found. A new one has been generated at: " + USER_CONFIG_PATH.toString(), "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
             plexiBot.stopBot();
+            plexiLogger.info("Please fill out the configuration file and restart Plexi");
             System.exit(0);
 
         } catch (Exception e) {
             //if we cant get these two, there is absolutely no way to continue program execution. We inform the user of an issue and terminate
-            System.out.println("Error while initializing settings. We should never have this issue; what did you do? Eh, it was probably my fault.");
-            System.out.println("Anyway, have a stacktrace. I've heard it can be useful when debugging");
-            System.out.println(e.getMessage());
-            System.out.println(Arrays.toString(e.getStackTrace()));
+            plexiLogger.error("Error reading the settings file: " + e.getLocalizedMessage());
+            plexiLogger.trace(Arrays.toString(e.getStackTrace()));
             //pop open a dialog box to ensure the user is aware of what happened
             JOptionPane.showMessageDialog(null, "Unknown error, unable to continue program execution. Error: " + e.getLocalizedMessage() + "\nCheck the log for a bit more info (Hopefully)", "Plexi - Unknown Error", JOptionPane.INFORMATION_MESSAGE);
             //after the user closes that, shut down the bot if it is running and terminate the program
             plexiBot.stopBot();
             System.exit(-1);
         }
+        plexiLogger.info("Settings file loaded successfully!");
     }
 
 
@@ -134,18 +155,18 @@ public class Settings {
             InputStream resourceConfigStream = INTERNAL_CONFIG_PATH.openStream();
             //make sure that it was initialized properly
             if (resourceConfigStream == null) {
-                System.out.println();
+                plexiLogger.error("Unable to find config path!");
             }
             //now attempt to copy the file to the destination
             Files.copy(resourceConfigStream, USER_CONFIG_PATH, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            System.out.println("Error creating config file: ");
-            e.printStackTrace();
+            plexiLogger.error("Unable to create config file!");
+            plexiLogger.trace(Arrays.toString(e.getStackTrace()));
             plexiBot.stopBot();
             System.exit(-1);
         } catch (Exception e) {
-            System.out.println("Unknown Error: ");
-            e.printStackTrace();
+            plexiLogger.error("Unknown error occurred while generating new config file!");
+            plexiLogger.trace(Arrays.toString(e.getStackTrace()));
             plexiBot.stopBot();
             System.exit(-1);
         }
@@ -216,9 +237,11 @@ public class Settings {
 
             response = client.newCall(request).execute();
             //if that call didnt fail, we were able to connect
+            plexiLogger.info("Successfully performed first connection to Ombi");
             return true;
         } catch (Exception e) {
             //if that call failed, we couldn't connect to ombi
+            plexiLogger.error("Unable to connect to Ombi during startup");
             return false;
         } finally {
             //close the response if one was created 
@@ -252,5 +275,9 @@ public class Settings {
 
     public String getVersionNumber() {
         return VERSION_NUMBER;
+    }
+
+    public Logger getLogger(){
+        return plexiLogger;
     }
 }

@@ -2,6 +2,7 @@ package com.github.tcn.plexi.discordBot.commands;
 
 import com.github.tcn.plexi.ombi.OmbiCallers;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
+import com.github.tcn.plexi.settingsManager.Settings;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
@@ -30,18 +31,28 @@ public class RequestCommand extends Command {
                 TvInfo tvInfo = caller.ombiTvInfo(args[1]);
 
                 event.reply(ombiCallers.requestTv(true, tvInfo));
+
+                //log the command's usage
+                Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has used the request command for TVDb_ID: " + args[1]);
             } catch (IllegalArgumentException e) {
                 event.reply("Error requesting media");
+                //log the command's failure
+                Settings.getInstance().getLogger().error("The request failed");
             }
         } else if (args[0].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks|m")) {
             try {
                 event.reply(ombiCallers.requestMovie(args[1]));
 
+                //log the command's usage
+                Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has used the request command for TMDb_ID: " + args[1]);
             } catch (IllegalArgumentException e) {
                 event.reply("Error requesting media");
+                //log the command's failure
+                Settings.getInstance().getLogger().error("The request failed");
             }
         } else {
             event.getChannel().sendMessage("Malformed Command!").queue();
+            Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has attempted to use the request command but provided invalid information");
         }
 
     }

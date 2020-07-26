@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class MainView extends JFrame {
 
@@ -32,6 +33,19 @@ public class MainView extends JFrame {
         textArea = new JTextArea(50, 10);
         textArea.setEditable(false);
         PrintStream guiOut = new PrintStream(new SwingOutputStream(textArea));
+
+        //Create Icon array so we can scale our icons to look decent
+        ArrayList<Image> icons = new ArrayList<>();
+        icons.add(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/assets/originalIcons/16.png")));
+        icons.add(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/assets/originalIcons/32.png")));
+        icons.add(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/assets/originalIcons/64.png")));
+        icons.add(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/assets/originalIcons/128.png")));
+        icons.add(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/assets/originalIcons/256.png")));
+        icons.add(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/assets/originalIcons/512.png")));
+        icons.add(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/assets/originalIcons/1024.png")));
+
+        //add that array to our program
+        setIconImages(icons);
 
         //set system output
         System.setErr(guiOut);
@@ -81,7 +95,7 @@ public class MainView extends JFrame {
                         botInstance.stopBot();
                     } else {
                         //this means that the user decided to avoid shutdown. Print to log and return.
-                        System.out.println("Avoided Shutdown");
+                        Settings.getInstance().getLogger().debug("Exit attempted but avoided by user");
                         return;
                     }
                 }
@@ -111,7 +125,7 @@ public class MainView extends JFrame {
                         if (!botInstance.isRunning()) {
                             buttonState.setText("Start");
                         } else {
-                            System.out.println("Error: Unable to stop bot");
+                            Settings.getInstance().getLogger().error("Stop button failed to stop Plexi");
                         }
                     }
                 } else {

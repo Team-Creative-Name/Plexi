@@ -3,6 +3,7 @@ package com.github.tcn.plexi.discordBot.commands;
 import com.github.tcn.plexi.discordBot.EmbedManager;
 import com.github.tcn.plexi.discordBot.PlexiBot;
 import com.github.tcn.plexi.ombi.OmbiCallers;
+import com.github.tcn.plexi.settingsManager.Settings;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
@@ -20,5 +21,8 @@ public class getPingCommand extends Command {
         OmbiCallers caller = new OmbiCallers();
         EmbedManager embedManager = new EmbedManager();
         event.reply(embedManager.createPingEmbed(PlexiBot.getInstance().getGatewayPing(), PlexiBot.getInstance().getRestPing(), caller.getPingTime()).build());
+
+        //print command usage to the log
+        Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has used the ping command");
     }
 }

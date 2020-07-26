@@ -1,6 +1,7 @@
 package com.github.tcn.plexi.discordBot.commands;
 
 import com.github.tcn.plexi.discordBot.PlexiBot;
+import com.github.tcn.plexi.settingsManager.Settings;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
@@ -16,6 +17,9 @@ public class ShutdownCommand extends Command {
     @Override
     protected void execute(CommandEvent event) {
         event.reply("Plexi is shutting down.");
+
+        //log that the command was used
+        Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has used the shutdown command");
 
         //turn off plexi
         PlexiBot.getInstance().stopBot();

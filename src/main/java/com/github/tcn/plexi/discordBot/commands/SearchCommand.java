@@ -5,6 +5,7 @@ import com.github.tcn.plexi.ombi.OmbiCallers;
 import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
 import com.github.tcn.plexi.paginators.searchPaginators.SearchPaginator;
+import com.github.tcn.plexi.settingsManager.Settings;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -27,7 +28,6 @@ public class SearchCommand extends Command {
 
 
         ePBuilder = new SearchPaginator.Builder()
-
                 .setFinalAction(message -> {
                     try {
                         message.clearReactions().queue();
@@ -54,7 +54,7 @@ public class SearchCommand extends Command {
             OmbiCallers tvSearcher = new OmbiCallers();
             EmbedManager embedManager = new EmbedManager();
 
-            System.out.println(event.getAuthor().getName() + " has searched for: " + args[1]);
+            Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has searched for: " + args[1]);
             //Retrieve array of TvSearch Objects - each object is a search result
             TvSearch[] result = tvSearcher.ombiTvSearch(args[1]);
 
@@ -74,13 +74,13 @@ public class SearchCommand extends Command {
                 p.paginate(event.getChannel(), 1);
             }
 
-
-            //event.getChannel().sendMessage("Here is the first result: " + result[0].getTitle()).queue();
+            //log that the command was used
+            Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has used the search command for the phrase: " + args[1]);
         } else if (args[0].toLowerCase().matches("((m(ovie)?|film|feature|flick)s?)|(cine(matic)?)")) {
 
             OmbiCallers moviesearcher = new OmbiCallers();
             EmbedManager embedManager = new EmbedManager();
-            System.out.println(event.getAuthor().getName() + " has searched for " + args[1]);
+            Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has searched for " + args[1]);
 
             MovieSearch[] result = moviesearcher.ombiMovieSearch(args[1]);
 
@@ -99,9 +99,14 @@ public class SearchCommand extends Command {
                 p.paginate(event.getChannel(), 1);
             }
 
+            //log that the command was used
+            Settings.getInstance().getLogger().info(event.getAuthor().getName() + " has used the search command for the phrase: " + args[1]);
         } else {
             event.getChannel().sendMessage("Malformed Command!").queue();
+            //log that the command was used improperly
+            Settings.getInstance().getLogger().info(event.getAuthor().getName() + " attempted to use the search command but used malformed arguments");
         }
+
     }
 
     private ArrayList<Integer> generateEpisodeIdArray(TvSearch[] tvArray) {

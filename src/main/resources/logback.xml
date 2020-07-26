@@ -1,9 +1,11 @@
 <configuration>
     <timestamp key="fullTimeStamp" datePattern="yyyy-MM-dd'_'HH-mm-ss"/>
 
+    <property name="LOG_PATH" value="${LOG_PATH}"/>
+
     <!-- Settings for file logger -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/Plexi-Log-${fullTimeStamp}.log</file>
+        <file>${LOG_PATH}/logs/Plexi-Log-${fullTimeStamp}.log</file>
         <append>false</append>
         <encoder>
             <pattern>[%d{HH:mm:ss.SS}] [%level]: [%logger{35}] - %msg%n</pattern>

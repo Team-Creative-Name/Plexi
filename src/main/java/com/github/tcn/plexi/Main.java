@@ -22,7 +22,7 @@ public class Main {
                 "    |__/";
 
 
-        //call getInstance in order to ensure that it is loaded
+        //call getInstance in order to ensure that it is loaded before anything else
         Settings.getInstance();
 
 

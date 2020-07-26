@@ -30,7 +30,7 @@ public class Settings {
     //reference to this object - the only one
     private static Settings SETTINGS_INSTANCE = null;
     //the version number
-    private final String VERSION_NUMBER = "v1.0-RC.1";
+    private final String VERSION_NUMBER = "v1.0";
     //stuff loaded from the config file
     private String TOKEN = null;
     private String PREFIX = null;
@@ -45,7 +45,7 @@ public class Settings {
     PlexiBot plexiBot = PlexiBot.getInstance();
 
     //The Main logger for Plexi
-    Logger plexiLogger = LoggerFactory.getLogger("Plexi");
+    Logger plexiLogger;
 
     /**
      * No other classes are allowed to instantiate this class
@@ -81,12 +81,27 @@ public class Settings {
     private void initVariables() {
         try {
             //first attempt to get the resource path and jar path
-            //JAR_PATH = Paths.get(Settings.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
             JAR_PATH = new File(Settings.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).toPath();
             INTERNAL_CONFIG_PATH = this.getClass().getResource("/assets/config.txt");
 
             //now attempt to read from the configuration file and set values accordingly
-            USER_CONFIG_PATH = JAR_PATH.getParent().resolve("config.txt");
+            //if using Mac OS && are using the application bundle, we need to change the config and log paths
+            if (System.getProperty("os.name").toLowerCase().contains("mac") && JAR_PATH.getParent().getParent().getParent().toString().contains(".app")) {
+                //this should only fire if the jar is wrapped inside of a .app bundle
+                //set the logger to the same folder that the .app is located in
+                System.setProperty("LOG_PATH", JAR_PATH.getParent().getParent().getParent().getParent().toString());
+                //now attempt to load the config file
+                USER_CONFIG_PATH = JAR_PATH.getParent().getParent().getParent().getParent().resolve("config.txt");
+            } else {
+                //If not running within an application bundle, the user should have direct access to the jar. Set Everything to its path.
+                USER_CONFIG_PATH = JAR_PATH.getParent().resolve("config.txt");
+                //set the log path as well
+                System.setProperty("LOG_PATH", JAR_PATH.getParent().toString());
+            }
+
+            //now that we know where the logger needs to be, go ahead and create it
+            plexiLogger = LoggerFactory.getLogger("Plexi");
+
             FileInputStream config = new FileInputStream(USER_CONFIG_PATH.toString());
             Properties properties = new Properties();
 
@@ -110,8 +125,8 @@ public class Settings {
         } catch (FileNotFoundException e) {
             plexiLogger.error("Unable to locate existing configuration file!");
             generateConfigFile();
-            plexiLogger.info("A new configuration file has been generated at: " + JAR_PATH.getParent().toString() );
-            JOptionPane.showMessageDialog(null, "The config file was unable to be found. A new one has been generated at: " + JAR_PATH.getParent().toString(), "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
+            plexiLogger.info("A new configuration file has been generated at: " + USER_CONFIG_PATH.toString());
+            JOptionPane.showMessageDialog(null, "The config file was unable to be found. A new one has been generated at: " + USER_CONFIG_PATH.toString(), "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
             plexiBot.stopBot();
             plexiLogger.info("Please fill out the configuration file and restart Plexi");
             System.exit(0);

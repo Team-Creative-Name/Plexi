@@ -14,5 +14,6 @@ public class Commands extends CommandClientBuilder {
         this.addCommand(new ShutdownCommand());
         this.addCommand(new RestartCommand());
         this.addCommand(new getPingCommand());
+        this.addCommand(new ViewRequestsCommand(waiter));
     }
 }

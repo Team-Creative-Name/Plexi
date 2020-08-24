@@ -2,9 +2,10 @@ package com.github.tcn.plexi.ombi;
 
 
 import com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo.MovieInfo;
+import com.github.tcn.plexi.ombi.templateClasses.movies.requestList.MovieRequestList;
 import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
-import com.github.tcn.plexi.ombi.templateClasses.requests.movie.MovieRequest;
-import com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate.TvRequestTemplate;
+import com.github.tcn.plexi.ombi.templateClasses.movies.requestResponse.MovieRequest;
+import com.github.tcn.plexi.ombi.templateClasses.tv.requestTemplate.TvRequestTemplate;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
 import com.github.tcn.plexi.ombi.templateClasses.tv.tvLite.TvLite;
@@ -201,6 +202,35 @@ public class OmbiCallers {
         Settings.getInstance().getLogger().error("An unknown error occurred while communicating with Ombi. Please try again later");
         return null;
     }
+
+    public MovieRequestList[] getMovieRequests(){
+        OkHttpClient client = new OkHttpClient();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        Request request = new Request.Builder()
+                .url(settings.getOmbiUrl() + "/api/v1/Request/movie")
+                .get()
+                .addHeader("accept", "application/json")
+                .addHeader("ApiKey", settings.getOmbiKey())
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected Code: " + response);
+            }
+            String downloadedJSON = response.body().string();
+            return gson.fromJson(downloadedJSON, MovieRequestList[].class);
+        } catch (IOException e) {
+            Settings.getInstance().getLogger().error(e.getMessage());
+        }
+        return null;
+    }
+
+
+
+
+
+
+
+
 
     /**
      * Forms a connection to the Ombi API and requests a movie given its TMDb id number.

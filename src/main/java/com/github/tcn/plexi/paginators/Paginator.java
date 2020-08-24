@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -451,6 +452,17 @@ public abstract class Paginator extends Menu {
          */
         public final T setFinalAction(Consumer<Message> finalAction) {
             this.finalAction = finalAction;
+            return (T) this;
+        }
+
+        public final T setDefaultFinalAction(){
+            this.finalAction = message -> {
+                try {
+                    message.clearReactions().queue();
+                } catch (PermissionException ex) {
+                    message.delete().queue();
+                }
+            };
             return (T) this;
         }
     }

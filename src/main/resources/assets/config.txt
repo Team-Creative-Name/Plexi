@@ -32,4 +32,7 @@ ombiURL = "URL_HERE"
 //Ombi Key
 ombiKey = "KEY_HERE"
 
+//Allow users other than the bot owner to view media requests (default is true)
+usersViewRequests = "true"
+
 //end of config

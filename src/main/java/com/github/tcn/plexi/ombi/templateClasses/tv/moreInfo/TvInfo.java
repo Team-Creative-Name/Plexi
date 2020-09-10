@@ -526,6 +526,10 @@ public class TvInfo {
 
     public String getPlexAvailability() {
         if (fullyAvailable) {
+            //check to see if the plex url is valid
+            if(getPlexUrl() == null){
+                return "[Fully Available on Plex!]";
+            }
             return "[Fully Available on Plex!](" + getPlexUrl() + ")";
         } else if (!fullyAvailable && available) {
             return "[" + getMissingEpisodes() + " episode(s) Missing!](" + getPlexUrl() + ")";

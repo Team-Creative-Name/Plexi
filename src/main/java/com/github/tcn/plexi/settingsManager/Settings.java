@@ -1,6 +1,7 @@
 package com.github.tcn.plexi.settingsManager;
 
 import com.github.tcn.plexi.discordBot.PlexiBot;
+import com.typesafe.config.ConfigException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -37,6 +38,7 @@ public class Settings {
     private String OMBI_URL = null;
     private String OMBI_KEY = null;
     private String OWNER_ID = null;
+    private Boolean USERS_VIEW_REQUESTS = null;
     private URL INTERNAL_CONFIG_PATH;
     private Path USER_CONFIG_PATH;
     //Variables useful for class operations
@@ -116,6 +118,9 @@ public class Settings {
             OMBI_URL = properties.getProperty("ombiURL").replaceAll("^\"|\"$", "");
             OMBI_KEY = properties.getProperty("ombiKey").replaceAll("^\"|\"$", "");
 
+            //this one is a bit special because we need to cast it to a boolean - this value defaults to false if an invalid value is provided
+            USERS_VIEW_REQUESTS = Boolean.valueOf(properties.getProperty("usersViewRequests").replaceAll("^\"|\"$", "").toLowerCase());
+
             if (!validateGlobals()) {
                 JOptionPane.showMessageDialog(null, "The config file contains invalid settings, please check it and try again.", "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
                 plexiLogger.error("Invalid settings found in the configuration file. Plexi must exit");
@@ -131,12 +136,21 @@ public class Settings {
             plexiLogger.info("Please fill out the configuration file and restart Plexi");
             System.exit(0);
 
+        } catch (NullPointerException e){
+            //This most likely means that the settings file is missing a value or something. Inform the user and have them delete the old settings file
+            plexiLogger.error("Missing Key/Value pair in settings file! Please delete the settings file and let Plexi generate a new one");
+            plexiLogger.trace(Arrays.toString(e.getStackTrace()));
+            //pop open a dialog box to ensure the user is aware of what happened
+            JOptionPane.showMessageDialog(null, "Missing Key/Value pair in settings file! Please delete the settings file and let Plexi generate a new one", "Plexi - Configuration Error", JOptionPane.INFORMATION_MESSAGE);
+            //after the user closes that, shut down the bot if it is running and terminate the program
+            plexiBot.stopBot();
+            System.exit(-1);
         } catch (Exception e) {
             //if we cant get these two, there is absolutely no way to continue program execution. We inform the user of an issue and terminate
             plexiLogger.error("Error reading the settings file: " + e.getLocalizedMessage());
             plexiLogger.trace(Arrays.toString(e.getStackTrace()));
             //pop open a dialog box to ensure the user is aware of what happened
-            JOptionPane.showMessageDialog(null, "Unknown error, unable to continue program execution. Error: " + e.getLocalizedMessage() + "\nCheck the log for a bit more info (Hopefully)", "Plexi - Unknown Error", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Unknown error, unable to continue program execution. Error: " + Arrays.toString(e.getStackTrace()) + "\nCheck the log for a bit more info (Hopefully)", "Plexi - Unknown Error", JOptionPane.INFORMATION_MESSAGE);
             //after the user closes that, shut down the bot if it is running and terminate the program
             plexiBot.stopBot();
             System.exit(-1);
@@ -203,6 +217,10 @@ public class Settings {
         }
         //check to ensure ownerID != null;
         if (OWNER_ID.equals("") || OWNER_ID.equals("0")) {
+            isValid = false;
+        }
+        //ensure that USERS_VIEW_REQUESTS is not null
+        if(USERS_VIEW_REQUESTS == null){
             isValid = false;
         }
 
@@ -275,6 +293,10 @@ public class Settings {
 
     public String getVersionNumber() {
         return VERSION_NUMBER;
+    }
+
+    public Boolean getUsersViewRequests(){
+        return USERS_VIEW_REQUESTS;
     }
 
     public Logger getLogger(){

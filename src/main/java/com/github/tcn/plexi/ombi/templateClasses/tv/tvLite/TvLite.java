@@ -20,6 +20,12 @@ public class TvLite {
     @SerializedName("id")
     @Expose
     private Integer id;
+    @SerializedName("title")
+    @Expose
+    private String title;
+    @SerializedName("available")
+    @Expose
+    private Boolean available;
 
     public Integer getTvDbId() {
         return tvDbId;
@@ -36,4 +42,21 @@ public class TvLite {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public Boolean getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Boolean available) {
+        this.available = available;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
 }

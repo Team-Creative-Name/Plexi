@@ -2,9 +2,13 @@ package com.github.tcn.plexi.discordBot;
 
 import com.github.tcn.plexi.ombi.OmbiCallers;
 import com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo.MovieInfo;
+import com.github.tcn.plexi.ombi.templateClasses.movies.requestList.MovieRequestList;
 import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
+import com.github.tcn.plexi.ombi.templateClasses.tv.requestTemplate.TvRequestTemplate;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
+import com.github.tcn.plexi.ombi.templateClasses.tv.tvLite.TvLite;
+import com.github.tcn.plexi.ombi.templateClasses.tv.tvRequests.TvRequestList;
 import com.github.tcn.plexi.settingsManager.Settings;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -284,6 +288,113 @@ public class EmbedManager {
         OmbiCallers caller = new OmbiCallers();
         return createTvMoreInfoEmbed(caller.ombiTvInfo(String.valueOf(id)));
     }
+
+    public EmbedBuilder getMovieRequestListEmbed(MovieRequestList[] movieRequestArray, int pageNum){
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(new Color(0x00Ae86));
+        eb.setTitle("Requested Movies");
+        eb.setFooter("Page " + (pageNum + 1));
+        int numOfItems = 10 * (pageNum + 1); //sets the number of items per page
+
+        if(pageNum  == (int)Math.floor(movieRequestArray.length / 10.0) ){ //last page in array
+            numOfItems = movieRequestArray.length;
+        }
+
+        //generate the string required for the embed description
+        String descString = "";
+        for(int i = pageNum * 10;    i <  numOfItems     ; i++){ //<--- this line
+            descString += movieRequestArray[i].getTitle() + "\n";
+        }
+
+        eb.setDescription(descString);
+        return eb;
+    }
+
+    public ArrayList<EmbedBuilder> getMovieRequestListArray(MovieRequestList[] movieRequestArray){
+        //first determine the number of pages that we will need to present with 10 movies per page
+        int numOfPages = (int)Math.ceil(movieRequestArray.length / 10.0) ;
+
+
+        //create the embed array
+        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
+
+        for(int i = 0; i < numOfPages; i++){
+            newArray.add(getMovieRequestListEmbed(movieRequestArray, i));
+        }
+
+        //return newArray
+        return newArray;
+    }
+
+    public ArrayList<EmbedBuilder> getUnfilledMovieRequestListArray(MovieRequestList[] movieRequestArray){
+        //run through the movie array and strip it of available movies
+        ArrayList<MovieRequestList> tempMovieArray = new ArrayList<>();
+
+        for (int i = 0; i < movieRequestArray.length; i++){
+            if (!movieRequestArray[i].getAvailable()) {
+                tempMovieArray.add(movieRequestArray[i]);
+            }
+        }
+
+        MovieRequestList[] fixedMovieArray = tempMovieArray.toArray(new MovieRequestList[tempMovieArray.size()]);
+
+        return getMovieRequestListArray(fixedMovieArray);
+    }
+
+    public EmbedBuilder getTvRequestListEmbed(TvRequestList[] requestArray, int pageNum){
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(new Color(0x00Ae86));
+        eb.setTitle("Requested TV Shows");
+        eb.setFooter("Page " + (pageNum + 1));
+
+        int numOfItems = 10 * (pageNum + 1);
+
+        if(pageNum == (int)Math.floor(requestArray.length / 10.0)){
+            numOfItems = requestArray.length;
+        }
+
+        //generate the string required for the embed description
+        String descString = "";
+        for(int i = pageNum * 10;    i <  numOfItems     ; i++){ //<--- this line
+            descString += requestArray[i].getTitle() + "\n";
+        }
+        eb.setDescription(descString);
+        return eb;
+    }
+
+
+    public ArrayList<EmbedBuilder> getTvRequestListArray(TvRequestList[] tvRequests){
+        //first determine the number of pages that we will need to present with 10 movies per page
+        int numOfPages = (int)Math.ceil(tvRequests.length / 10.0) ;
+
+
+        //create the embed array
+        ArrayList<EmbedBuilder> newArray = new ArrayList<>();
+
+        for(int i = 0; i < numOfPages; i++){
+            newArray.add(getTvRequestListEmbed(tvRequests, i));
+        }
+
+        //return newArray
+        return newArray;
+    }
+
+
+    public ArrayList<EmbedBuilder> getUnfilledTvRequestList(TvRequestList[] tvRequests){
+        //run through the movie array and strip it of available movies
+        ArrayList<TvRequestList> tempTvArray = new ArrayList<>();
+
+        for (int i = 0; i < tvRequests.length; i++){
+            if (!tvRequests[i].getFullyAvailable()) {
+                tempTvArray.add(tvRequests[i]);
+            }
+        }
+
+        TvRequestList[] fixedTvArray = tempTvArray.toArray(new TvRequestList[tempTvArray.size()]);
+
+        return getTvRequestListArray(fixedTvArray);
+    }
+
 
     /**
      * wraps EmbedBuilder object into an ArrayList

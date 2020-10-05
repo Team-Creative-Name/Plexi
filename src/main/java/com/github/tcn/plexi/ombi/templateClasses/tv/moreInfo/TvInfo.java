@@ -1,9 +1,9 @@
 
 package com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo;
 
-import com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate.RequestEpisode;
-import com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate.Season;
-import com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate.TvRequestTemplate;
+import com.github.tcn.plexi.ombi.templateClasses.tv.requestTemplate.RequestEpisode;
+import com.github.tcn.plexi.ombi.templateClasses.tv.requestTemplate.Season;
+import com.github.tcn.plexi.ombi.templateClasses.tv.requestTemplate.TvRequestTemplate;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -526,6 +526,10 @@ public class TvInfo {
 
     public String getPlexAvailability() {
         if (fullyAvailable) {
+            //check to see if the plex url is valid
+            if(getPlexUrl() == null){
+                return "[Fully Available on Plex!]";
+            }
             return "[Fully Available on Plex!](" + getPlexUrl() + ")";
         } else if (!fullyAvailable && available) {
             return "[" + getMissingEpisodes() + " episode(s) Missing!](" + getPlexUrl() + ")";

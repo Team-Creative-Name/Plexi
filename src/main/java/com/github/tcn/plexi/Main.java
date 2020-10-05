@@ -9,6 +9,10 @@ public class Main {
 
     public static void main(String[] args) {
 
+        //call getInstance in order to ensure that it is loaded before anything else
+        Settings.getInstance();
+
+
         String logo =   "               /$$                     /$$           \n" +
                 "              | $$                    |__/           \n" +
                 "      /$$$$$$ | $$  /$$$$$$  /$$   /$$ /$$           \n" +
@@ -19,11 +23,10 @@ public class Main {
                 "    | $$____/ |__/ \\_______/|__/  \\__/|__/         \n" +
                 "    | $$                                             \n" +
                 "    | $$   Created by Team Creative Name             \n" +
-                "    |__/";
+                "    |__/   Version " + Settings.getInstance().getVersionNumber();
 
 
-        //call getInstance in order to ensure that it is loaded before anything else
-        Settings.getInstance();
+
 
 
         SwingUtilities.invokeLater(() -> {

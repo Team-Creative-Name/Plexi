@@ -407,7 +407,11 @@ public class MovieInfo {
 
     public String getAvailability() {
         if (available) {
-            return "[Available on plex!](" + getPlexUrl() + ")";
+            //check to see if the plex url is valid
+            if(getPlexUrl() == null){
+                return "[Available on Plex!]";
+            }
+            return "[Available on Plex!](" + getPlexUrl() + ")";
         } else {
             return "Not Available";
         }

@@ -1,5 +1,5 @@
 
-package com.github.tcn.plexi.ombi.templateClasses.requests.tv.jsonTemplate;
+package com.github.tcn.plexi.ombi.templateClasses.tv.requestTemplate;
 
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
 import com.google.gson.annotations.Expose;

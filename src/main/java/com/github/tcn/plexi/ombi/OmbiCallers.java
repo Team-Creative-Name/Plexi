@@ -14,7 +14,6 @@ import com.github.tcn.plexi.settingsManager.Settings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import okhttp3.*;
-import okhttp3.Request.Builder;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -37,6 +36,10 @@ public class OmbiCallers {
 
 /////////       Methods that get requests from Ombi       /////////
 
+    /**
+     * Forms a connection to Ombi and gets an array of movie request objects
+     * @return An array of MovieRequestList objects
+     */
     public MovieRequestList[] getMovieRequests(){
         OkHttpClient client = new OkHttpClient();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -58,9 +61,6 @@ public class OmbiCallers {
         return null;
     }
 
-    public TvRequestList[] getTvRequests(){
-        return null;
-    }
 
     /**
      * Forms a connection to Ombi and requests a list of all requested TV shows in the form of a TvLite object array. The downloaded
@@ -94,6 +94,11 @@ public class OmbiCallers {
         return null;
     }
 
+    /**
+     * Forms a connection to Ombi and requests a list of all requested TV shows in the form of a TvRequestList object array. This provides more information than {@link OmbiCallers#getTvLiteArray()}
+     * @return An Array of TvLite objects
+     * @implNote This method performs the request via the {@code /api/v1/Request/tv} get endpoint
+     */
     public TvRequestList[] getTvRequestListArray(){
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();
@@ -483,6 +488,89 @@ public class OmbiCallers {
             MovieSearch[] result = gson.fromJson(downloadedJson, MovieSearch[].class);
             //Log the number of items in the array
             Settings.getInstance().getLogger().info("The result is " + result.length + " page(s) long");
+            //return the array
+            return result;
+        } catch (IOException e) {
+            Settings.getInstance().getLogger().error("Unable to communicate with Ombi: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
+        }
+        Settings.getInstance().getLogger().error("An unknown error occurred while communicating with Ombi. Please try again later");
+        return null;
+    }
+
+    /**
+     * Forms a connection to the Ombi API and gets a list of up to 10 recently released movies
+     * The downloaded JSON is then converted into a MovieSearch array via {@link Gson#fromJson(String, Type)}
+     *
+     * @return An array of {@link MovieSearch MovieSearch} objects. Each object is one search result
+     * @implNote This method gets its info via the {@code /api/v1/Search/movie/upcoming} Ombi endpoint
+     */
+    public MovieSearch[] getUpcomingMovies(){
+        //Create new objects
+        OkHttpClient client = new OkHttpClient();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+        //log request
+        Settings.getInstance().getLogger().info("Getting a list of recently released movies from Ombi");
+
+        //Create the request
+        Request request = new Request.Builder()
+                .url(settings.getOmbiUrl() + "/api/v1/Search/movie/upcoming")
+                .addHeader("accept", "application/json")
+                .addHeader("ApiKey", settings.getOmbiKey())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            //Download the Json returned by the API and make it into a string
+            String downloadedJson = response.body().string();
+            //Pass the String to Gson and have it turned into a TvSearch Array
+            MovieSearch[] result = gson.fromJson(downloadedJson, MovieSearch[].class);
+            //return the array
+            return result;
+        } catch (IOException e) {
+            Settings.getInstance().getLogger().error("Unable to communicate with Ombi: " + e.getLocalizedMessage());
+            Settings.getInstance().getLogger().trace(Arrays.toString(e.getStackTrace()));
+        }
+        Settings.getInstance().getLogger().error("An unknown error occurred while communicating with Ombi. Please try again later");
+        return null;
+    }
+
+    /**
+     * Forms a connection to the Ombi API and gets a list of up to 10 upcoming shows.
+     * The downloaded JSON is then converted into a TvSearch array via {@link Gson#fromJson(String, Type)}
+     *
+     * @return An array of {@link TvSearch TvSearch} objects. Each object is one result
+     * @implNote This method gets its info via the {@code /api/v1/Search/tv/upcoming} Ombi endpoint
+     */
+    public TvSearch[] getUpcomingTvShows(){
+        //Create new objects
+        OkHttpClient client = new OkHttpClient();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+        //log request
+        Settings.getInstance().getLogger().info("Getting a list of upcoming TV shows from Ombi");
+
+        //Create the request
+        Request request = new Request.Builder()
+                .url(settings.getOmbiUrl() + "/api/v1/Search/tv/upcoming")
+                .addHeader("accept", "application/json")
+                .addHeader("ApiKey", settings.getOmbiKey())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            //Download the Json returned by the API and make it into a string
+            String downloadedJson = response.body().string();
+
+            //Pass the String to Gson and have it turned into a TvSearch Array
+            TvSearch[] result = gson.fromJson(downloadedJson, TvSearch[].class);
             //return the array
             return result;
         } catch (IOException e) {

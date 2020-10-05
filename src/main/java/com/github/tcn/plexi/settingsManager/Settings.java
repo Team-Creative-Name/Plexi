@@ -31,7 +31,7 @@ public class Settings {
     //reference to this object - the only one
     private static Settings SETTINGS_INSTANCE = null;
     //the version number
-    private final String VERSION_NUMBER = "v1.0";
+    private final String VERSION_NUMBER = "v1.1";
     //stuff loaded from the config file
     private String TOKEN = null;
     private String PREFIX = null;

@@ -13,7 +13,11 @@ import net.dv8tion.jda.api.exceptions.PermissionException;
 
 import java.util.ArrayList;
 
-
+/**
+ * This class is responsible for the Search command. Depending on the search query, it makes different calls to Ombi via
+ * {@link OmbiCallers#ombiTvSearch(String)} or {@link OmbiCallers#ombiMovieInfo(String)}. From there, the information is paginated
+ * and presented to the user via {@link SearchPaginator}
+ */
 public class SearchCommand extends Command {
 
     private final SearchPaginator.Builder ePBuilder;
@@ -109,24 +113,6 @@ public class SearchCommand extends Command {
 
     }
 
-    private ArrayList<Integer> generateEpisodeIdArray(TvSearch[] tvArray) {
 
-        ArrayList<Integer> toReturn = new ArrayList<>();
-
-        for (TvSearch tvSearch : tvArray) {
-            toReturn.add(tvSearch.getId());
-        }
-
-        return toReturn;
-    }
-
-    private ArrayList<Integer> generateMovieIdArray(MovieSearch[] movieArray) {
-        ArrayList<Integer> toReturn = new ArrayList<>();
-
-        for (MovieSearch movieSearch : movieArray) {
-            toReturn.add(movieSearch.getId());
-        }
-        return toReturn;
-    }
 
 }

@@ -3,7 +3,6 @@ package com.github.tcn.plexi.discordBot.commands;
 import com.github.tcn.plexi.discordBot.EmbedManager;
 import com.github.tcn.plexi.ombi.OmbiCallers;
 import com.github.tcn.plexi.ombi.templateClasses.movies.requestList.MovieRequestList;
-import com.github.tcn.plexi.ombi.templateClasses.tv.tvLite.TvLite;
 import com.github.tcn.plexi.ombi.templateClasses.tv.tvRequests.TvRequestList;
 import com.github.tcn.plexi.paginators.simplePaginators.ArrowPaginator;
 import com.github.tcn.plexi.settingsManager.Settings;
@@ -19,9 +18,9 @@ public class ViewRequestsCommand extends Command {
 
     public ViewRequestsCommand(EventWaiter waiter){
         this.name = "viewRequests";
-        this.help = "Views the requests that are currently in the request list";
+        this.help = "Views the requests that are currently in the request list and have not been filled.";
         this.arguments = "<tv|movie>";
-        this.aliases = new String[]{"viewrequests", "VR", "vr"};
+        this.aliases = new String[]{"viewrequests", "VR", "vr", "v"};
         this.ownerCommand = Settings.getInstance().getUsersViewRequests();
         this.guildOnly = false;
 

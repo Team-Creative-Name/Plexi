@@ -39,6 +39,7 @@ public class Settings {
     private String OMBI_KEY = null;
     private String OWNER_ID = null;
     private Boolean USERS_VIEW_REQUESTS = null;
+    private Boolean ALLOW_PLUGIN_LOADING = null;
     private URL INTERNAL_CONFIG_PATH;
     private Path USER_CONFIG_PATH;
     //Variables useful for class operations
@@ -120,6 +121,7 @@ public class Settings {
 
             //this one is a bit special because we need to cast it to a boolean - this value defaults to false if an invalid value is provided
             USERS_VIEW_REQUESTS = Boolean.valueOf(properties.getProperty("usersViewRequests").replaceAll("^\"|\"$", "").toLowerCase());
+            ALLOW_PLUGIN_LOADING = Boolean.valueOf(properties.getProperty("loadPlugins").replaceAll("^\"|\"$", "").toLowerCase());
 
             if (!validateGlobals()) {
                 JOptionPane.showMessageDialog(null, "The config file contains invalid settings, please check it and try again.", "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
@@ -301,5 +303,9 @@ public class Settings {
 
     public Logger getLogger(){
         return plexiLogger;
+    }
+
+    public Boolean getAllowPluginLoading(){
+        return ALLOW_PLUGIN_LOADING;
     }
 }

@@ -35,4 +35,7 @@ ombiKey = "KEY_HERE"
 //Allow users other than the bot owner to view media requests (default is true)
 usersViewRequests = "true"
 
+//Enable Plugin loading (default is false)
+loadPlugins = "false"
+
 //end of config

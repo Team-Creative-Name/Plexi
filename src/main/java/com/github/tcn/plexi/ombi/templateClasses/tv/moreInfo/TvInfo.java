@@ -570,8 +570,6 @@ public class TvInfo {
         return seasonRequests.get(seasonNum).getEpisodes().get(episodeNum).getAirDate();
     }
 
-    //TODO: The following two methods are essentially the same. They can probably be simplified or something...
-
     public TvRequestTemplate getLatestMissingSeasonArray() {
         //Create a new requestTemplate obj
         TvRequestTemplate missing = new TvRequestTemplate();

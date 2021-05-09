@@ -13,7 +13,7 @@ public class RequestCommand extends Command {
         this.name = "request";
         this.help = "requests media to be added to the plex server";
         this.arguments = "<tv|movie> <TVDb ID|TMDb ID>";
-        this.aliases = new String[]{"r"};
+        this.aliases = new String[]{"r|R"};
         this.ownerCommand = false;
         this.guildOnly = true;
     }

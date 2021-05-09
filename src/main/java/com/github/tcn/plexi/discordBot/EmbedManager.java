@@ -5,9 +5,7 @@ import com.github.tcn.plexi.ombi.templateClasses.movies.moreInfo.MovieInfo;
 import com.github.tcn.plexi.ombi.templateClasses.movies.requestList.MovieRequestList;
 import com.github.tcn.plexi.ombi.templateClasses.movies.search.MovieSearch;
 import com.github.tcn.plexi.ombi.templateClasses.tv.moreInfo.TvInfo;
-import com.github.tcn.plexi.ombi.templateClasses.tv.requestTemplate.TvRequestTemplate;
 import com.github.tcn.plexi.ombi.templateClasses.tv.search.TvSearch;
-import com.github.tcn.plexi.ombi.templateClasses.tv.tvLite.TvLite;
 import com.github.tcn.plexi.ombi.templateClasses.tv.tvRequests.TvRequestList;
 import com.github.tcn.plexi.settingsManager.Settings;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -16,6 +14,7 @@ import net.dv8tion.jda.api.JDA;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -133,6 +132,7 @@ public class EmbedManager {
         eb.addField("Network", stringVerifier(info.getNetwork(), 4), true);
         eb.addField("TVDb ID", stringVerifier(info.getId().toString(), 3), true);
         eb.addField("Last Episode Air Date", stringVerifier(info.getLatestEpisodeDate(), 8), true);
+        eb.setFooter(getRandomSplash(), Settings.getInstance().getHostedIconURL());
         eb.setThumbnail(info.getBanner());
         return eb;
     }
@@ -172,6 +172,7 @@ public class EmbedManager {
         } else {
             eb.setThumbnail("https://cdn.discordapp.com/attachments/592540131097837578/656822685912793088/poster.png");
         }
+        eb.setFooter(getRandomSplash(), Settings.getInstance().getHostedIconURL());
         return eb;
     }
 
@@ -459,7 +460,7 @@ public class EmbedManager {
         return toCheck;
     }
 
-    //this method returns a string with the formattedName added. This is used to get the URL for a show on the TVDB using the "title slug" field
+    //this method returns a string with the formatted Name added. This is used to get the URL for a show on the TVDB using the "title slug" field
     private String getTvDbUrl(int id) {
         return "https://www.thetvdb.com/?tab=series&id=" + id;
     }
@@ -494,7 +495,7 @@ public class EmbedManager {
 
         URI footerPath;
         try {
-            footerPath = getClass().getResource("/assets/footer.plexi").toURI();
+            footerPath = getClass().getResource("/assets/splashes.plexi").toURI();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             //log that the command was used
@@ -503,7 +504,7 @@ public class EmbedManager {
             return "Missing Footer File!";
         }
 
-        //create array of Strings out of footer.plexi file
+        //create array of Strings out of splashes.plexi file
         try {
             List<String> footerList = Files.readAllLines(Paths.get(footerPath));
             return footerList.get(randomNumber);
@@ -512,6 +513,34 @@ public class EmbedManager {
             return "Unable to generate footer!";
         }
 
+    }
+
+    //in this new implementation, the function automatically determines the size of the splash file
+    private String getRandomSplash(){
+
+        URI footerPath;
+
+        try{
+            //attempt to load the footer file
+            footerPath = getClass().getResource("/assets/splashes.plexi").toURI();
+
+            //load each line of the spash file into a List
+            List<String> splashList = Files.readAllLines(Paths.get(footerPath));
+
+            if(splashList.size() >0){
+                //generate random number based on the current number of spashes in the file
+                Random random = new Random();
+                int randomNum = random.ints(0, splashList.size() +1).findFirst().getAsInt();
+                return splashList.get(randomNum);
+            }
+
+        }catch (URISyntaxException | NullPointerException e) {
+            Settings.getInstance().getLogger().error("Unable to find splash file! Error:" + e.getLocalizedMessage());
+        }catch (IOException e){
+            Settings.getInstance().getLogger().error("Unable to read splash file! Is it corrupt? Error:" + e.getLocalizedMessage());
+        }
+
+        return "Error loading spashes!";
     }
 
 

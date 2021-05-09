@@ -32,6 +32,8 @@ public class Settings {
     private static Settings SETTINGS_INSTANCE = null;
     //the version number
     private final String VERSION_NUMBER = "v1.1";
+    //path to discord hosted icon @512x
+    private final String HOSTED_ICON_URL = "https://cdn.discordapp.com/attachments/675899155083952148/736485323663474728/Plexi_icon_512x.png";
     //stuff loaded from the config file
     private String TOKEN = null;
     private String PREFIX = null;
@@ -301,5 +303,9 @@ public class Settings {
 
     public Logger getLogger(){
         return plexiLogger;
+    }
+
+    public String getHostedIconURL(){
+        return HOSTED_ICON_URL;
     }
 }

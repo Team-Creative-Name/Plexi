@@ -1,7 +1,6 @@
 package com.github.tcn.plexi.settingsManager;
 
 import com.github.tcn.plexi.discordBot.PlexiBot;
-import com.typesafe.config.ConfigException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -14,7 +13,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -34,6 +35,9 @@ public class Settings {
     private final String VERSION_NUMBER = "v1.1";
     //path to discord hosted icon @512x
     private final String HOSTED_ICON_URL = "https://cdn.discordapp.com/attachments/675899155083952148/736485323663474728/Plexi_icon_512x.png";
+    //path to spashes file
+    private URL SPLASH_FILE_PATH = null;
+    private List<String> SPLASH_LIST = null;
     //stuff loaded from the config file
     private String TOKEN = null;
     private String PREFIX = null;
@@ -123,7 +127,7 @@ public class Settings {
             //this one is a bit special because we need to cast it to a boolean - this value defaults to false if an invalid value is provided
             USERS_VIEW_REQUESTS = Boolean.valueOf(properties.getProperty("usersViewRequests").replaceAll("^\"|\"$", "").toLowerCase());
 
-            if (!validateGlobals()) {
+            if (!validateSettings()) {
                 JOptionPane.showMessageDialog(null, "The config file contains invalid settings, please check it and try again.", "Plexi - Configuration Issue", JOptionPane.INFORMATION_MESSAGE);
                 plexiLogger.error("Invalid settings found in the configuration file. Plexi must exit");
                 System.exit(0);
@@ -158,6 +162,42 @@ public class Settings {
             System.exit(-1);
         }
         plexiLogger.info("Settings file loaded successfully!");
+
+        //now we want to attempt to load the splash file
+        try{
+            SPLASH_FILE_PATH = this.getClass().getResource("/assets/splashes.plexi");
+
+            //open an inputsteam and loop through the steam until it ends
+            InputStream splashStream = SPLASH_FILE_PATH.openStream();
+            int current;
+            StringBuilder currentQuote = new StringBuilder();
+            SPLASH_LIST = new ArrayList<>();
+
+            while((current = splashStream.read()) != -1){
+                if(current == 10){
+                    SPLASH_LIST.add(currentQuote.toString());
+                    currentQuote = new StringBuilder();
+                }else{
+                    currentQuote.append((char) current);
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            plexiLogger.error("Unable to locate splashes file, they will be disabled until found. Try re-downloading the release.");
+            plexiLogger.trace(Arrays.toString(e.getStackTrace()));
+        } catch (Exception e) {
+            plexiLogger.error("Unknown issue when attempting to load splashes file, they will be disabled. Try re-downloading the release.\n" + e.getMessage() + "\n" + e);
+
+        }
+
+        if(SPLASH_LIST != null && SPLASH_LIST.size() >0 && SPLASH_FILE_PATH != null){
+            plexiLogger.info("Successfully loaded " + SPLASH_LIST.size() + "splashes");
+        }else{
+            //we dont want to leave the splash list as null or it will cause issue, lets set it to a list that has one empty string.
+            SPLASH_LIST = new ArrayList<>();
+            SPLASH_LIST.add("");
+        }
+
     }
 
 
@@ -198,7 +238,7 @@ public class Settings {
     //we need a way to validate as many of the settings variables as possible
     //This is very rudimentary validation that checks to ensure that values are not empty and arent default. The Ombi API is checked to see if it can connect.
     //TODO: Make this method a bit less clunky
-    private boolean validateGlobals() {
+    private boolean validateSettings() {
         boolean isValid = true;
 
         //check to ensure token != null
@@ -271,7 +311,6 @@ public class Settings {
         }
     }
 
-
     //getters and setters for globals
     public String getToken() {
         return TOKEN;
@@ -307,5 +346,8 @@ public class Settings {
 
     public String getHostedIconURL(){
         return HOSTED_ICON_URL;
+    }
+    public List<String> getSplashList(){
+        return SPLASH_LIST;
     }
 }

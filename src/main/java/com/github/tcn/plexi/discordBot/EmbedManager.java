@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.JDA;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -517,27 +516,14 @@ public class EmbedManager {
 
     //in this new implementation, the function automatically determines the size of the splash file
     private String getRandomSplash(){
+        List<String> splashList= Settings.getInstance().getSplashList();
 
-        URI footerPath;
-
-        try{
-            //attempt to load the footer file
-            footerPath = getClass().getResource("/assets/splashes.plexi").toURI();
-
-            //load each line of the spash file into a List
-            List<String> splashList = Files.readAllLines(Paths.get(footerPath));
-
-            if(splashList.size() >0){
-                //generate random number based on the current number of spashes in the file
-                Random random = new Random();
-                int randomNum = random.ints(0, splashList.size() +1).findFirst().getAsInt();
-                return splashList.get(randomNum);
-            }
-
-        }catch (URISyntaxException | NullPointerException e) {
-            Settings.getInstance().getLogger().error("Unable to find splash file! Error:" + e.getLocalizedMessage());
-        }catch (IOException e){
-            Settings.getInstance().getLogger().error("Unable to read splash file! Is it corrupt? Error:" + e.getLocalizedMessage());
+        //double check that the list has something in it
+        if(splashList.size() > 1){
+            //generate random number based on the current number of spashes in the file
+            Random random = new Random();
+            int randomNum = random.ints(0, splashList.size() +1).findFirst().getAsInt();
+            return splashList.get(randomNum);
         }
 
         return "Error loading spashes!";

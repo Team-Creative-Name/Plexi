@@ -181,6 +181,8 @@ public class Settings {
                     currentQuote.append((char) current);
                 }
             }
+            //We will still have one quote left in the currentQuote var, so add that to the list
+            SPLASH_LIST.add(currentQuote.toString());
 
         } catch (FileNotFoundException e) {
             plexiLogger.error("Unable to locate splashes file, they will be disabled until found. Try re-downloading the release.");

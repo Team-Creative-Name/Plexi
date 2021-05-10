@@ -519,7 +519,7 @@ public class EmbedManager {
         List<String> splashList= Settings.getInstance().getSplashList();
 
         //double check that the list has something in it
-        if(splashList.size() > 1){
+        if(splashList.size() > 0){
             //generate random number based on the current number of spashes in the file
             Random random = new Random();
             int randomNum = random.ints(0, splashList.size() +1).findFirst().getAsInt();

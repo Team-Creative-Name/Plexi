@@ -183,12 +183,12 @@ public class EmbedManager {
      * @param missingEpisodeArray A String ArrayList where each string is information about a missing episode.
      * @return A {@link EmbedBuilder} object containing the first 10 items in missingEpisodeArray
      */
-    public EmbedBuilder createMissingEpisodeEmbed(ArrayList<String> missingEpisodeArray) {
+    public EmbedBuilder createMissingEpisodeEmbed(ArrayList<String> missingEpisodeArray, String title) {
 
         String episodes = "";
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(new Color(0x00Ae86));
-        eb.setTitle("Missing Episodes");
+        eb.setTitle("Missing Episodes for: " + title);
         if (missingEpisodeArray.size() == 0) {
             eb.setDescription("No Missing Episodes!");
         } else {
@@ -196,7 +196,7 @@ public class EmbedManager {
                 for (int i = 0; i < 9; i++) {
                     episodes += missingEpisodeArray.get(i) + "\n";
                 }
-                episodes += "Plus " + (missingEpisodeArray.size() - 9) + "more episodes";
+                episodes += "Plus " + (missingEpisodeArray.size() - 9) + " more episodes";
             } else {
                 for (int i = 0; i < missingEpisodeArray.size(); i++) {
                     episodes += missingEpisodeArray.get(i) + "\n";
@@ -207,7 +207,7 @@ public class EmbedManager {
                     episodes
             );
         }
-
+        eb.setFooter(getRandomSplash(), Settings.getInstance().getHostedIconURL());
 
         return eb;
     }
@@ -233,7 +233,7 @@ public class EmbedManager {
         eb.addField("Gateway", stringVerifier(gatewayPing + "ms", 5), true);
         eb.addField("Discord", stringVerifier(String.valueOf(discordPing), 5) + "ms", true);
         eb.addField("Ombi", stringVerifier(String.valueOf(ombiPing), 5) + "ms", true);
-
+        eb.setFooter(getRandomSplash(), Settings.getInstance().getHostedIconURL());
         return eb;
     }
 

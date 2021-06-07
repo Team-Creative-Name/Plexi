@@ -10,12 +10,22 @@ public class RequestEpisode {
     @Expose
     private Integer episodeNumber;
 
+    private String name;
+
     public Integer getEpisodeNumber() {
         return episodeNumber;
     }
 
     public void setEpisodeNumber(Integer episodeNumber) {
         this.episodeNumber = episodeNumber;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String newName){
+        name = newName;
     }
 
 }

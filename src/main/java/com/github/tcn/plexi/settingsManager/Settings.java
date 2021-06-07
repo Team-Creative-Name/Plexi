@@ -193,7 +193,7 @@ public class Settings {
         }
 
         if(SPLASH_LIST != null && SPLASH_LIST.size() >0 && SPLASH_FILE_PATH != null){
-            plexiLogger.info("Successfully loaded " + SPLASH_LIST.size() + "splashes");
+            plexiLogger.info("Successfully loaded " + SPLASH_LIST.size() + " splashes");
         }else{
             //we dont want to leave the splash list as null or it will cause issue, lets set it to a list that has one empty string.
             SPLASH_LIST = new ArrayList<>();

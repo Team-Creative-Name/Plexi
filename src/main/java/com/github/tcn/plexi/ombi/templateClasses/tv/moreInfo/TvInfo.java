@@ -629,7 +629,8 @@ public class TvInfo {
         return requested;
     }
 
-    public TvRequestTemplate getMissingEpisodeArray() {
+
+    public TvRequestTemplate getMissingAndUnrequestedArray() {
         //Create a new requestTemplate obj
         TvRequestTemplate missing = new TvRequestTemplate();
         //Create a new Season ArrayList
@@ -651,6 +652,45 @@ public class TvInfo {
                     RequestEpisode episode = new RequestEpisode();
                     //set the episode number
                     episode.setEpisodeNumber(seasonRequests.get(i).getEpisodes().get(j).getEpisodeNumber());
+                    //add episode to the missingEpisodes array
+                    missingEpisodes.add(episode);
+                }
+            }
+            //add the missing episodes to the season
+            season.setRequestEpisodes(missingEpisodes);
+            missingSeasons.add(season);
+        }
+
+        //finally add the missing seasons array to the TvRequestTemplate obj
+        missing.setSeasons(missingSeasons);
+        //and return it
+        return missing;
+    }
+
+    public TvRequestTemplate getAllMissingEpisodes(){
+        //Create a new requestTemplate obj
+        TvRequestTemplate missing = new TvRequestTemplate();
+        //Create a new Season ArrayList
+        ArrayList<Season> missingSeasons = new ArrayList<>();
+
+        //loop through the seasons in a show
+        for (int i = 0; i < seasonRequests.size(); i++) {
+
+            //Create a new season
+            Season season = new Season();
+            season.setSeasonNumber(i + 1);
+            //Create a new Episode ArrayList
+            ArrayList<RequestEpisode> missingEpisodes = new ArrayList<>();
+            //loop through the episodes in a season
+            for (int j = 0; j < seasonRequests.get(i).getEpisodes().size(); j++) {
+                if (!seasonRequests.get(i).getEpisodes().get(j).getAvailable()) {
+                    //create new Episode object
+                    System.out.println("Season " + i + " Episode " + j + " is missing!");
+                    RequestEpisode episode = new RequestEpisode();
+                    //set the episode number
+                    episode.setEpisodeNumber(seasonRequests.get(i).getEpisodes().get(j).getEpisodeNumber());
+                    //set the episode name
+                    episode.setName(seasonRequests.get(i).getEpisodes().get(j).getTitle());
                     //add episode to the missingEpisodes array
                     missingEpisodes.add(episode);
                 }

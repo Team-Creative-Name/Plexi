@@ -96,7 +96,7 @@ public class OmbiCallers {
 
     /**
      * Forms a connection to Ombi and requests a list of all requested TV shows in the form of a TvRequestList object array. This provides more information than {@link OmbiCallers#getTvLiteArray()}
-     * @return An Array of TvLite objects
+     * @return An Array of TvRequestList objects
      * @implNote This method performs the request via the {@code /api/v1/Request/tv} get endpoint
      */
     public TvRequestList[] getTvRequestListArray(){
@@ -223,7 +223,7 @@ public class OmbiCallers {
                 requestTemplate.setLatestSeason(true);
 
             } else {
-                requestTemplate = tvInfo.getMissingEpisodeArray();
+                requestTemplate = tvInfo.getMissingAndUnrequestedArray();
 
             }
             requestTemplate.setTvDbId(Integer.decode(id));
@@ -600,22 +600,25 @@ public class OmbiCallers {
 
         //get the TvInfo Object
         TvInfo tvInfo = ombiTvInfo(id);
+        return getMissingEpisodeArray(tvInfo);
 
+    }
+
+    public ArrayList<String> getMissingEpisodeArray(TvInfo tvInfo){
         //get the TvRequest Template object that contains the missing episodes
-        TvRequestTemplate missingEpisodes = tvInfo.getMissingEpisodeArray();
+        TvRequestTemplate missingEpisodes = tvInfo.getAllMissingEpisodes();
 
         ArrayList<String> missingEpisodeslist = new ArrayList<>();
 
-
         for (int i = 0; i < missingEpisodes.getSeasons().size(); i++) {
             for (int j = 0; j < missingEpisodes.getSeasons().get(i).getRequestEpisodes().size(); j++) {
-                missingEpisodeslist.add("Missing S" + (i + 1) + "E" + missingEpisodes.getSeasons().get(i).getRequestEpisodes().get(j).getEpisodeNumber());
+                missingEpisodeslist.add("S" + (i + 1) + "E" + missingEpisodes.getSeasons().get(i).getRequestEpisodes().get(j).getEpisodeNumber() + ": " + missingEpisodes.getSeasons().get(i).getRequestEpisodes().get(j).getName());
             }
         }
 
         return missingEpisodeslist;
-
     }
+
 
     /**
      * Forms a connection to Ombi and counts the amount of time it took for it to respond to an API request.

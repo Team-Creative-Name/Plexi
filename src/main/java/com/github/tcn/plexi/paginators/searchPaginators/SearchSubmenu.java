@@ -75,7 +75,8 @@ public class SearchSubmenu extends Paginator {
             }
 
         } else if (REACTIONS[1].getUnicode().equals(event.getReaction().getReactionEmote().getName())) { //the second item in the array is 👎
-            //remove media from the request list
+            //Removing requests seems to be a bit broken, lets remove this for now and replace it with a message
+            //remove media from the request list TODO: FIX THIS
             boolean success = caller.removeMediaRequest(getRequestID(), MEDIA_TYPE);
             if (success) {
                 event.getChannel().sendMessage("Successfully removed request for " + getMediaName()).queue();
@@ -126,10 +127,15 @@ public class SearchSubmenu extends Paginator {
 
             //add emotes depending on media status
             if (!FULLY_REQUESTED && (AVAILABILITY == 1 || AVAILABILITY == 0)) { //if not fully requested and not completely available
-                m.addReaction(REACTIONS[0].getUnicode()).queue(); //adds 👍
+                //remove if a tv (for now) TODO: FIX
+                if(!(MEDIA_TYPE == 1)){
+                    m.addReaction(REACTIONS[0].getUnicode()).queue(); //adds 👍
+                }
+
             }
             if (REQUESTED && (AVAILABILITY == 1 || AVAILABILITY == 0)) {    //if requested at all and not completely available
-                m.addReaction(REACTIONS[1].getUnicode()).queue(); //adds 👎
+                //disable this for now TODO: FIX THIS
+                //m.addReaction(REACTIONS[1].getUnicode()).queue(); //adds 👎
             }
 
             //as of right now, I am removing the new emote. It does not work and I dont know how it differs from the normal add command

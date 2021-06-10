@@ -25,6 +25,9 @@ public class RequestCommand extends Command {
         String[] args = event.getArgs().split(" ", 2);
 
         if (args[0].toLowerCase().matches("tv|television|telly|tele|t")) {
+            event.reply("TV Requests are currently disabled. This should be fixed soon");
+            //TODO Fix this
+            /*
             try {
                 //TODO: this command must change to conform to the new request method.
                 OmbiCallers caller = new OmbiCallers();
@@ -39,6 +42,8 @@ public class RequestCommand extends Command {
                 //log the command's failure
                 Settings.getInstance().getLogger().error("The request failed");
             }
+             */
+
         } else if (args[0].toLowerCase().matches("movie|film|feature|flick|cinematic|cine|movies|films|features|flicks|m")) {
             try {
                 event.reply(ombiCallers.requestMovie(args[1]));

@@ -67,6 +67,7 @@ public class SearchCommand extends Command {
                 event.reply("No Results Found!");
             } else {
 
+                event.reply("TV Requests are currently disabled. This should be fixed soon");
                 //Create an embed for the result array and send it to the paginator
                 ePBuilder.setMediaType(1);
                 ePBuilder.setPages(embedManager.getTvSearchEmbedArray(result));

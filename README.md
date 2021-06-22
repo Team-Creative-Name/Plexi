@@ -9,6 +9,11 @@
   
 </div>
 
+***PLEASE NOTE: PLEXI V1 is no longer supported. [Plexi v2](https://github.com/Team-Creative-Name/Plexi-V2) is currently in beta and has switched to using [Overseerr](https://github.com/sct/overseerr) as its backend. Plexi V1 will receive no future updates or support.***
+
+
+
+
 Plexi is a (fairly) easy to use discord bot that aims to allow users to search and request media via discord instead of a web browser.
 
 ## Features:
